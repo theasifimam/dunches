@@ -10,82 +10,47 @@ import { Button } from "./ui/button";
 import { useDispatch } from "react-redux";
 import { fetchProfile, setProfile } from "@/features/user/userSlice";
 
-// Step flow:
-//  "phone"    → user enters mobile
-//  "password" → existing user enters password (no SMS)
-//  "otp"      → new user enters OTP from SMS
-//  "register" → new user enters name + password + OTP verify
-
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const dispatch = useDispatch();
 
-  const [step, setStep] = useState("phone");
+  const [step, setStep] = useState("login");
   const [phone, setPhone] = useState("");
   const [countryCode] = useState("+91");
   const [password, setPassword] = useState("");
   const [showPwd, setShowPwd] = useState(false);
+  
   const [name, setName] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [showNewPwd, setShowNewPwd] = useState(false);
+  
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [timer, setTimer] = useState(30);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  
   const otpRefs = [useRef(), useRef(), useRef(), useRef()];
 
   useEffect(() => {
     if (!isOpen) {
-      setStep("phone"); setPhone(""); setPassword(""); setName(""); setNewPassword("");
+      setStep("login"); setPhone(""); setPassword(""); setName(""); setNewPassword("");
       setOtp(["", "", "", ""]); setTimer(30); setLoading(false); setError("");
     }
   }, [isOpen]);
 
   useEffect(() => {
     let t;
-    if (step === "otp" && timer > 0) t = setInterval(() => setTimer(p => p - 1), 1000);
+    if ((step === "signup-otp" || step === "forgot-otp") && timer > 0) {
+      t = setInterval(() => setTimer(p => p - 1), 1000);
+    }
     return () => clearInterval(t);
   }, [step, timer]);
 
   const mobile = `${countryCode}${phone}`;
+  const fullMobile = `${countryCode} ${phone.slice(0, 3)}****${phone.slice(7)}`;
 
-  // ── Step 1: Check phone ──────────────────────────────────────────────────
-  const handlePhoneSubmit = async (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
     if (phone.length !== 10) { setError("Enter a valid 10-digit number"); return; }
-    setError(""); setLoading(true);
-    try {
-      const res = await fetch("/api/v1/auth/phone-check", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mobile }),
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Check failed");
-      if (data.data.exists && data.data.hasPassword) {
-        setStep("password");  // existing user → password login
-      } else {
-        // new user → request OTP for registration
-        await sendOTP();
-      }
-    } catch (err) { setError(err.message); }
-    finally { setLoading(false); }
-  };
-
-  const sendOTP = async () => {
-    const res = await fetch("/api/v1/auth/phone-login-request", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mobile }),
-    });
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message || "Failed to send OTP");
-    setTimer(30); setStep("otp");
-    setTimeout(() => { if (otpRefs[0].current) otpRefs[0].current.focus(); }, 100);
-  };
-
-  // ── Step 2a: Password login (existing user) ──────────────────────────────
-  const handlePasswordLogin = async (e) => {
-    e.preventDefault();
     if (!password) { setError("Enter your password"); return; }
     setError(""); setLoading(true);
     try {
@@ -102,30 +67,43 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
     finally { setLoading(false); }
   };
 
-  // ── Step 2b: OTP entry (new user) ────────────────────────────────────────
-  const handleOtpChange = (val, idx) => {
-    const clean = val.replace(/[^0-9]/g, "");
-    if (!clean) { const n = [...otp]; n[idx] = ""; setOtp(n); return; }
-    const n = [...otp]; n[idx] = clean[0]; setOtp(n);
-    if (idx < 3 && clean) setTimeout(() => { otpRefs[idx + 1]?.current?.focus(); }, 10);
+  const handleSignupRequest = async (e) => {
+    if (e) e.preventDefault();
+    if (phone.length !== 10) { setError("Enter a valid 10-digit number"); return; }
+    setError(""); setLoading(true);
+    try {
+      const res = await fetch("/api/v1/auth/phone-login-request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to send OTP");
+      setTimer(30); setStep("signup-otp"); setOtp(["", "", "", ""]);
+      setTimeout(() => { if (otpRefs[0].current) otpRefs[0].current.focus(); }, 100);
+    } catch (err) { setError(err.message); }
+    finally { setLoading(false); }
   };
 
-  const handleOtpKey = (e, idx) => {
-    if (e.key === "Backspace" && otp[idx] === "" && idx > 0) {
-      const n = [...otp]; n[idx - 1] = ""; setOtp(n);
-      setTimeout(() => otpRefs[idx - 1]?.current?.focus(), 10);
-    }
+  const handleForgotRequest = async (e) => {
+    if (e) e.preventDefault();
+    if (phone.length !== 10) { setError("Enter a valid 10-digit number"); return; }
+    setError(""); setLoading(true);
+    try {
+      const res = await fetch("/api/v1/auth/phone-forgot-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Failed to send OTP");
+      setTimer(30); setStep("forgot-otp"); setOtp(["", "", "", ""]);
+      setTimeout(() => { if (otpRefs[0].current) otpRefs[0].current.focus(); }, 100);
+    } catch (err) { setError(err.message); }
+    finally { setLoading(false); }
   };
 
-  useEffect(() => {
-    if (step === "otp" && otp.join("").length === 4) {
-      // OTP complete — advance to the register info step
-      setStep("register");
-    }
-  }, [otp, step]);
-
-  // ── Step 3: Registration details + verify OTP ────────────────────────────
-  const handleRegister = async (e) => {
+  const handleSignupVerify = async (e) => {
     e.preventDefault();
     if (!name.trim()) { setError("Enter your name"); return; }
     if (newPassword.length < 6) { setError("Password must be at least 6 characters"); return; }
@@ -142,10 +120,54 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
       handleSuccess(data.data.user);
     } catch (err) {
       setError(err.message);
-      setOtp(["", "", "", ""]); setStep("otp");
+      setOtp(["", "", "", ""]); setStep("signup-otp");
       setTimeout(() => otpRefs[0]?.current?.focus(), 100);
     } finally { setLoading(false); }
   };
+
+  const handleForgotVerify = async (e) => {
+    e.preventDefault();
+    if (newPassword.length < 6) { setError("Password must be at least 6 characters"); return; }
+    setError(""); setLoading(true);
+    try {
+      const res = await fetch("/api/v1/auth/phone-reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mobile, otp: otp.join(""), newPassword }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.message || "Reset failed");
+      setStep("login");
+      setPassword("");
+      setNewPassword("");
+      setError("");
+      // Using error state just to show success message briefly
+      setTimeout(() => setError("Password reset successfully. You can now login."), 10);
+    } catch (err) {
+      setError(err.message);
+      setOtp(["", "", "", ""]); setStep("forgot-otp");
+      setTimeout(() => otpRefs[0]?.current?.focus(), 100);
+    } finally { setLoading(false); }
+  };
+
+  const handleOtpChange = (val, idx) => {
+    const clean = val.replace(/[^0-9]/g, "");
+    if (!clean) { const n = [...otp]; n[idx] = ""; setOtp(n); return; }
+    const n = [...otp]; n[idx] = clean[0]; setOtp(n);
+    if (idx < 3 && clean) setTimeout(() => { otpRefs[idx + 1]?.current?.focus(); }, 10);
+  };
+
+  const handleOtpKey = (e, idx) => {
+    if (e.key === "Backspace" && otp[idx] === "" && idx > 0) {
+      const n = [...otp]; n[idx - 1] = ""; setOtp(n);
+      setTimeout(() => otpRefs[idx - 1]?.current?.focus(), 10);
+    }
+  };
+
+  useEffect(() => {
+    if (step === "signup-otp" && otp.join("").length === 4) setStep("signup-details");
+    if (step === "forgot-otp" && otp.join("").length === 4) setStep("forgot-reset");
+  }, [otp, step]);
 
   const handleSuccess = (userData) => {
     localStorage.setItem("user", JSON.stringify(userData));
@@ -154,8 +176,6 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
     onLoginSuccess?.(userData);
     onClose?.();
   };
-
-  const fullMobile = `${countryCode} ${phone.slice(0, 3)}****${phone.slice(7)}`;
 
   return (
     <AnimatePresence>
@@ -173,7 +193,6 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
           >
             <div className="sm:hidden w-12 h-1.5 bg-foreground/10 rounded-full mx-auto mt-4" />
 
-            {/* Header */}
             <div className="flex items-center justify-between px-8 pt-8 pb-4">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 bg-primary/10 rounded-xl flex items-center justify-center">
@@ -182,10 +201,12 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
                 <div>
                   <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-foreground/30">Dunches</p>
                   <p className="text-sm font-black font-heading tracking-tight">
-                    {step === "phone" && "Sign In / Sign Up"}
-                    {step === "password" && "Welcome back!"}
-                    {step === "otp" && "Verify Number"}
-                    {step === "register" && "Create Account"}
+                    {step === "login" && "Sign In"}
+                    {step === "signup" && "Sign Up"}
+                    {(step === "signup-otp" || step === "forgot-otp") && "Verify Number"}
+                    {step === "signup-details" && "Create Account"}
+                    {step === "forgot-password" && "Reset Password"}
+                    {step === "forgot-reset" && "New Password"}
                   </p>
                 </div>
               </div>
@@ -197,16 +218,53 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
 
             <div className="px-8 pb-10 pt-2">
               {error && (
-                <div className="mb-4 text-[9px] font-black text-red-500 bg-red-500/5 border border-red-500/10 p-3 rounded-xl tracking-widest uppercase text-center">
+                <div className={`mb-4 text-[9px] font-black p-3 rounded-xl tracking-widest uppercase text-center ${error.includes('successful') ? 'text-green-500 bg-green-500/5 border border-green-500/10' : 'text-red-500 bg-red-500/5 border border-red-500/10'}`}>
                   {error}
                 </div>
               )}
 
-              {/* ─ Step: Phone ─────────────────────────────────────────────── */}
-              {step === "phone" && (
-                <motion.form key="phone" initial={{ opacity: 0 }} animate={{ opacity: 1 }} onSubmit={handlePhoneSubmit} className="space-y-4">
+              {/* LOGIN */}
+              {step === "login" && (
+                <motion.form key="login" initial={{ opacity: 0 }} animate={{ opacity: 1 }} onSubmit={handleLogin} className="space-y-4">
+                  <div className="flex items-center gap-2 bg-foreground/3 border border-transparent focus-within:border-primary/40 focus-within:bg-background rounded-2xl h-14 pl-4 pr-4 transition-all">
+                    <Phone className="w-4 h-4 text-foreground/20 shrink-0" />
+                    <span className="text-[10px] font-black tracking-widest text-foreground/60 shrink-0">+91</span>
+                    <div className="w-px h-5 bg-border shrink-0" />
+                    <input type="tel" maxLength={10} placeholder="MOBILE NUMBER" value={phone}
+                      onChange={(e) => setPhone(e.target.value.replace(/[^0-9]/g, ""))}
+                      className="flex-1 bg-transparent outline-none text-[10px] font-black tracking-[0.2em] placeholder:text-foreground/20" />
+                  </div>
+                  <div className="flex items-center gap-2 bg-foreground/3 border border-transparent focus-within:border-primary/40 focus-within:bg-background rounded-2xl h-14 pl-4 pr-3 transition-all">
+                    <Lock className="w-4 h-4 text-foreground/20 shrink-0" />
+                    <input type={showPwd ? "text" : "password"} placeholder="YOUR PASSWORD"
+                      value={password} onChange={(e) => setPassword(e.target.value)}
+                      className="flex-1 bg-transparent outline-none text-[10px] font-black tracking-[0.2em] placeholder:text-foreground/20" />
+                    <button type="button" onClick={() => setShowPwd(p => !p)} className="text-foreground/30 hover:text-primary transition-colors">
+                      {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <Button type="submit" disabled={phone.length !== 10 || !password || loading}
+                    className="w-full h-13 rounded-2xl text-[11px] font-black tracking-[0.2em] uppercase shadow-xl flex items-center justify-center gap-2">
+                    {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <><ShieldCheck className="w-4 h-4" /> Sign In</>}
+                  </Button>
+                  <div className="flex justify-between items-center pt-2">
+                    <button type="button" onClick={() => { setStep("forgot-password"); setError(""); }}
+                      className="text-[9px] font-black text-primary/80 hover:text-primary uppercase tracking-widest transition-colors">
+                      Forgot Password?
+                    </button>
+                    <button type="button" onClick={() => { setStep("signup"); setError(""); }}
+                      className="text-[9px] font-black text-foreground/60 hover:text-foreground uppercase tracking-widest transition-colors">
+                      Sign Up
+                    </button>
+                  </div>
+                </motion.form>
+              )}
+
+              {/* SIGNUP / FORGOT PASSWORD - PHONE */}
+              {(step === "signup" || step === "forgot-password") && (
+                <motion.form key={step} initial={{ opacity: 0 }} animate={{ opacity: 1 }} onSubmit={step === "signup" ? handleSignupRequest : handleForgotRequest} className="space-y-4">
                   <p className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest mb-5">
-                    Enter your mobile number to continue
+                    {step === "signup" ? "Enter your mobile to get started" : "Enter mobile to reset password"}
                   </p>
                   <div className="flex items-center gap-2 bg-foreground/3 border border-transparent focus-within:border-primary/40 focus-within:bg-background rounded-2xl h-14 pl-4 pr-4 transition-all">
                     <Phone className="w-4 h-4 text-foreground/20 shrink-0" />
@@ -218,46 +276,17 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
                   </div>
                   <Button type="submit" disabled={phone.length !== 10 || loading}
                     className="w-full h-13 rounded-2xl text-[11px] font-black tracking-[0.2em] uppercase shadow-xl flex items-center justify-center gap-2">
-                    {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <>Continue <ArrowRight className="w-4 h-4" /></>}
+                    {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <>Send OTP <ArrowRight className="w-4 h-4" /></>}
                   </Button>
-                  <p className="text-center text-[9px] text-foreground/30 font-medium">
-                    Existing users log in with password · New users get a one-time OTP
-                  </p>
-                </motion.form>
-              )}
-
-              {/* ─ Step: Password (existing user) ──────────────────────────── */}
-              {step === "password" && (
-                <motion.form key="password" initial={{ opacity: 0 }} animate={{ opacity: 1 }} onSubmit={handlePasswordLogin} className="space-y-4">
-                  <p className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest mb-5">
-                    Enter password for <span className="text-foreground/70">{fullMobile}</span>
-                  </p>
-                  <div className="flex items-center gap-2 bg-foreground/3 border border-transparent focus-within:border-primary/40 focus-within:bg-background rounded-2xl h-14 pl-4 pr-3 transition-all">
-                    <Lock className="w-4 h-4 text-foreground/20 shrink-0" />
-                    <input
-                      type={showPwd ? "text" : "password"}
-                      placeholder="YOUR PASSWORD"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="flex-1 bg-transparent outline-none text-[10px] font-black tracking-[0.2em] placeholder:text-foreground/20"
-                    />
-                    <button type="button" onClick={() => setShowPwd(p => !p)} className="text-foreground/30 hover:text-primary transition-colors">
-                      {showPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                    </button>
-                  </div>
-                  <Button type="submit" disabled={!password || loading}
-                    className="w-full h-13 rounded-2xl text-[11px] font-black tracking-[0.2em] uppercase shadow-xl flex items-center justify-center gap-2">
-                    {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <><ShieldCheck className="w-4 h-4" /> Sign In</>}
-                  </Button>
-                  <button type="button" onClick={() => { setStep("phone"); setPassword(""); setError(""); }}
+                  <button type="button" onClick={() => { setStep("login"); setError(""); }}
                     className="w-full text-center text-[9px] font-black text-primary/60 hover:text-primary uppercase tracking-widest transition-colors flex items-center justify-center gap-1">
-                    <ArrowLeft className="w-3 h-3" /> Change number
+                    <ArrowLeft className="w-3 h-3" /> Back to Login
                   </button>
                 </motion.form>
               )}
 
-              {/* ─ Step: OTP entry (new user) ───────────────────────────────── */}
-              {step === "otp" && (
+              {/* OTP (SIGNUP & FORGOT) */}
+              {(step === "signup-otp" || step === "forgot-otp") && (
                 <motion.div key="otp" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
                   <p className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest">
                     OTP sent to <span className="text-foreground/70">{fullMobile}</span>
@@ -274,31 +303,26 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
                   <div className="text-center">
                     {timer > 0
                       ? <p className="text-[9px] font-black uppercase tracking-widest text-foreground/20">Resend in <span className="text-primary">{timer}s</span></p>
-                      : <button onClick={async () => { setError(""); try { await sendOTP(); } catch(e) { setError(e.message); } }}
+                      : <button onClick={async () => { setError(""); setOtp(["", "", "", ""]); try { step === "signup-otp" ? await handleSignupRequest() : await handleForgotRequest(); } catch(e) {} }}
                           className="text-[10px] font-black text-primary hover:text-amber-500 transition-colors uppercase tracking-widest">Resend OTP</button>
                     }
                   </div>
-                  <button onClick={() => { setStep("phone"); setOtp(["", "", "", ""]); setError(""); }}
+                  <button onClick={() => { setStep(step === "signup-otp" ? "signup" : "forgot-password"); setOtp(["", "", "", ""]); setError(""); }}
                     className="w-full text-center text-[9px] font-black text-primary/60 hover:text-primary uppercase tracking-widest transition-colors flex items-center justify-center gap-1">
                     <ArrowLeft className="w-3 h-3" /> Change number
                   </button>
                 </motion.div>
               )}
 
-              {/* ─ Step: Register details ───────────────────────────────────── */}
-              {step === "register" && (
-                <motion.form key="register" initial={{ opacity: 0 }} animate={{ opacity: 1 }} onSubmit={handleRegister} className="space-y-4">
-                  <p className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest mb-5">
-                    Almost there! Just a few more details.
-                  </p>
-                  {/* Name */}
+              {/* SIGNUP DETAILS */}
+              {step === "signup-details" && (
+                <motion.form key="signup-details" initial={{ opacity: 0 }} animate={{ opacity: 1 }} onSubmit={handleSignupVerify} className="space-y-4">
                   <div className="flex items-center gap-2 bg-foreground/3 border border-transparent focus-within:border-primary/40 focus-within:bg-background rounded-2xl h-14 pl-4 pr-4 transition-all">
                     <User className="w-4 h-4 text-foreground/20 shrink-0" />
                     <input type="text" placeholder="YOUR NAME" value={name}
                       onChange={(e) => setName(e.target.value)}
                       className="flex-1 bg-transparent outline-none text-[10px] font-black tracking-[0.2em] placeholder:text-foreground/20" />
                   </div>
-                  {/* Password */}
                   <div className="flex items-center gap-2 bg-foreground/3 border border-transparent focus-within:border-primary/40 focus-within:bg-background rounded-2xl h-14 pl-4 pr-3 transition-all">
                     <Lock className="w-4 h-4 text-foreground/20 shrink-0" />
                     <input type={showNewPwd ? "text" : "password"} placeholder="CREATE A PASSWORD"
@@ -308,13 +332,34 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
                       {showNewPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
-                  <p className="text-[9px] text-foreground/30 font-medium px-1">Minimum 6 characters — you'll use this to log in next time.</p>
+                  <p className="text-[9px] text-foreground/30 font-medium px-1">Minimum 6 characters.</p>
                   <Button type="submit" disabled={!name || newPassword.length < 6 || loading}
                     className="w-full h-13 rounded-2xl text-[11px] font-black tracking-[0.2em] uppercase shadow-xl flex items-center justify-center gap-2">
                     {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <><CheckCircle2 className="w-4 h-4" /> Create Account</>}
                   </Button>
                 </motion.form>
               )}
+
+              {/* FORGOT RESET */}
+              {step === "forgot-reset" && (
+                <motion.form key="forgot-reset" initial={{ opacity: 0 }} animate={{ opacity: 1 }} onSubmit={handleForgotVerify} className="space-y-4">
+                  <div className="flex items-center gap-2 bg-foreground/3 border border-transparent focus-within:border-primary/40 focus-within:bg-background rounded-2xl h-14 pl-4 pr-3 transition-all">
+                    <Lock className="w-4 h-4 text-foreground/20 shrink-0" />
+                    <input type={showNewPwd ? "text" : "password"} placeholder="NEW PASSWORD"
+                      value={newPassword} onChange={(e) => setNewPassword(e.target.value)}
+                      className="flex-1 bg-transparent outline-none text-[10px] font-black tracking-[0.2em] placeholder:text-foreground/20" />
+                    <button type="button" onClick={() => setShowNewPwd(p => !p)} className="text-foreground/30 hover:text-primary transition-colors">
+                      {showNewPwd ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                  <p className="text-[9px] text-foreground/30 font-medium px-1">Minimum 6 characters.</p>
+                  <Button type="submit" disabled={newPassword.length < 6 || loading}
+                    className="w-full h-13 rounded-2xl text-[11px] font-black tracking-[0.2em] uppercase shadow-xl flex items-center justify-center gap-2">
+                    {loading ? <RefreshCw className="w-4 h-4 animate-spin" /> : <><CheckCircle2 className="w-4 h-4" /> Reset Password</>}
+                  </Button>
+                </motion.form>
+              )}
+
             </div>
           </motion.div>
         </div>

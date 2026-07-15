@@ -317,7 +317,7 @@ export const phoneLoginRequest = asyncHandler(async (req, res) => {
 
 // POST /api/v1/auth/phone-login-verify
 export const phoneLoginVerify = asyncHandler(async (req, res) => {
-  const { mobile, otp } = req.body;
+  const { mobile, otp, name, password } = req.body;
   if (!mobile || !otp) throw new ApiError(400, "Mobile and OTP are required");
 
   let isValid = false;
@@ -361,18 +361,21 @@ export const phoneLoginVerify = asyncHandler(async (req, res) => {
   if (!user) {
     const cleanMobile = mobile.replace(/[^0-9]/g, "");
     const dummyEmail = `user_${cleanMobile}@dunches.com`;
-    const dummyName = `Muncher ${cleanMobile.slice(-4)}`;
+    const finalName = name || `Muncher ${cleanMobile.slice(-4)}`;
+    const finalPassword = password || (Math.random().toString(36).slice(-8) + "Ab1!");
 
     const existingEmail = await User.findOne({ email: dummyEmail });
     if (existingEmail) {
       user = existingEmail;
       user.mobile = mobile;
+      if (password) user.password = finalPassword;
+      if (name) user.name = finalName;
     } else {
       user = new User({
-        name: dummyName,
+        name: finalName,
         email: dummyEmail,
         mobile: mobile,
-        password: Math.random().toString(36).slice(-8) + "Ab1!",
+        password: finalPassword,
         isEmailVerified: true,
       });
     }
@@ -445,3 +448,69 @@ export const phoneLoginPassword = async (req, res, next) => {
        .json({ success: true, message: 'Login successful', data: { accessToken, user: { id: user._id, name: user.name, email: user.email, mobile: user.mobile, role: user.role } } });
   } catch(e) { next(e); }
 };
+
+// POST /api/v1/auth/phone-forgot-password
+export const phoneForgotPassword = asyncHandler(async (req, res) => {
+  const { mobile } = req.body;
+  if (!mobile) throw new ApiError(400, "Mobile number is required");
+
+  const user = await User.findOne({
+    mobile,
+    isDeleted: false,
+  });
+  if (!user) throw new ApiError(404, "No account with this mobile number");
+
+  const otp = Math.floor(1000 + Math.random() * 9000).toString();
+  const expiresAt = new Date(
+    Date.now() + Number(process.env.OTP_EXPIRY_MINUTES ?? 10) * 60 * 1000,
+  );
+  await Otp.findOneAndDelete({ mobile, purpose: "phone-password-reset" });
+  await Otp.create({ mobile, otp, purpose: "phone-password-reset", expiresAt });
+
+  const smsBody = `Your Dunches Password Reset Code is: ${otp}. Valid for 10 minutes.`;
+  await sendSMS(mobile, smsBody);
+
+  res.status(200).json(new ApiResponse("Password reset OTP sent to your mobile", { mobile }));
+});
+
+// POST /api/v1/auth/phone-reset-password
+export const phoneResetPassword = asyncHandler(async (req, res) => {
+  const { mobile, otp, newPassword } = req.body;
+  if (!mobile || !otp || !newPassword)
+    throw new ApiError(400, "Mobile, OTP and new password are required");
+  if (newPassword.length < 6)
+    throw new ApiError(400, "Password must be at least 6 characters");
+
+  let isValid = false;
+  if (process.env.MODE === "development" && otp === "1234") {
+    isValid = true;
+  } else {
+    const otpDoc = await Otp.findOne({ mobile, purpose: "phone-password-reset" });
+    if (!otpDoc) throw new ApiError(400, "OTP expired or not found");
+
+    if (otpDoc.attempts >= 5) {
+      await otpDoc.deleteOne();
+      throw new ApiError(429, "Too many failed attempts. Please request a new OTP.");
+    }
+
+    isValid = await otpDoc.compareOTP(otp);
+    if (!isValid) {
+      otpDoc.attempts += 1;
+      await otpDoc.save();
+      throw new ApiError(400, `Invalid OTP. ${5 - otpDoc.attempts} attempts remaining.`);
+    }
+
+    await otpDoc.deleteOne();
+  }
+  if (!isValid) {
+    throw new ApiError(400, "Invalid verification code");
+  }
+
+  const user = await User.findOne({ mobile, isDeleted: false });
+  if (!user) throw new ApiError(404, "User not found");
+
+  user.password = newPassword;
+  await user.save();
+
+  res.status(200).json(new ApiResponse("Password reset successful. Please login.", null));
+});

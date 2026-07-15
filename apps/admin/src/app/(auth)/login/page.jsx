@@ -1,28 +1,38 @@
 "use client";
-import React from "react";
+import React, { useEffect } from "react";
 import { Eye, EyeOff, Lock, Mail, ArrowRight, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useLoginMutation } from "@/store/authApi";
-import { useAppDispatch } from "@/store/store";
-import { setCredentials } from "@/store/authSlice";
+import { useAppDispatch, useAppSelector } from "@/store/store";
+import { setCredentials, selectIsAuthenticated } from "@/store/authSlice";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [login, { isLoading }] = useLoginMutation();
   const dispatch = useAppDispatch();
   const router = useRouter();
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
   const [showPassword, setShowPassword] = React.useState(false);
   const [formData, setFormData] = React.useState({
-    email: "",
+    mobile: "",
     password: "",
   });
+
+  // Redirect already-authenticated admins away from login
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace("/");
+    }
+  }, [isAuthenticated, router]);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await login(formData).unwrap();
+      const mobile = formData.mobile.startsWith("+") ? formData.mobile : `+91${formData.mobile}`;
+      const res = await login({ mobile, password: formData.password }).unwrap();
       const { user, accessToken } = res.data;
       if (user.role === "admin" || user.role === "moderator") {
         dispatch(setCredentials({ user, accessToken }));
@@ -37,6 +47,7 @@ export default function LoginPage() {
       );
     }
   };
+
   return (
     <div className="space-y-6">
       <div className="text-center md:text-left mb-8">
@@ -51,17 +62,18 @@ export default function LoginPage() {
       <form onSubmit={handleSubmit} className="space-y-6">
         <div className="space-y-2 group">
           <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 ml-4 font-heading">
-            Phone Number
+            Mobile Number
           </label>
           <div className="relative">
             <Mail className="absolute left-6 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors duration-300" />
             <Input
-              type="text"
-              placeholder="Enter your phone number"
+              type="tel"
+              placeholder="Enter your mobile number"
+              maxLength={10}
               className="h-16 pl-14 pr-6 rounded-[1.25rem] bg-muted/30 border-none focus-visible:ring-2 focus-visible:ring-primary/20 font-bold transition-all"
-              value={formData.email}
+              value={formData.mobile}
               onChange={(e) =>
-                setFormData({ ...formData, email: e.target.value })
+                setFormData({ ...formData, mobile: e.target.value.replace(/[^0-9]/g, "") })
               }
               required
             />
@@ -110,7 +122,6 @@ export default function LoginPage() {
           type="submit"
           className="w-full h-18 rounded-[1.5rem] font-black text-xs uppercase tracking-[0.3em] shadow-2xl shadow-primary/20 group relative overflow-hidden mt-4 font-heading"
           disabled={isLoading}
-          onClick={() => router.push("/")}
         >
           {isLoading ? (
             <Loader2 className="h-5 w-5 animate-spin" />

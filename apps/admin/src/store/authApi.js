@@ -36,7 +36,7 @@ export const authApi = createApi({
     tagTypes: ['AdminUser'],
     endpoints: (builder) => ({
         login: builder.mutation({
-            query: (body) => ({ url: '/auth/login', method: 'POST', body }),
+            query: (body) => ({ url: '/auth/phone-login-password', method: 'POST', body }),
         }),
         logout: builder.mutation({
             query: () => ({ url: '/auth/logout', method: 'POST' }),

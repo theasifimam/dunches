@@ -5,7 +5,7 @@ const OtpSchema = new Schema({
   email: { type: String, required: false, index: true },
   mobile: { type: String, required: false, index: true },
   otp: { type: String, required: true },
-  purpose: { type: String, enum: ['email-verify', 'password-reset', 'account-deletion', 'mobile-verify'], required: true },
+  purpose: { type: String, enum: ['email-verify', 'password-reset', 'account-deletion', 'mobile-verify', 'phone-password-reset'], required: true },
   expiresAt: { type: Date, required: true, index: { expireAfterSeconds: 0 } },
   attempts: { type: Number, default: 0 },
 });

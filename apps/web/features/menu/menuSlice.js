@@ -7,7 +7,7 @@ const mockDishes = [
     description: 'Slow-roasted to a delicate crunch, lightly tossed in hand-harvested pink Himalayan salt and premium cold-pressed olive oil.',
     price: 120,
     category: 'Classic',
-    image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?q=80&w=800&auto=format&fit=crop',
+    image: '/images/makhana_salt.png',
     ingredients: ['Organic Makhana (Lotus Seeds)', 'Pink Himalayan Salt', 'Cold-Pressed Olive Oil', 'White Pepper'],
   },
   {
@@ -16,7 +16,7 @@ const mockDishes = [
     description: 'A vibrant kick of fiery Kashmiri red chili flakes tempered by fresh tangy key lime zest. Bold and refreshing.',
     price: 135,
     category: 'Spicy',
-    image: 'https://images.unsplash.com/photo-1599487488170-d11ec9c172f0?q=80&w=800&auto=format&fit=crop',
+    image: '/images/makhana_chili.png',
     ingredients: ['Organic Makhana', 'Smoked Kashmiri Chili', 'Key Lime Zest', 'Dehydrated Lime Juice', 'Olive Oil'],
   },
   {
@@ -25,7 +25,7 @@ const mockDishes = [
     description: 'Coated in freshly ground Tellicherry black pepper and nutty toasted black and white sesame seeds. Comfortingly savory.',
     price: 130,
     category: 'Savory',
-    image: 'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?q=80&w=800&auto=format&fit=crop',
+    image: '/images/makhana_pepper.png',
     ingredients: ['Organic Makhana', 'Tellicherry Black Pepper', 'Toasted White Sesame', 'Toasted Black Sesame', 'Sesame Oil'],
   },
   {
@@ -34,7 +34,7 @@ const mockDishes = [
     description: 'Slow-glazed with warm organic sugarcane jaggery (gud) and infused with crushed sweet green fennel seeds.',
     price: 150,
     category: 'Sweet',
-    image: 'https://images.unsplash.com/photo-1588165171080-c89acfa5ee83?q=80&w=800&auto=format&fit=crop',
+    image: '/images/makhana_jaggery.png',
     ingredients: ['Organic Makhana', 'Sugarcane Jaggery', 'Green Fennel Seeds', 'Dry Ginger Powder', 'Pure A2 Cow Ghee'],
   },
   {
@@ -43,7 +43,7 @@ const mockDishes = [
     description: 'Infused with powdered wild mint leaves, earthy oregano, and a touch of tangy mango powder for a refreshing after-taste.',
     price: 130,
     category: 'Savory',
-    image: 'https://images.unsplash.com/photo-1540189549336-e6e99c3679fe?q=80&w=800&auto=format&fit=crop',
+    image: '/images/makhana_mint.png',
     ingredients: ['Organic Makhana', 'Dried Mint Leaves', 'Oregano', 'Dry Mango Powder (Amchur)', 'Olive Oil'],
   },
   {
@@ -52,7 +52,7 @@ const mockDishes = [
     description: 'Dusted with mature cheddar cheese powder and sweet Mediterranean sweet basil leaves. A rich cheese gourmet treat.',
     price: 145,
     category: 'Savory',
-    image: 'https://images.unsplash.com/photo-1484723091739-30a097e8f929?q=80&w=800&auto=format&fit=crop',
+    image: '/images/makhana_cheese.png',
     ingredients: ['Organic Makhana', 'Cheddar Cheese Powder', 'Dried Sweet Basil', 'Garlic Powder', 'Coconut Oil'],
   },
   {
@@ -61,7 +61,7 @@ const mockDishes = [
     description: 'A premium, eco-friendly curation of our four signature flavors packed in beautiful airtight glass canisters. Ideal for gifting.',
     price: 499,
     category: 'Assortments',
-    image: 'https://images.unsplash.com/photo-1607344645866-009c320c5ab8?q=80&w=800&auto=format&fit=crop',
+    image: 'https://images.unsplash.com/photo-1549488344-c6b75825da11?q=80&w=800&auto=format&fit=crop',
     ingredients: ['Classic Salt Jar (80g)', 'Chili Lime Jar (80g)', 'Jaggery Fennel Jar (80g)', 'Mint Herb Jar (80g)'],
   }
 ];
