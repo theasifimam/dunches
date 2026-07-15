@@ -1,0 +1,23 @@
+import mongoose, { Schema } from 'mongoose';
+import bcrypt from 'bcryptjs';
+
+const OtpSchema = new Schema({
+  email: { type: String, required: false, index: true },
+  mobile: { type: String, required: false, index: true },
+  otp: { type: String, required: true },
+  purpose: { type: String, enum: ['email-verify', 'password-reset', 'account-deletion', 'mobile-verify'], required: true },
+  expiresAt: { type: Date, required: true, index: { expireAfterSeconds: 0 } },
+  attempts: { type: Number, default: 0 },
+});
+
+// Hash OTP before save
+OtpSchema.pre('save', async function () {
+  if (!this.isModified('otp')) return;
+  this.otp = bcrypt.hashSync(this.otp, 10);
+});
+
+OtpSchema.methods.compareOTP = async function (candidateOTP) {
+  return bcrypt.compare(candidateOTP, this.otp);
+};
+
+export default mongoose.model('Otp', OtpSchema);

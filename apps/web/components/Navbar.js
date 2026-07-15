@@ -1,0 +1,242 @@
+"use client";
+
+import Link from "next/link";
+import {
+  ShoppingBag,
+  Menu,
+  Flame,
+  Sun,
+  Moon,
+  ArrowRight,
+  User,
+  LogOut,
+  ChevronDown,
+} from "lucide-react";
+import { useSelector } from "react-redux";
+import { selectCartCount } from "@/features/cart/cartSlice";
+import { selectActiveRestaurant } from "@/features/restaurant/restaurantSlice";
+import { Button } from "./ui/button";
+import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
+import { useState, useEffect } from "react";
+import { usePathname } from "next/navigation";
+import AuthModal from "./AuthModal";
+
+export default function Navbar() {
+  const cartCount = useSelector(selectCartCount);
+  const activeRestaurant = useSelector(selectActiveRestaurant);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [authMode, setAuthMode] = useState("login");
+  const [theme, setTheme] = useState("dark");
+  const [mounted, setMounted] = useState(false);
+  const [user, setUser] = useState(null);
+  const pathname = usePathname();
+
+  useEffect(() => {
+    setMounted(true);
+    try {
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
+      if (savedTheme === "dark") {
+        document.documentElement.classList.add("dark");
+      } else {
+        document.documentElement.classList.add("light");
+      }
+
+      const savedUser = localStorage.getItem("user");
+      if (savedUser) {
+        setUser(JSON.parse(savedUser));
+      }
+    } catch (error) {
+      console.warn("localStorage is not accessible:", error);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.title = "Dunches | Fiery Crunch & Spicy Cravings";
+    
+    if (activeRestaurant) {
+      const primaryColor = theme === "dark" ? activeRestaurant.colors.dark : activeRestaurant.colors.light;
+      document.documentElement.style.setProperty('--primary', primaryColor);
+      document.documentElement.style.setProperty('--ring', primaryColor);
+    }
+  }, [activeRestaurant, theme]);
+
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+    } else {
+      document.documentElement.classList.add("light");
+      document.documentElement.classList.remove("dark");
+    }
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const openAuth = (mode) => {
+    setAuthMode(mode);
+    setIsAuthModalOpen(true);
+  };
+
+  const handleLogout = () => {
+    setUser(null);
+    localStorage.removeItem("user");
+  };
+
+  const navLinkClass = (path) => `
+    text-[11px] font-black tracking-[0.2em] uppercase transition-all duration-300
+    ${pathname === path ? "text-primary" : "text-foreground/40 hover:text-foreground hover:scale-105"}
+  `;
+
+  if (!mounted) return null;
+
+  return (
+    <>
+      <header
+        className={`fixed top-0 w-full z-100 transition-all duration-500 px-4 py-2 md:px-8 md:py-4`}
+      >
+        <nav
+          className={`
+            container mx-auto max-w-6xl h-12 md:h-16 px-4 md:px-6 flex items-center justify-between rounded-full border border-border/50 transition-all duration-500
+            ${isScrolled ? "bg-background/80 backdrop-blur-2xl shadow-2xl scale-[0.98] md:scale-100" : "bg-transparent border-transparent"}
+          `}
+        >
+          {/* Brand - Scaled for Mobile */}
+          <Link href="/" className="group flex items-center gap-2">
+            <div className="w-8 h-8 md:w-10 md:h-10 bg-primary/10 border border-primary/20 rounded-xl flex items-center justify-center rotate-6 group-hover:rotate-0 transition-transform shadow-sm">
+              <Flame className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+            </div>
+            <span className="text-base md:text-lg font-light tracking-widest text-foreground font-serif lowercase group-hover:tracking-[0.15em] transition-all duration-500">
+              Dunches
+            </span>
+          </Link>
+
+          {/* Desktop Nav Only */}
+          <div className="hidden lg:flex items-center gap-10">
+            <Link href="/" className={navLinkClass("/")}>
+              Home
+            </Link>
+            <Link href="/menu" className={navLinkClass("/menu")}>
+              Shop
+            </Link>
+          </div>
+
+          {/* Actions - Cleaned for Mobile */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={toggleTheme}
+              className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all"
+            >
+              {theme === "dark" ? (
+                <Sun className="w-4 h-4" />
+              ) : (
+                <Moon className="w-4 h-4" />
+              )}
+            </button>
+            <div className="w-px h-4 bg-border mx-1 hidden sm:block" />
+
+            {/* Profile Dropdown or Mobile Login Trigger */}
+            {user ? (
+              <Popover>
+                <PopoverTrigger className="flex items-center gap-2 border border-border/50 hover:border-primary/40 rounded-full p-1 sm:pr-4 transition-all bg-foreground/[0.02] hover:bg-foreground/[0.04] group outline-hidden cursor-pointer">
+                  <div className="w-8 h-8 rounded-full border border-primary/50 overflow-hidden flex items-center justify-center shrink-0">
+                    <img src="https://i.pravatar.cc/100" alt="Avatar" className="w-full h-full object-cover" />
+                  </div>
+                  <span className="hidden sm:inline text-[9px] font-black uppercase tracking-[0.15em] text-foreground/60 group-hover:text-primary transition-all font-heading">
+                    {user.name}
+                  </span>
+                  <ChevronDown className="hidden sm:block w-3.5 h-3.5 text-foreground/30 group-hover:text-primary transition-colors" />
+                </PopoverTrigger>
+                <PopoverContent align="end" className="w-56 p-4 rounded-2xl border border-border/50 bg-background/95 backdrop-blur-xl shadow-2xl flex flex-col gap-2.5 z-150">
+                  <div className="flex items-center gap-3 pb-3 border-b border-border/10">
+                    <div className="w-10 h-10 rounded-full border border-primary/50 overflow-hidden shrink-0">
+                      <img src="https://i.pravatar.cc/100" alt="Avatar" className="w-full h-full object-cover" />
+                    </div>
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-[11px] font-black font-heading uppercase tracking-widest text-foreground truncate">{user.name}</span>
+                      <span className="text-[9px] font-medium text-foreground/40 truncate">{user.email || 'ayaan.ahmed@makhana.wellness'}</span>
+                    </div>
+                  </div>
+                  <Link href="/profile" className="w-full">
+                    <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/[0.03] transition-all font-heading cursor-pointer">
+                      <User className="w-3.5 h-3.5" />
+                      View Profile
+                    </button>
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-600 py-2 px-1 rounded-lg hover:bg-red-500/5 transition-all font-heading border-t border-border/10 pt-3 cursor-pointer"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    Logout
+                  </button>
+                </PopoverContent>
+              </Popover>
+            ) : (
+              <button
+                onClick={() => openAuth("login")}
+                className="w-8 h-8 rounded-full border border-border flex items-center justify-center sm:hidden text-foreground/40"
+              >
+                <User className="w-4 h-4" />
+              </button>
+            )}
+
+            <div className="hidden sm:flex items-center gap-2">
+              {!user && (
+                <button
+                  onClick={() => openAuth("login")}
+                  className="text-[9px] font-black uppercase tracking-widest text-foreground/40 hover:text-primary px-3 transition-all font-heading cursor-pointer"
+                >
+                  Login
+                </button>
+              )}
+
+              <Link href="/cart">
+                <div className="relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full glass hover:bg-primary hover:text-primary-foreground transition-all group">
+                  <ShoppingBag
+                    className="w-4 h-4 md:w-5 md:h-5"
+                    strokeWidth={2}
+                  />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 md:h-5 md:w-5 items-center justify-center rounded-full bg-primary text-[8px] md:text-[10px] font-black text-primary-foreground shadow-lg border-2 border-background">
+                      {cartCount}
+                    </span>
+                  )}
+                </div>
+              </Link>
+
+              {!user && (
+                <Button
+                  onClick={() => openAuth("signup")}
+                  className="hidden md:flex h-12 px-8 rounded-full text-xs font-black tracking-widest uppercase group"
+                >
+                  Join Us{" "}
+                  <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                </Button>
+              )}
+            </div>
+          </div>
+        </nav>
+      </header>
+
+      <AuthModal
+        isOpen={isAuthModalOpen}
+        onClose={() => setIsAuthModalOpen(false)}
+        onLoginSuccess={(userData) => {
+          setUser(userData);
+          localStorage.setItem("user", JSON.stringify(userData));
+        }}
+      />
+    </>
+  );
+}
