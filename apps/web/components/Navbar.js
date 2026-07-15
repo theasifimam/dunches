@@ -12,9 +12,15 @@ import {
   LogOut,
   ChevronDown,
 } from "lucide-react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { selectCartCount } from "@/features/cart/cartSlice";
 import { selectActiveRestaurant } from "@/features/restaurant/restaurantSlice";
+import {
+  selectUser,
+  logoutUser,
+  setProfile,
+  fetchProfile,
+} from "@/features/user/userSlice";
 import { Button } from "./ui/button";
 import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
 import { useState, useEffect } from "react";
@@ -24,12 +30,13 @@ import AuthModal from "./AuthModal";
 export default function Navbar() {
   const cartCount = useSelector(selectCartCount);
   const activeRestaurant = useSelector(selectActiveRestaurant);
+  const user = useSelector(selectUser);
+  const dispatch = useDispatch();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [authMode, setAuthMode] = useState("login");
   const [theme, setTheme] = useState("dark");
   const [mounted, setMounted] = useState(false);
-  const [user, setUser] = useState(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -43,22 +50,30 @@ export default function Navbar() {
         document.documentElement.classList.add("light");
       }
 
+      // Hydrate Redux from localStorage if not already loaded
       const savedUser = localStorage.getItem("user");
       if (savedUser) {
-        setUser(JSON.parse(savedUser));
+        try {
+          dispatch(setProfile(JSON.parse(savedUser)));
+          // Also re-fetch from server to get fresh data
+          dispatch(fetchProfile());
+        } catch {}
       }
     } catch (error) {
       console.warn("localStorage is not accessible:", error);
     }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     document.title = "Dunches | Fiery Crunch & Spicy Cravings";
-    
+
     if (activeRestaurant) {
-      const primaryColor = theme === "dark" ? activeRestaurant.colors.dark : activeRestaurant.colors.light;
-      document.documentElement.style.setProperty('--primary', primaryColor);
-      document.documentElement.style.setProperty('--ring', primaryColor);
+      const primaryColor =
+        theme === "dark"
+          ? activeRestaurant.colors.dark
+          : activeRestaurant.colors.light;
+      document.documentElement.style.setProperty("--primary", primaryColor);
+      document.documentElement.style.setProperty("--ring", primaryColor);
     }
   }, [activeRestaurant, theme]);
 
@@ -89,8 +104,7 @@ export default function Navbar() {
   };
 
   const handleLogout = () => {
-    setUser(null);
-    localStorage.removeItem("user");
+    dispatch(logoutUser());
   };
 
   const navLinkClass = (path) => `
@@ -148,27 +162,42 @@ export default function Navbar() {
             {/* Profile Dropdown or Mobile Login Trigger */}
             {user ? (
               <Popover>
-                <PopoverTrigger className="flex items-center gap-2 border border-border/50 hover:border-primary/40 rounded-full p-1 sm:pr-4 transition-all bg-foreground/[0.02] hover:bg-foreground/[0.04] group outline-hidden cursor-pointer">
+                <PopoverTrigger className="flex items-center gap-2 border border-border/50 hover:border-primary/40 rounded-full p-1 sm:pr-4 transition-all bg-foreground/2 hover:bg-foreground/4 group outline-hidden cursor-pointer">
                   <div className="w-8 h-8 rounded-full border border-primary/50 overflow-hidden flex items-center justify-center shrink-0">
-                    <img src="https://i.pravatar.cc/100" alt="Avatar" className="w-full h-full object-cover" />
+                    <img
+                      src="https://i.pravatar.cc/100"
+                      alt="Avatar"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                   <span className="hidden sm:inline text-[9px] font-black uppercase tracking-[0.15em] text-foreground/60 group-hover:text-primary transition-all font-heading">
                     {user.name}
                   </span>
                   <ChevronDown className="hidden sm:block w-3.5 h-3.5 text-foreground/30 group-hover:text-primary transition-colors" />
                 </PopoverTrigger>
-                <PopoverContent align="end" className="w-56 p-4 rounded-2xl border border-border/50 bg-background/95 backdrop-blur-xl shadow-2xl flex flex-col gap-2.5 z-150">
+                <PopoverContent
+                  align="end"
+                  className="w-56 p-4 rounded-2xl border border-border/50 bg-background/95 backdrop-blur-xl shadow-2xl flex flex-col gap-2.5 z-150"
+                >
                   <div className="flex items-center gap-3 pb-3 border-b border-border/10">
                     <div className="w-10 h-10 rounded-full border border-primary/50 overflow-hidden shrink-0">
-                      <img src="https://i.pravatar.cc/100" alt="Avatar" className="w-full h-full object-cover" />
+                      <img
+                        src="https://i.pravatar.cc/100"
+                        alt="Avatar"
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <div className="flex flex-col min-w-0">
-                      <span className="text-[11px] font-black font-heading uppercase tracking-widest text-foreground truncate">{user.name}</span>
-                      <span className="text-[9px] font-medium text-foreground/40 truncate">{user.email || 'ayaan.ahmed@makhana.wellness'}</span>
+                      <span className="text-[11px] font-black font-heading uppercase tracking-widest text-foreground truncate">
+                        {user.name}
+                      </span>
+                      <span className="text-[9px] font-medium text-foreground/40 truncate">
+                        {user.email || "ayaan.ahmed@makhana.wellness"}
+                      </span>
                     </div>
                   </div>
                   <Link href="/profile" className="w-full">
-                    <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/[0.03] transition-all font-heading cursor-pointer">
+                    <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
                       <User className="w-3.5 h-3.5" />
                       View Profile
                     </button>
@@ -233,7 +262,7 @@ export default function Navbar() {
         isOpen={isAuthModalOpen}
         onClose={() => setIsAuthModalOpen(false)}
         onLoginSuccess={(userData) => {
-          setUser(userData);
+          dispatch(setProfile(userData));
           localStorage.setItem("user", JSON.stringify(userData));
         }}
       />

@@ -8,14 +8,16 @@ import {
   getAllOrders,
   verifyPayment,
 } from '../controllers/order.controller.js';
-import { protect, adminOnly } from '../middlewares/auth.middleware.js';
+import { protect, protectStrict, adminOnly } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
-router.use(protect);
+// Strict auth — order creation and payment verification require a real logged-in user
+router.post('/', protectStrict, createOrder);
+router.post('/verify-payment', protectStrict, verifyPayment);
 
-router.post('/', createOrder);
-router.post('/verify-payment', verifyPayment);
+// Standard auth for reading user orders
+router.use(protect);
 router.get('/my', getMyOrders);
 router.get('/:id', getOrderById);
 router.patch('/:id/cancel', cancelOrder);

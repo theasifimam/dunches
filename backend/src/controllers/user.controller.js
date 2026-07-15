@@ -8,10 +8,16 @@ import { sendOTPEmail } from '../utils/sendEmail.js';
 
 // GET /api/v1/users/profile
 export const getProfile = asyncHandler(async (req, res) => {
+  // req.user.id may be the dev-bypass fake ID '000000000000000000000000'
+  // when there's no real token — return null gracefully so the frontend
+  // can treat it as "not logged in" instead of showing an error.
   const user = await User.findById(req.user.id).populate('wishlist', 'name slug images price discount');
-  if (!user) throw new ApiError(404, 'User not found');
+  if (!user) {
+    return res.status(200).json(new ApiResponse('Not authenticated', null));
+  }
   res.status(200).json(new ApiResponse('Profile fetched', user));
 });
+
 
 // PATCH /api/v1/users/profile
 export const updateProfile = asyncHandler(async (req, res) => {

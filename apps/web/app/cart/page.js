@@ -21,10 +21,8 @@ import {
   CreditCard,
   ShieldCheck,
   Sparkles,
-  CheckCircle2,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import AuthModal from "@/components/AuthModal";
 
 export default function CartPage() {
   const dispatch = useDispatch();
@@ -32,7 +30,6 @@ export default function CartPage() {
   const cartTotal = useSelector(selectCartTotal);
 
   const [isAuthOpen, setIsAuthOpen] = React.useState(false);
-  const [isCheckoutSuccess, setIsCheckoutSuccess] = React.useState(false);
   const [user, setUser] = React.useState(null);
 
   React.useEffect(() => {
@@ -46,93 +43,15 @@ export default function CartPage() {
     }
   }, []);
 
-  const handleLoginSuccess = (mockUser) => {
-    setUser(mockUser);
-    localStorage.setItem("user", JSON.stringify(mockUser));
-    setIsAuthOpen(false);
-    setIsCheckoutSuccess(true);
-  };
-
   const handleCheckout = () => {
-    const savedUser = localStorage.getItem("user");
-    if (!savedUser) {
-      setIsAuthOpen(true);
-    } else {
-      setIsCheckoutSuccess(true);
-    }
+    // Navigate to /checkout — handles auth + address + payment steps
+    window.location.href = "/checkout";
   };
 
   const tax = cartTotal * 0.05; // 5% GST
   const grandTotal = cartTotal + tax;
 
-  if (isCheckoutSuccess) {
-    return (
-      <div className="min-h-screen flex flex-col items-center justify-center pt-28 pb-32 px-4 text-center relative overflow-hidden bg-background">
-        <div className="absolute inset-0 bg-grain pointer-events-none opacity-[0.03]" />
 
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9, y: 20 }}
-          animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="relative z-10 max-w-lg mx-auto p-10 glass border border-border/50 rounded-[3rem] shadow-2xl"
-        >
-          <div className="w-24 h-24 bg-green-500/10 rounded-full flex items-center justify-center mb-8 mx-auto relative">
-            <CheckCircle2 className="w-12 h-12 text-green-500 animate-pulse" />
-          </div>
-
-          <span className="text-[10px] font-bold text-primary uppercase tracking-[0.2em] mb-3 block">
-            Order Confirmed
-          </span>
-          <h1 className="text-4xl md:text-5xl font-light font-serif mb-6 tracking-tighter text-foreground lowercase">
-            wellness is on its way.
-          </h1>
-
-          <p className="text-foreground/50 mb-8 text-md font-light leading-relaxed">
-            Thank you for choosing makhāna. Your organic roasted superfood packs
-            are being packaged and prepared for dispatch.
-          </p>
-
-          <div className="border-t border-b border-border/50 py-6 mb-8 space-y-4 text-left text-sm font-light">
-            <div className="flex justify-between">
-              <span className="text-foreground/45">Amount Paid</span>
-              <span className="font-serif font-bold text-primary text-lg">
-                ₹{grandTotal.toLocaleString()}
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-foreground/45">Estimated Delivery</span>
-              <span className="font-serif text-foreground font-bold">
-                3 - 5 Business Days
-              </span>
-            </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4">
-            <Button
-              size="lg"
-              className="flex-1 rounded-full h-16 text-xs font-bold tracking-widest uppercase shadow-xl"
-              onClick={() => {
-                dispatch(clearCart());
-                window.location.href = "/menu";
-              }}
-            >
-              Continue Snacking
-            </Button>
-            <Button
-              variant="outline"
-              size="lg"
-              className="flex-1 rounded-full h-16 text-xs font-bold tracking-widest uppercase border-2 border-primary/20 hover:bg-primary/5 text-foreground"
-              onClick={() => {
-                dispatch(clearCart());
-                window.location.href = "/profile";
-              }}
-            >
-              View Profile
-            </Button>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
 
   if (cartItems.length === 0) {
     return (
@@ -419,11 +338,7 @@ export default function CartPage() {
         </div>
       </div>
 
-      <AuthModal
-        isOpen={isAuthOpen}
-        onClose={() => setIsAuthOpen(false)}
-        onLoginSuccess={handleLoginSuccess}
-      />
+
 
     </div>
   );

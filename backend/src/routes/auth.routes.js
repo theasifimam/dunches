@@ -9,6 +9,8 @@ import {
   logout,
   phoneLoginRequest,
   phoneLoginVerify,
+  phoneCheck,
+  phoneLoginPassword,
 } from '../controllers/auth.controller.js';
 import { protect } from '../middlewares/auth.middleware.js';
 
@@ -21,7 +23,11 @@ router.post('/forgot-password', forgotPassword);
 router.post('/reset-password', resetPassword);
 router.post('/refresh-token', refreshToken);
 router.post('/logout', protect, logout);
-router.post('/phone-login-request', phoneLoginRequest);
-router.post('/phone-login-verify', phoneLoginVerify);
+
+// Phone auth
+router.post('/phone-check', phoneCheck);               // Check if mobile is registered
+router.post('/phone-login-password', phoneLoginPassword); // Login: existing user → password
+router.post('/phone-login-request', phoneLoginRequest);   // Signup: new user → send OTP
+router.post('/phone-login-verify', phoneLoginVerify);     // Signup: verify OTP + create account
 
 export default router;

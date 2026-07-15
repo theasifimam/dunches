@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, UtensilsCrossed, ShoppingBag } from "lucide-react";
+import { Home, Compass, ShoppingBag } from "lucide-react";
 import { useSelector } from "react-redux";
 import { selectCartCount } from "@/features/cart/cartSlice";
 import { motion } from "framer-motion";
@@ -13,7 +13,7 @@ export default function BottomNav() {
 
   const tabs = [
     { name: "Home", path: "/", icon: Home },
-    { name: "Menu", path: "/menu", icon: UtensilsCrossed },
+    { name: "Explore", path: "/explore", icon: Compass },
     { name: "Order", path: "/cart", icon: ShoppingBag, count: cartCount },
   ];
 

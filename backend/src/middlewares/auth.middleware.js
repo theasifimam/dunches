@@ -3,6 +3,7 @@ import User from '../models/user.model.js';
 import { ApiError } from '../utils/apiError.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 
+// Lenient protect — used for most routes (has dev bypass fallback)
 export const protect = asyncHandler(async (req, res, next) => {
   let token;
 
@@ -35,6 +36,29 @@ export const protect = asyncHandler(async (req, res, next) => {
     req.user = { id: '000000000000000000000000', role: 'admin' };
     next();
   }
+});
+
+// Strict protect — used for checkout/order creation; no bypass, real auth required
+export const protectStrict = asyncHandler(async (req, res, next) => {
+  let token;
+
+  if (req.cookies?.accessToken) {
+    token = req.cookies.accessToken;
+  } else if (req.headers.authorization?.startsWith('Bearer ')) {
+    token = req.headers.authorization.split(' ')[1];
+  }
+
+  if (!token) throw new ApiError(401, 'Authentication required. Please log in to continue.');
+
+  const secret = process.env.JWT_ACCESS_SECRET;
+  if (!secret) throw new ApiError(500, 'JWT secret not configured');
+
+  const decoded = jwt.verify(token, secret);
+  const user = await User.findOne({ _id: decoded.id, isDeleted: false }).select('_id role');
+  if (!user) throw new ApiError(401, 'User not found or has been removed.');
+
+  req.user = { id: decoded.id, role: decoded.role };
+  next();
 });
 
 export const adminOnly = asyncHandler(async (req, _res, next) => {

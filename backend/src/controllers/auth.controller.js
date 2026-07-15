@@ -1,28 +1,28 @@
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcryptjs';
-import User from '../models/user.model.js';
-import Otp from '../models/otp.model.js';
-import { asyncHandler } from '../utils/asyncHandler.js';
-import { ApiError } from '../utils/apiError.js';
-import { ApiResponse } from '../utils/apiResponse.js';
-import { generateOTP } from '../utils/generateOTP.js';
-import { sendOTPEmail } from '../utils/sendEmail.js';
-import { sendSMS } from '../utils/sendSMS.js';
+import jwt from "jsonwebtoken";
+import bcrypt from "bcryptjs";
+import User from "../models/user.model.js";
+import Otp from "../models/otp.model.js";
+import { asyncHandler } from "../utils/asyncHandler.js";
+import { ApiError } from "../utils/apiError.js";
+import { ApiResponse } from "../utils/apiResponse.js";
+import { generateOTP } from "../utils/generateOTP.js";
+import { sendOTPEmail } from "../utils/sendEmail.js";
+import { sendSMS } from "../utils/sendSMS.js";
 
 const COOKIE_OPTIONS = {
   httpOnly: true,
-  secure: process.env.NODE_ENV === 'production',
-  sameSite: 'strict',
+  secure: process.env.NODE_ENV === "production",
+  sameSite: "strict",
 };
 
 const generateTokens = (userId, role) => {
   const accessSecret = process.env.JWT_ACCESS_SECRET;
   const refreshSecret = process.env.JWT_REFRESH_SECRET;
   const accessToken = jwt.sign({ id: userId, role }, accessSecret, {
-    expiresIn: process.env.JWT_ACCESS_EXPIRY ?? '1d',
+    expiresIn: process.env.JWT_ACCESS_EXPIRY ?? "1d",
   });
   const refreshToken = jwt.sign({ id: userId, role }, refreshSecret, {
-    expiresIn: process.env.JWT_REFRESH_EXPIRY ?? '7d',
+    expiresIn: process.env.JWT_REFRESH_EXPIRY ?? "7d",
   });
   return { accessToken, refreshToken };
 };
@@ -31,11 +31,14 @@ const generateTokens = (userId, role) => {
 export const register = asyncHandler(async (req, res) => {
   const { name, email, password } = req.body;
 
-  if (!name || !email || !password) throw new ApiError(400, 'Name, email and password are required');
-  if (password.length < 6) throw new ApiError(400, 'Password must be at least 6 characters');
+  if (!name || !email || !password)
+    throw new ApiError(400, "Name, email and password are required");
+  if (password.length < 6)
+    throw new ApiError(400, "Password must be at least 6 characters");
 
   const existing = await User.findOne({ email, isDeleted: false });
-  if (existing && existing.isEmailVerified) throw new ApiError(409, 'Email already registered');
+  if (existing && existing.isEmailVerified)
+    throw new ApiError(409, "Email already registered");
 
   // Upsert unverified user
   let user = existing;
@@ -49,155 +52,231 @@ export const register = asyncHandler(async (req, res) => {
 
   // Generate and store OTP
   const otp = generateOTP();
-  const expiresAt = new Date(Date.now() + Number(process.env.OTP_EXPIRY_MINUTES ?? 10) * 60 * 1000);
-  await Otp.findOneAndDelete({ email, purpose: 'email-verify' });
-  await Otp.create({ email, otp, purpose: 'email-verify', expiresAt });
+  const expiresAt = new Date(
+    Date.now() + Number(process.env.OTP_EXPIRY_MINUTES ?? 10) * 60 * 1000,
+  );
+  await Otp.findOneAndDelete({ email, purpose: "email-verify" });
+  await Otp.create({ email, otp, purpose: "email-verify", expiresAt });
 
-  await sendOTPEmail(email, otp, 'verify');
+  await sendOTPEmail(email, otp, "verify");
 
-  res.status(201).json(new ApiResponse('Registration successful. OTP sent to your email.', { email }));
+  res
+    .status(201)
+    .json(
+      new ApiResponse("Registration successful. OTP sent to your email.", {
+        email,
+      }),
+    );
 });
 
 // POST /api/v1/auth/verify-email
 export const verifyEmail = asyncHandler(async (req, res) => {
   const { email, otp } = req.body;
-  if (!email || !otp) throw new ApiError(400, 'Email and OTP are required');
+  if (!email || !otp) throw new ApiError(400, "Email and OTP are required");
 
-  const otpDoc = await Otp.findOne({ email, purpose: 'email-verify' });
-  if (!otpDoc) throw new ApiError(400, 'OTP expired or not found. Please register again.');
+  const otpDoc = await Otp.findOne({ email, purpose: "email-verify" });
+  if (!otpDoc)
+    throw new ApiError(400, "OTP expired or not found. Please register again.");
 
   if (otpDoc.attempts >= 5) {
     await otpDoc.deleteOne();
-    throw new ApiError(429, 'Too many failed attempts. Please request a new OTP.');
+    throw new ApiError(
+      429,
+      "Too many failed attempts. Please request a new OTP.",
+    );
   }
 
   const isValid = await otpDoc.compareOTP(otp);
   if (!isValid) {
     otpDoc.attempts += 1;
     await otpDoc.save();
-    throw new ApiError(400, `Invalid OTP. ${5 - otpDoc.attempts} attempts remaining.`);
+    throw new ApiError(
+      400,
+      `Invalid OTP. ${5 - otpDoc.attempts} attempts remaining.`,
+    );
   }
 
   await otpDoc.deleteOne();
 
   const user = await User.findOne({ email });
-  if (!user) throw new ApiError(404, 'User not found');
+  if (!user) throw new ApiError(404, "User not found");
 
   user.isEmailVerified = true;
-  const { accessToken, refreshToken } = generateTokens(user._id.toString(), user.role);
+  const { accessToken, refreshToken } = generateTokens(
+    user._id.toString(),
+    user.role,
+  );
   user.refreshToken = refreshToken;
   await user.save();
 
   res
-    .cookie('accessToken', accessToken, { ...COOKIE_OPTIONS, maxAge: 24 * 60 * 60 * 1000 })
-    .cookie('refreshToken', refreshToken, { ...COOKIE_OPTIONS, maxAge: 7 * 24 * 60 * 60 * 1000 })
+    .cookie("accessToken", accessToken, {
+      ...COOKIE_OPTIONS,
+      maxAge: 24 * 60 * 60 * 1000,
+    })
+    .cookie("refreshToken", refreshToken, {
+      ...COOKIE_OPTIONS,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
     .status(200)
     .json(
-      new ApiResponse('Email verified. Welcome!', {
+      new ApiResponse("Email verified. Welcome!", {
         accessToken,
-        user: { id: user._id, name: user.name, email: user.email, role: user.role },
-      })
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+        },
+      }),
     );
 });
 
 // POST /api/v1/auth/login
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  if (!email || !password) throw new ApiError(400, 'Email and password are required');
+  if (!email || !password)
+    throw new ApiError(400, "Email and password are required");
 
-  const user = await User.findOne({ email, isDeleted: false }).select('+password');
-  if (!user) throw new ApiError(401, 'Invalid email or password');
-  if (!user.isEmailVerified) throw new ApiError(403, 'Please verify your email before logging in');
+  const user = await User.findOne({ email, isDeleted: false }).select(
+    "+password",
+  );
+  if (!user) throw new ApiError(401, "Invalid email or password");
+  if (!user.isEmailVerified)
+    throw new ApiError(403, "Please verify your email before logging in");
 
   const isMatch = await user.comparePassword(password);
-  if (!isMatch) throw new ApiError(401, 'Invalid email or password');
+  if (!isMatch) throw new ApiError(401, "Invalid email or password");
 
-  const { accessToken, refreshToken } = generateTokens(user._id.toString(), user.role);
+  const { accessToken, refreshToken } = generateTokens(
+    user._id.toString(),
+    user.role,
+  );
   user.refreshToken = refreshToken;
   await user.save();
 
   res
-    .cookie('accessToken', accessToken, { ...COOKIE_OPTIONS, maxAge: 24 * 60 * 60 * 1000 })
-    .cookie('refreshToken', refreshToken, { ...COOKIE_OPTIONS, maxAge: 7 * 24 * 60 * 60 * 1000 })
+    .cookie("accessToken", accessToken, {
+      ...COOKIE_OPTIONS,
+      maxAge: 24 * 60 * 60 * 1000,
+    })
+    .cookie("refreshToken", refreshToken, {
+      ...COOKIE_OPTIONS,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
     .status(200)
     .json(
-      new ApiResponse('Login successful', {
+      new ApiResponse("Login successful", {
         accessToken,
-        user: { id: user._id, name: user.name, email: user.email, role: user.role, avatar: user.avatar },
-      })
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          avatar: user.avatar,
+        },
+      }),
     );
 });
 
 // POST /api/v1/auth/forgot-password
 export const forgotPassword = asyncHandler(async (req, res) => {
   const { email } = req.body;
-  if (!email) throw new ApiError(400, 'Email is required');
+  if (!email) throw new ApiError(400, "Email is required");
 
-  const user = await User.findOne({ email, isEmailVerified: true, isDeleted: false });
-  if (!user) throw new ApiError(404, 'No verified account with this email');
+  const user = await User.findOne({
+    email,
+    isEmailVerified: true,
+    isDeleted: false,
+  });
+  if (!user) throw new ApiError(404, "No verified account with this email");
 
   const otp = generateOTP();
-  const expiresAt = new Date(Date.now() + Number(process.env.OTP_EXPIRY_MINUTES ?? 10) * 60 * 1000);
-  await Otp.findOneAndDelete({ email, purpose: 'password-reset' });
-  await Otp.create({ email, otp, purpose: 'password-reset', expiresAt });
+  const expiresAt = new Date(
+    Date.now() + Number(process.env.OTP_EXPIRY_MINUTES ?? 10) * 60 * 1000,
+  );
+  await Otp.findOneAndDelete({ email, purpose: "password-reset" });
+  await Otp.create({ email, otp, purpose: "password-reset", expiresAt });
 
-  await sendOTPEmail(email, otp, 'reset');
+  await sendOTPEmail(email, otp, "reset");
 
-  res.status(200).json(new ApiResponse('Password reset OTP sent to your email', { email }));
+  res
+    .status(200)
+    .json(new ApiResponse("Password reset OTP sent to your email", { email }));
 });
 
 // POST /api/v1/auth/reset-password
 export const resetPassword = asyncHandler(async (req, res) => {
   const { email, otp, newPassword } = req.body;
-  if (!email || !otp || !newPassword) throw new ApiError(400, 'Email, OTP and new password are required');
-  if (newPassword.length < 6) throw new ApiError(400, 'Password must be at least 6 characters');
+  if (!email || !otp || !newPassword)
+    throw new ApiError(400, "Email, OTP and new password are required");
+  if (newPassword.length < 6)
+    throw new ApiError(400, "Password must be at least 6 characters");
 
-  const otpDoc = await Otp.findOne({ email, purpose: 'password-reset' });
-  if (!otpDoc) throw new ApiError(400, 'OTP expired or not found');
+  const otpDoc = await Otp.findOne({ email, purpose: "password-reset" });
+  if (!otpDoc) throw new ApiError(400, "OTP expired or not found");
 
   if (otpDoc.attempts >= 5) {
     await otpDoc.deleteOne();
-    throw new ApiError(429, 'Too many failed attempts. Please request a new OTP.');
+    throw new ApiError(
+      429,
+      "Too many failed attempts. Please request a new OTP.",
+    );
   }
 
   const isValid = await otpDoc.compareOTP(otp);
   if (!isValid) {
     otpDoc.attempts += 1;
     await otpDoc.save();
-    throw new ApiError(400, `Invalid OTP. ${5 - otpDoc.attempts} attempts remaining.`);
+    throw new ApiError(
+      400,
+      `Invalid OTP. ${5 - otpDoc.attempts} attempts remaining.`,
+    );
   }
 
   await otpDoc.deleteOne();
 
   const user = await User.findOne({ email, isDeleted: false });
-  if (!user) throw new ApiError(404, 'User not found');
+  if (!user) throw new ApiError(404, "User not found");
 
   user.password = newPassword;
   await user.save();
 
-  res.status(200).json(new ApiResponse('Password reset successful. Please login.', null));
+  res
+    .status(200)
+    .json(new ApiResponse("Password reset successful. Please login.", null));
 });
 
 // POST /api/v1/auth/refresh-token
 export const refreshToken = asyncHandler(async (req, res) => {
-  const token = req.cookies?.refreshToken ?? (req.body).refreshToken;
-  if (!token) throw new ApiError(401, 'Refresh token missing');
+  const token = req.cookies?.refreshToken ?? req.body.refreshToken;
+  if (!token) throw new ApiError(401, "Refresh token missing");
 
   const secret = process.env.JWT_REFRESH_SECRET;
   const decoded = jwt.verify(token, secret);
 
-  const user = await User.findById(decoded.id).select('+refreshToken');
-  if (!user || user.refreshToken !== token) throw new ApiError(401, 'Invalid refresh token');
+  const user = await User.findById(decoded.id).select("+refreshToken");
+  if (!user || user.refreshToken !== token)
+    throw new ApiError(401, "Invalid refresh token");
 
-  const { accessToken, refreshToken: newRefresh } = generateTokens(user._id.toString(), user.role);
+  const { accessToken, refreshToken: newRefresh } = generateTokens(
+    user._id.toString(),
+    user.role,
+  );
   user.refreshToken = newRefresh;
   await user.save();
 
   res
-    .cookie('accessToken', accessToken, { ...COOKIE_OPTIONS, maxAge: 24 * 60 * 60 * 1000 })
-    .cookie('refreshToken', newRefresh, { ...COOKIE_OPTIONS, maxAge: 7 * 24 * 60 * 60 * 1000 })
+    .cookie("accessToken", accessToken, {
+      ...COOKIE_OPTIONS,
+      maxAge: 24 * 60 * 60 * 1000,
+    })
+    .cookie("refreshToken", newRefresh, {
+      ...COOKIE_OPTIONS,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
     .status(200)
-    .json(new ApiResponse('Token refreshed', { accessToken }));
+    .json(new ApiResponse("Token refreshed", { accessToken }));
 });
 
 // POST /api/v1/auth/logout
@@ -206,69 +285,81 @@ export const logout = asyncHandler(async (req, res) => {
     await User.findByIdAndUpdate(req.user.id, { $unset: { refreshToken: 1 } });
   }
   res
-    .clearCookie('accessToken')
-    .clearCookie('refreshToken')
+    .clearCookie("accessToken")
+    .clearCookie("refreshToken")
     .status(200)
-    .json(new ApiResponse('Logged out successfully', null));
+    .json(new ApiResponse("Logged out successfully", null));
 });
 
 // POST /api/v1/auth/phone-login-request
 export const phoneLoginRequest = asyncHandler(async (req, res) => {
   const { mobile } = req.body;
-  if (!mobile) throw new ApiError(400, 'Mobile number is required');
+  if (!mobile) throw new ApiError(400, "Mobile number is required");
 
   // Generate a random 4-digit OTP code (as expected by storefront AuthModal)
   const otp = Math.floor(1000 + Math.random() * 9000).toString();
-  const expiresAt = new Date(Date.now() + Number(process.env.OTP_EXPIRY_MINUTES ?? 10) * 60 * 1000);
+  const expiresAt = new Date(
+    Date.now() + Number(process.env.OTP_EXPIRY_MINUTES ?? 10) * 60 * 1000,
+  );
 
   // Remove any previous verification attempts for this number
-  await Otp.findOneAndDelete({ mobile, purpose: 'mobile-verify' });
-  await Otp.create({ mobile, otp, purpose: 'mobile-verify', expiresAt });
+  await Otp.findOneAndDelete({ mobile, purpose: "mobile-verify" });
+  await Otp.create({ mobile, otp, purpose: "mobile-verify", expiresAt });
 
   // Send OTP SMS
-  const smsBody = `Your DuskMunch Verification Code is: ${otp}. Valid for 10 minutes.`;
+  const smsBody = `Your Dunches Verification Code is: ${otp}. Valid for 10 minutes.`;
   await sendSMS(mobile, smsBody);
 
-  res.status(200).json(new ApiResponse('OTP sent successfully to your mobile.', { mobile }));
+  res
+    .status(200)
+    .json(new ApiResponse("OTP sent successfully to your mobile.", { mobile }));
 });
 
 // POST /api/v1/auth/phone-login-verify
 export const phoneLoginVerify = asyncHandler(async (req, res) => {
   const { mobile, otp } = req.body;
-  if (!mobile || !otp) throw new ApiError(400, 'Mobile and OTP are required');
+  if (!mobile || !otp) throw new ApiError(400, "Mobile and OTP are required");
 
   let isValid = false;
   // Developer Bypass inside local development mode
-  if (process.env.MODE === 'development' && otp === '1234') {
+  if (process.env.MODE === "development" && otp === "1234") {
     isValid = true;
-    console.log(`[DEVELOPER BYPASS] Verified mobile number: ${mobile} with bypass code`);
+    console.log(
+      `[DEVELOPER BYPASS] Verified mobile number: ${mobile} with bypass code`,
+    );
   } else {
-    const otpDoc = await Otp.findOne({ mobile, purpose: 'mobile-verify' });
-    if (!otpDoc) throw new ApiError(400, 'OTP expired or not found');
+    const otpDoc = await Otp.findOne({ mobile, purpose: "mobile-verify" });
+    if (!otpDoc) throw new ApiError(400, "OTP expired or not found");
 
     if (otpDoc.attempts >= 5) {
       await otpDoc.deleteOne();
-      throw new ApiError(429, 'Too many failed attempts. Please request a new OTP.');
+      throw new ApiError(
+        429,
+        "Too many failed attempts. Please request a new OTP.",
+      );
     }
 
     isValid = await otpDoc.compareOTP(otp);
     if (!isValid) {
       otpDoc.attempts += 1;
       await otpDoc.save();
-      throw new ApiError(400, `Invalid OTP. ${5 - otpDoc.attempts} attempts remaining.`);
+      throw new ApiError(
+        400,
+        `Invalid OTP. ${5 - otpDoc.attempts} attempts remaining.`,
+      );
     }
 
     await otpDoc.deleteOne();
   }
 
   if (!isValid) {
-    throw new ApiError(400, 'Invalid verification code');
+    throw new ApiError(400, "Invalid verification code");
   }
 
   // Find or create User with Mongoose constraints resolved
   let user = await User.findOne({ mobile, isDeleted: false });
   if (!user) {
-    const cleanMobile = mobile.replace(/[^0-9]/g, '');
+    const cleanMobile = mobile.replace(/[^0-9]/g, "");
     const dummyEmail = `user_${cleanMobile}@dunches.com`;
     const dummyName = `Muncher ${cleanMobile.slice(-4)}`;
 
@@ -281,25 +372,76 @@ export const phoneLoginVerify = asyncHandler(async (req, res) => {
         name: dummyName,
         email: dummyEmail,
         mobile: mobile,
-        password: Math.random().toString(36).slice(-8) + 'Ab1!',
+        password: Math.random().toString(36).slice(-8) + "Ab1!",
         isEmailVerified: true,
       });
     }
     await user.save();
   }
 
-  const { accessToken, refreshToken } = generateTokens(user._id.toString(), user.role);
+  const { accessToken, refreshToken } = generateTokens(
+    user._id.toString(),
+    user.role,
+  );
   user.refreshToken = refreshToken;
   await user.save();
 
   res
-    .cookie('accessToken', accessToken, { ...COOKIE_OPTIONS, maxAge: 24 * 60 * 60 * 1000 })
-    .cookie('refreshToken', refreshToken, { ...COOKIE_OPTIONS, maxAge: 7 * 24 * 60 * 60 * 1000 })
+    .cookie("accessToken", accessToken, {
+      ...COOKIE_OPTIONS,
+      maxAge: 24 * 60 * 60 * 1000,
+    })
+    .cookie("refreshToken", refreshToken, {
+      ...COOKIE_OPTIONS,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    })
     .status(200)
     .json(
-      new ApiResponse('Login successful', {
+      new ApiResponse("Login successful", {
         accessToken,
-        user: { id: user._id, name: user.name, email: user.email, mobile: user.mobile, role: user.role },
-      })
+        user: {
+          id: user._id,
+          name: user.name,
+          email: user.email,
+          mobile: user.mobile,
+          role: user.role,
+        },
+      }),
     );
 });
+
+// POST /api/v1/auth/phone-check
+export const phoneCheck = async (req, res, next) => {
+  try {
+    const { mobile } = req.body;
+    if (!mobile) { res.status(400).json({ success: false, message: 'Mobile number is required' }); return; }
+    const User = (await import('../models/user.model.js')).default;
+    const user = await User.findOne({ mobile, isDeleted: false }).select('+password');
+    res.status(200).json({ success: true, message: 'Phone check complete', data: { exists: !!user, hasPassword: !!(user && user.password) } });
+  } catch(e) { next(e); }
+};
+
+// POST /api/v1/auth/phone-login-password
+export const phoneLoginPassword = async (req, res, next) => {
+  try {
+    const { mobile, password } = req.body;
+    if (!mobile || !password) { res.status(400).json({ success: false, message: 'Mobile and password required' }); return; }
+    const User = (await import('../models/user.model.js')).default;
+    const user = await User.findOne({ mobile, isDeleted: false }).select('+password');
+    if (!user) { res.status(401).json({ success: false, message: 'No account found with this mobile number' }); return; }
+    const isMatch = await user.comparePassword(password);
+    if (!isMatch) { res.status(401).json({ success: false, message: 'Incorrect password. Please try again.' }); return; }
+    const jwt = (await import('jsonwebtoken')).default;
+    const accessSecret = process.env.JWT_ACCESS_SECRET;
+    const refreshSecret = process.env.JWT_REFRESH_SECRET;
+    const accessToken = jwt.sign({ id: user._id.toString(), role: user.role }, accessSecret, { expiresIn: process.env.JWT_ACCESS_EXPIRY ?? '1d' });
+    const refreshToken = jwt.sign({ id: user._id.toString(), role: user.role }, refreshSecret, { expiresIn: process.env.JWT_REFRESH_EXPIRY ?? '7d' });
+    user.refreshToken = refreshToken;
+    await user.save();
+    const COOKIE_OPTIONS = { httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'strict' };
+    res.cookie('accessToken', accessToken, { ...COOKIE_OPTIONS, maxAge: 24*60*60*1000 })
+       .cookie('refreshToken', refreshToken, { ...COOKIE_OPTIONS, maxAge: 7*24*60*60*1000 })
+       .status(200)
+       .json({ success: true, message: 'Login successful', data: { accessToken, user: { id: user._id, name: user.name, email: user.email, mobile: user.mobile, role: user.role } } });
+  } catch(e) { next(e); }
+};

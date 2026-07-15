@@ -7,39 +7,101 @@ import { ApiResponse } from '../utils/apiResponse.js';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 
+// Helper: strip surrounding quotes from env vars
+const cleanEnv = (val = '') => val.replace(/^["']|["']$/g, '').trim();
+
 // POST /api/v1/orders
+// Accepts either:
+//   (a) items from the user's server-side cart (default for logged-in users with server cart)
+//   (b) items[] in the request body (for guest-checkout where cart was local-only in Redux)
 export const createOrder = asyncHandler(async (req, res) => {
-  const { shippingAddress, paymentMethod = 'cod', notes } = req.body;
+  const { shippingAddress, paymentMethod = 'cod', notes, items: clientItems } = req.body;
 
   if (!shippingAddress) throw new ApiError(400, 'Shipping address is required');
 
-  const cart = await Cart.findOne({ user: req.user.id }).populate('items.product');
-  if (!cart || cart.items.length === 0) throw new ApiError(400, 'Cart is empty');
-
+  let orderItems = [];
   let totalAmount = 0;
-  const orderItems = [];
 
-  for (const item of cart.items) {
-    const product = item.product;
-    if (!product.isActive) throw new ApiError(400, `Product "${product.name}" is no longer available`);
-    if (product.stock < item.qty) throw new ApiError(400, `Insufficient stock for "${product.name}"`);
+  if (clientItems && Array.isArray(clientItems) && clientItems.length > 0) {
+    // Guest cart or local Redux cart sent directly from client
+    for (const item of clientItems) {
+      let product = null;
 
-    const itemPrice = product.price - (product.price * product.discount) / 100;
-    totalAmount += itemPrice * item.qty;
+      // 1. Try MongoDB ObjectId lookup (24-char hex string)
+      const rawId = item.productId || item.id;
+      if (rawId && /^[a-f\d]{24}$/i.test(rawId)) {
+        product = await Product.findById(rawId);
+      }
 
-    orderItems.push({
-      product: product._id,
-      name: product.name,
-      image: product.images[0] ?? '',
-      price: itemPrice,
-      qty: item.qty,
-      lensType: item.lensType,
-      lensCoating: item.lensCoating,
-      selectedPower: item.selectedPower,
-    });
+      // 2. Fallback: case-insensitive name match (handles mock local IDs)
+      if (!product && item.name) {
+        product = await Product.findOne({
+          name: { $regex: new RegExp(`^${item.name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') },
+        });
+      }
 
-    // Decrement stock
-    await Product.findByIdAndUpdate(product._id, { $inc: { stock: -item.qty } });
+      // 3. Fallback: slug-based match derived from the item name
+      if (!product && item.name) {
+        const slug = item.name
+          .toLowerCase()
+          .replace(/[āáàäâ]/g, 'a')
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/(^-|-$)/g, '');
+        product = await Product.findOne({ slug });
+      }
+
+      if (!product)
+        throw new ApiError(400, `Product "${item.name || rawId}" not found in our catalog. Please refresh your cart.`);
+      if (!product.isActive)
+        throw new ApiError(400, `"${product.name}" is currently unavailable.`);
+      if (product.stock < item.qty)
+        throw new ApiError(400, `Only ${product.stock} left in stock for "${product.name}"`);
+
+      const itemPrice = product.price - (product.price * product.discount) / 100;
+      totalAmount += itemPrice * item.qty;
+
+      orderItems.push({
+        product: product._id,
+        name: product.name,
+        image: product.images?.[0] ?? '',
+        price: itemPrice,
+        qty: item.qty,
+      });
+
+      await Product.findByIdAndUpdate(product._id, { $inc: { stock: -item.qty } });
+    }
+  } else {
+    // Server-side cart fallback
+    const cart = await Cart.findOne({ user: req.user.id }).populate('items.product');
+    if (!cart || cart.items.length === 0) throw new ApiError(400, 'Cart is empty');
+
+    for (const item of cart.items) {
+      const product = item.product;
+      if (!product.isActive)
+        throw new ApiError(400, `Product "${product.name}" is no longer available`);
+      if (product.stock < item.qty)
+        throw new ApiError(400, `Insufficient stock for "${product.name}"`);
+
+      const itemPrice = product.price - (product.price * product.discount) / 100;
+      totalAmount += itemPrice * item.qty;
+
+      orderItems.push({
+        product: product._id,
+        name: product.name,
+        image: product.images?.[0] ?? '',
+        price: itemPrice,
+        qty: item.qty,
+        lensType: item.lensType,
+        lensCoating: item.lensCoating,
+        selectedPower: item.selectedPower,
+      });
+
+      await Product.findByIdAndUpdate(product._id, { $inc: { stock: -item.qty } });
+    }
+
+    // Clear server cart after processing
+    cart.items = [];
+    await cart.save();
   }
 
   const order = await Order.create({
@@ -55,13 +117,13 @@ export const createOrder = asyncHandler(async (req, res) => {
 
   if (paymentMethod === 'online') {
     const razorpay = new Razorpay({
-      key_id: process.env.LIVE_KEY_ID,
-      key_secret: process.env.LIVE_KEY_SECRET,
+      key_id: cleanEnv(process.env.RAZOR_KEY_ID),
+      key_secret: cleanEnv(process.env.RAZOR_KEY_SECRET),
     });
 
     const options = {
-      amount: Math.round(order.finalAmount * 100), // amount in smallest currency unit (paise)
-      currency: "INR",
+      amount: Math.round(order.finalAmount * 100), // paise
+      currency: 'INR',
       receipt: `receipt_order_${order._id}`,
     };
 
@@ -70,22 +132,19 @@ export const createOrder = asyncHandler(async (req, res) => {
       order.razorpayOrderId = razorpayOrder.id;
       await order.save();
 
-      // Clear cart ONLY after successful Razorpay order generation
-      cart.items = [];
-      await cart.save();
-
-      res.status(201).json(new ApiResponse('Order placed successfully, proceed to payment', {
-        order,
-        razorpayOrder: {
-          id: razorpayOrder.id,
-          amount: razorpayOrder.amount,
-          currency: razorpayOrder.currency,
-        },
-        key: process.env.LIVE_KEY_ID
-      }));
-      return;
+      return res.status(201).json(
+        new ApiResponse('Order placed successfully, proceed to payment', {
+          order,
+          razorpayOrder: {
+            id: razorpayOrder.id,
+            amount: razorpayOrder.amount,
+            currency: razorpayOrder.currency,
+          },
+          key: cleanEnv(process.env.RAZOR_KEY_ID),
+        })
+      );
     } catch (error) {
-      // If Razorpay fails, delete the pending order and restore stock, then throw error
+      // Rollback: delete order and restore stock
       await Order.findByIdAndDelete(order._id);
       for (const item of orderItems) {
         await Product.findByIdAndUpdate(item.product, { $inc: { stock: item.qty } });
@@ -94,10 +153,7 @@ export const createOrder = asyncHandler(async (req, res) => {
     }
   }
 
-  // For COD, clear cart and return success
-  cart.items = [];
-  await cart.save();
-
+  // COD — success
   res.status(201).json(new ApiResponse('Order placed successfully', { order }));
 });
 
@@ -108,9 +164,8 @@ export const verifyPayment = asyncHandler(async (req, res) => {
   const order = await Order.findOne({ razorpayOrderId: razorpay_order_id });
   if (!order) throw new ApiError(404, 'Order not found');
 
-  const body = razorpay_order_id + "|" + razorpay_payment_id;
-
-  const secret = (process.env.LIVE_KEY_SECRET || '').replace(/["']/g, '').trim();
+  const body = razorpay_order_id + '|' + razorpay_payment_id;
+  const secret = cleanEnv(process.env.RAZOR_KEY_SECRET);
 
   const expectedSignature = crypto
     .createHmac('sha256', secret)
@@ -130,7 +185,6 @@ export const verifyPayment = asyncHandler(async (req, res) => {
   order.paymentStatus = 'paid';
   order.orderStatus = 'confirmed';
   order.paidAt = new Date();
-  
   await order.save();
 
   res.status(200).json(new ApiResponse('Payment verified successfully', order));
@@ -179,16 +233,14 @@ export const cancelOrder = asyncHandler(async (req, res) => {
     throw new ApiError(400, 'Order cannot be cancelled at this stage');
   }
 
-  // Restore stock
   for (const item of order.items) {
     await Product.findByIdAndUpdate(item.product, { $inc: { stock: item.qty } });
   }
 
   if (order.paymentStatus === 'paid') {
-    // Ideally call Razorpay refund API here
     order.paymentStatus = 'refunded';
   }
-  
+
   order.orderStatus = 'cancelled';
   await order.save();
   res.status(200).json(new ApiResponse('Order cancelled', order));
