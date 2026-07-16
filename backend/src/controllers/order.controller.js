@@ -118,25 +118,31 @@ export const createOrder = asyncHandler(async (req, res) => {
     notes,
   });
 
-  // ── Fire admin notification + email (non-blocking) ──
-  const user = await User.findById(req.user.id).select('name email').lean();
-  const notifTitle = `New Order #${String(order._id).slice(-8).toUpperCase()}`;
-  const notifMsg = `${user?.name || 'A customer'} placed a ${paymentMethod.toUpperCase()} order for Rs.${totalAmount.toFixed(2)} (${orderItems.length} item${orderItems.length > 1 ? 's' : ''})`;
-  Notification.create({
-    type: 'new_order',
-    title: notifTitle,
-    message: notifMsg,
-    data: {
-      orderId: order._id,
-      userId: req.user.id,
-      amount: totalAmount,
-      customerName: user?.name,
-      customerEmail: user?.email,
-      paymentMethod,
-      itemCount: orderItems.length,
-    },
-  }).catch((e) => console.error('[Notification] Failed to save:', e.message));
-  sendNewOrderAdminEmail(order, user);
+  // ── Fire admin notification + email ──
+  try {
+    const user = await User.findById(req.user.id).select('name email').lean();
+    const notifTitle = `New Order #${String(order._id).slice(-8).toUpperCase()}`;
+    const notifMsg = `${user?.name || 'A customer'} placed a ${paymentMethod.toUpperCase()} order for Rs.${totalAmount.toFixed(2)} (${orderItems.length} item${orderItems.length > 1 ? 's' : ''})`;
+    
+    await Notification.create({
+      type: 'new_order',
+      title: notifTitle,
+      message: notifMsg,
+      data: {
+        orderId: order._id,
+        userId: req.user.id,
+        amount: totalAmount,
+        customerName: user?.name,
+        customerEmail: user?.email,
+        paymentMethod,
+        itemCount: orderItems.length,
+      },
+    });
+
+    await sendNewOrderAdminEmail(order, user);
+  } catch (error) {
+    console.error('[Order Notification Error]:', error.message);
+  }
 
   if (paymentMethod === 'online') {
     const razorpay = new Razorpay({

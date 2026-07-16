@@ -70,7 +70,7 @@ export default function Home() {
       </div>
 
       {/* 2. Mobile App Dashboard (Visible on mobile/tablet only) */}
-      <div className="md:hidden flex flex-col pb-32 relative">
+      <div className="md:hidden flex flex-col pb-32 relative overflow-x-hidden">
         {/* Background Design System Texture & Lighting */}
         <div className="absolute inset-0 bg-grain pointer-events-none opacity-[0.03]" />
         <div className="absolute top-[5%] right-[-10%] w-[70vw] h-[70vw] bg-primary/5 rounded-full blur-[100px] pointer-events-none -z-10" />

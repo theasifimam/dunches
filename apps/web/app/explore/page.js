@@ -49,7 +49,7 @@ export default function ExplorePage() {
   });
 
   return (
-    <div className="min-h-screen bg-background text-foreground pt-24 pb-32 px-5 max-w-2xl mx-auto relative">
+    <div className="min-h-screen bg-background text-foreground pt-24 pb-32 px-5 max-w-2xl mx-auto relative overflow-x-hidden">
       {/* Background design accents */}
       <div className="absolute inset-0 bg-grain pointer-events-none opacity-[0.02]" />
       <div className="absolute top-[10%] right-[-10%] w-[60vw] h-[60vw] bg-primary/5 rounded-full blur-[100px] pointer-events-none -z-10" />
