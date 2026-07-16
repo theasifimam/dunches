@@ -2,24 +2,30 @@
 
 import { useState, useEffect } from "react";
 import HeroSection from "@/components/HeroSection";
-import MenuArchive from "@/components/MenuArchive";
+import dynamic from "next/dynamic";
+const MenuArchive = dynamic(() => import("@/components/MenuArchive"));
 import FoodCard from "@/components/FoodCard";
 import { useSelector, useDispatch } from "react-redux";
 import { selectCartCount } from "@/features/cart/cartSlice";
-import { selectMenu, selectCategories, selectSelectedCategory, setCategory } from "@/features/menu/menuSlice";
+import {
+  selectMenu,
+  selectCategories,
+  selectSelectedCategory,
+  setCategory,
+} from "@/features/menu/menuSlice";
 import { addToCart } from "@/features/cart/cartSlice";
-import { 
-  ChevronRight, 
-  ShoppingBag, 
-  Search, 
-  MapPin, 
-  Flame, 
-  Sparkles, 
-  Percent, 
-  Truck, 
-  Plus, 
+import {
+  ChevronRight,
+  ShoppingBag,
+  Search,
+  MapPin,
+  Flame,
+  Sparkles,
+  Percent,
+  Truck,
+  Plus,
   Check,
-  User
+  User,
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -31,7 +37,7 @@ export default function Home() {
   const menu = useSelector(selectMenu);
   const categories = useSelector(selectCategories);
   const selectedCategory = useSelector(selectSelectedCategory);
-  
+
   const [searchQuery, setSearchQuery] = useState("");
   const [addedId, setAddedId] = useState(null);
   const [greeting, setGreeting] = useState("Hey there!");
@@ -56,7 +62,9 @@ export default function Home() {
   }, []);
 
   // Filter 3 popular products for trending scroller
-  const trendingPicks = menu ? menu.filter(item => ["2", "3", "5"].includes(item.id)) : [];
+  const trendingPicks = menu
+    ? menu.filter((item) => ["2", "3", "5"].includes(item.id))
+    : [];
 
   const handleQuickAdd = (e, item) => {
     e.preventDefault();
@@ -67,7 +75,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground pb-32 sm:pb-12 gap-6 md:gap-16">
-      
       {/* 1. Desktop Website Hero Section */}
       <div className="hidden md:block">
         <HeroSection />
@@ -75,22 +82,24 @@ export default function Home() {
 
       {/* 2. Mobile App Dashboard (Visible on mobile/tablet only) */}
       <div className="md:hidden pt-24 px-4 space-y-6 flex flex-col pb-32">
-        
         {/* Welcome Header */}
         <div className="flex items-center justify-between">
           <div className="space-y-0.5">
             <h2 className="text-2xl font-black tracking-tight text-foreground font-heading">
-              Hi, {currentUser ? currentUser.name.split(' ')[0] : "Jack.L"}
+              Hi, {currentUser ? currentUser.name.split(" ")[0] : "Jack.L"}
             </h2>
             <p className="text-xs text-foreground/40 font-medium">
               Best Snacks For you
             </p>
           </div>
           {/* Avatar circle */}
-          <Link href="/profile" className="h-12 w-12 rounded-full overflow-hidden border-2 border-primary/20 shadow-md">
-            <img 
-              src="https://i.pravatar.cc/100" 
-              alt="Avatar" 
+          <Link
+            href="/profile"
+            className="h-12 w-12 rounded-full overflow-hidden border-2 border-primary/20 shadow-md"
+          >
+            <img
+              src="https://i.pravatar.cc/100"
+              alt="Avatar"
               className="h-full w-full object-cover"
             />
           </Link>
@@ -98,7 +107,7 @@ export default function Home() {
 
         {/* Interactive Search Option -> Redirects to Explore */}
         <Link href="/explore" className="block w-full">
-          <div className="flex items-center gap-3 w-full h-12 px-4 bg-foreground/[0.03] border border-border/40 rounded-full text-xs text-foreground/35 font-medium transition-all hover:bg-foreground/[0.05] shadow-sm">
+          <div className="flex items-center gap-3 w-full h-12 px-4 bg-foreground/3 border border-border/40 rounded-full text-xs text-foreground/35 font-medium transition-all hover:bg-foreground/5 shadow-sm">
             <Search className="w-4 h-4 text-foreground/30" />
             <span>Search chips, chocolates, savory bites...</span>
           </div>
@@ -134,27 +143,44 @@ export default function Home() {
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-black uppercase tracking-widest text-foreground/80 font-heading">
-              {selectedCategory === 'All' ? 'Chips' : selectedCategory} Collections
+              {selectedCategory === "All" ? "Chips" : selectedCategory}{" "}
+              Collections
             </h3>
-            <Link href="/explore" className="text-xs font-black text-primary hover:underline tracking-wider uppercase">
+            <Link
+              href="/explore"
+              className="text-xs font-black text-primary hover:underline tracking-wider uppercase"
+            >
               See all
             </Link>
           </div>
 
           {/* Cards List */}
           <div className="flex flex-col gap-6">
-            {(menu ? menu.filter(item => selectedCategory === "All" || item.category === selectedCategory) : []).map((item) => (
+            {(menu
+              ? menu.filter(
+                  (item) =>
+                    selectedCategory === "All" ||
+                    item.category === selectedCategory,
+                )
+              : []
+            ).map((item) => (
               <FoodCard key={item.id} dish={item} />
             ))}
 
-            {(menu ? menu.filter(item => selectedCategory === "All" || item.category === selectedCategory) : []).length === 0 && (
+            {(menu
+              ? menu.filter(
+                  (item) =>
+                    selectedCategory === "All" ||
+                    item.category === selectedCategory,
+                )
+              : []
+            ).length === 0 && (
               <div className="py-20 text-center text-foreground/30 text-sm font-black uppercase tracking-widest font-heading">
                 No items available in this category
               </div>
             )}
           </div>
         </div>
-
       </div>
 
       {/* 3. Main Catalog Grid (Search Queries mapped dynamically) */}
@@ -174,14 +200,15 @@ export default function Home() {
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-[9px] font-black uppercase tracking-widest opacity-80">View Cart</span>
+                <span className="text-[9px] font-black uppercase tracking-widest opacity-80">
+                  View Cart
+                </span>
                 <ChevronRight className="w-4 h-4" />
               </div>
             </button>
           </Link>
         </div>
       )}
-
     </div>
   );
 }

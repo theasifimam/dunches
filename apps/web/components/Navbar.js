@@ -25,7 +25,9 @@ import { Button } from "./ui/button";
 import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import AuthModal from "./AuthModal";
+import dynamic from "next/dynamic";
+
+const AuthModal = dynamic(() => import("./AuthModal"), { ssr: false });
 
 export default function Navbar() {
   const cartCount = useSelector(selectCartCount);
@@ -34,6 +36,7 @@ export default function Navbar() {
   const dispatch = useDispatch();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [hasOpenedAuth, setHasOpenedAuth] = useState(false);
   const [authMode, setAuthMode] = useState("login");
   const [theme, setTheme] = useState("dark");
   const [mounted, setMounted] = useState(false);
@@ -99,6 +102,7 @@ export default function Navbar() {
   }, []);
 
   const openAuth = (mode) => {
+    setHasOpenedAuth(true);
     setAuthMode(mode);
     setIsAuthModalOpen(true);
   };
@@ -121,7 +125,7 @@ export default function Navbar() {
       >
         <nav
           className={`
-            container mx-auto max-w-6xl h-12 md:h-16 px-4 md:px-6 flex items-center justify-between rounded-full border border-border/50 transition-all duration-500
+            container mx-auto max-w-7xl h-12 md:h-16 px-4 md:px-6 flex items-center justify-between rounded-full border border-border/50 transition-all duration-500
             ${isScrolled ? "bg-background/80 backdrop-blur-2xl shadow-2xl scale-[0.98] md:scale-100" : "bg-transparent border-transparent"}
           `}
         >
@@ -258,14 +262,16 @@ export default function Navbar() {
         </nav>
       </header>
 
-      <AuthModal
-        isOpen={isAuthModalOpen}
-        onClose={() => setIsAuthModalOpen(false)}
-        onLoginSuccess={(userData) => {
-          dispatch(setProfile(userData));
-          localStorage.setItem("user", JSON.stringify(userData));
-        }}
-      />
+      {hasOpenedAuth && (
+        <AuthModal
+          isOpen={isAuthModalOpen}
+          onClose={() => setIsAuthModalOpen(false)}
+          onLoginSuccess={(userData) => {
+            dispatch(setProfile(userData));
+            localStorage.setItem("user", JSON.stringify(userData));
+          }}
+        />
+      )}
     </>
   );
 }
