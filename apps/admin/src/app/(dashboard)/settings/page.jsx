@@ -242,7 +242,7 @@ export default function SettingsPage() {
                             ? previewUrl
                             : previewUrl.startsWith("http")
                               ? previewUrl
-                              : `http://localhost:5000${previewUrl}`
+                              : `${process.env.NEXT_PUBLIC_API_URL || "https://dunchesbackend.mazlis.com"}${previewUrl}`
                         }
                         alt="Preview"
                         className="w-full h-full object-cover"
@@ -288,7 +288,7 @@ export default function SettingsPage() {
                             ? logoUrl
                             : logoUrl.startsWith("http")
                               ? logoUrl
-                              : `http://localhost:5000${logoUrl}`
+                              : `${process.env.NEXT_PUBLIC_API_URL || "https://dunchesbackend.mazlis.com"}${logoUrl}`
                         }
                         alt="Logo"
                         className="w-full h-full object-contain"

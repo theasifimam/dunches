@@ -9,7 +9,7 @@ const nextConfig = {
         ],
     },
     async rewrites() {
-        const apiBase = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+        const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://dunchesbackend.mazlis.com";
         return [
             {
                 source: "/api/v1/:path*",
