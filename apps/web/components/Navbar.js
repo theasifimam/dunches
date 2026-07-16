@@ -11,6 +11,7 @@ import {
   User,
   LogOut,
   ChevronDown,
+  Search,
 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { selectCartCount } from "@/features/cart/cartSlice";
@@ -121,23 +122,49 @@ export default function Navbar() {
   return (
     <>
       <header
-        className={`fixed top-0 w-full z-100 transition-all duration-500 px-4 py-2 md:px-8 md:py-4`}
+        className="fixed top-0 left-0 w-full z-100 transition-all duration-500 p-0 md:px-8 md:py-4 flex flex-col"
       >
         <nav
           className={`
-            container mx-auto max-w-7xl h-12 md:h-16 px-4 md:px-6 flex items-center justify-between rounded-full border border-border/50 transition-all duration-500
-            ${isScrolled ? "bg-background/80 backdrop-blur-2xl shadow-2xl scale-[0.98] md:scale-100" : "bg-transparent border-transparent"}
+            flex items-center justify-between transition-all duration-500
+            w-full h-14 px-5 border-b border-border/10 bg-background/90 backdrop-blur-2xl
+            md:container md:mx-auto md:max-w-7xl md:h-16 md:px-6 md:rounded-full md:border md:border-border/50
+            ${isScrolled 
+              ? "md:bg-background/80 md:backdrop-blur-2xl md:shadow-2xl md:scale-[0.98] md:scale-100" 
+              : "md:bg-transparent md:border-transparent"
+            }
           `}
         >
-          {/* Brand - Scaled for Mobile */}
-          <Link href="/" className="group flex items-center gap-2">
-            <div className="w-8 h-8 md:w-10 md:h-10 bg-primary/10 border border-primary/20 rounded-xl flex items-center justify-center rotate-6 group-hover:rotate-0 transition-transform shadow-sm">
-              <Flame className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+          {/* Brand - Desktop Logo */}
+          <Link href="/" className="group hidden md:flex items-center gap-2">
+            <div className="w-10 h-10 bg-primary/10 border border-primary/20 rounded-xl flex items-center justify-center rotate-6 group-hover:rotate-0 transition-transform shadow-sm">
+              <Flame className="w-5 h-5 text-primary" />
             </div>
-            <span className="text-base md:text-lg font-light tracking-widest text-foreground font-serif lowercase group-hover:tracking-[0.15em] transition-all duration-500">
+            <span className="text-lg font-light tracking-widest text-foreground font-serif lowercase group-hover:tracking-[0.15em] transition-all duration-500">
               Dunches
             </span>
           </Link>
+
+          {/* Profile Welcome Row - Mobile Greeting Header */}
+          <div className="flex items-center gap-3 md:hidden">
+            <Link href="/profile">
+              <div className="w-8 h-8 rounded-full border border-primary/20 overflow-hidden flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-transform">
+                <img
+                  src="https://i.pravatar.cc/100"
+                  alt="Avatar"
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            </Link>
+            <div className="flex flex-col leading-none">
+              <span className="text-[9px] text-foreground/40 font-bold uppercase tracking-wider font-sans">
+                hello,
+              </span>
+              <span className="text-[11px] font-extrabold text-foreground font-sans tracking-tight">
+                {user ? user.name : "craver"}
+              </span>
+            </div>
+          </div>
 
           {/* Desktop Nav Only */}
           <div className="hidden lg:flex items-center gap-10">
@@ -150,10 +177,17 @@ export default function Navbar() {
           </div>
 
           {/* Actions - Cleaned for Mobile */}
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1.5 md:gap-2">
+            {/* Mobile-Only Actions */}
+            <Link href="/explore" className="md:hidden">
+              <div className="w-8 h-8 rounded-full flex items-center justify-center text-foreground/45 hover:text-primary bg-foreground/5 active:scale-95 transition-all cursor-pointer shrink-0">
+                <Search className="w-4 h-4" />
+              </div>
+            </Link>
+
             <button
               onClick={toggleTheme}
-              className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all"
+              className="md:hidden w-8 h-8 rounded-full flex items-center justify-center text-foreground/45 hover:text-primary bg-foreground/5 active:scale-95 transition-all cursor-pointer shrink-0"
             >
               {theme === "dark" ? (
                 <Sun className="w-4 h-4" />
@@ -161,105 +195,134 @@ export default function Navbar() {
                 <Moon className="w-4 h-4" />
               )}
             </button>
-            <div className="w-px h-4 bg-border mx-1 hidden sm:block" />
 
-            {/* Profile Dropdown or Mobile Login Trigger */}
-            {user ? (
-              <Popover>
-                <PopoverTrigger className="flex items-center gap-2 border border-border/50 hover:border-primary/40 rounded-full p-1 sm:pr-4 transition-all bg-foreground/2 hover:bg-foreground/4 group outline-hidden cursor-pointer">
-                  <div className="w-8 h-8 rounded-full border border-primary/50 overflow-hidden flex items-center justify-center shrink-0">
-                    <img
-                      src="https://i.pravatar.cc/100"
-                      alt="Avatar"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <span className="hidden sm:inline text-[9px] font-black uppercase tracking-[0.15em] text-foreground/60 group-hover:text-primary transition-all font-heading">
-                    {user.name}
+            <Link href="/cart" className="md:hidden">
+              <div className="relative w-8 h-8 rounded-full flex items-center justify-center text-foreground/45 hover:text-primary bg-foreground/5 active:scale-95 transition-all cursor-pointer shrink-0">
+                <ShoppingBag className="w-4 h-4" />
+                {cartCount > 0 && (
+                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-black text-primary-foreground shadow-lg border-2 border-background">
+                    {cartCount}
                   </span>
-                  <ChevronDown className="hidden sm:block w-3.5 h-3.5 text-foreground/30 group-hover:text-primary transition-colors" />
-                </PopoverTrigger>
-                <PopoverContent
-                  align="end"
-                  className="w-56 p-4 rounded-2xl border border-border/50 bg-background/95 backdrop-blur-xl shadow-2xl flex flex-col gap-2.5 z-150"
-                >
-                  <div className="flex items-center gap-3 pb-3 border-b border-border/10">
-                    <div className="w-10 h-10 rounded-full border border-primary/50 overflow-hidden shrink-0">
+                )}
+              </div>
+            </Link>
+
+            {/* Desktop Actions */}
+            <div className="hidden md:flex items-center gap-2">
+              <button
+                onClick={toggleTheme}
+                className="w-10 h-10 rounded-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all"
+              >
+                {theme === "dark" ? (
+                  <Sun className="w-4 h-4" />
+                ) : (
+                  <Moon className="w-4 h-4" />
+                )}
+              </button>
+              <div className="w-px h-4 bg-border mx-1" />
+
+              {user ? (
+                <Popover>
+                  <PopoverTrigger className="flex items-center gap-2 border border-border/50 hover:border-primary/40 rounded-full p-1 pr-4 transition-all bg-foreground/2 hover:bg-foreground/4 group outline-hidden cursor-pointer">
+                    <div className="w-8 h-8 rounded-full border border-primary/50 overflow-hidden flex items-center justify-center shrink-0">
                       <img
                         src="https://i.pravatar.cc/100"
                         alt="Avatar"
                         className="w-full h-full object-cover"
                       />
                     </div>
-                    <div className="flex flex-col min-w-0">
-                      <span className="text-[11px] font-black font-heading uppercase tracking-widest text-foreground truncate">
-                        {user.name}
-                      </span>
-                      <span className="text-[9px] font-medium text-foreground/40 truncate">
-                        {user.email || "ayaan.ahmed@makhana.wellness"}
-                      </span>
-                    </div>
-                  </div>
-                  <Link href="/profile" className="w-full">
-                    <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
-                      <User className="w-3.5 h-3.5" />
-                      View Profile
-                    </button>
-                  </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-600 py-2 px-1 rounded-lg hover:bg-red-500/5 transition-all font-heading border-t border-border/10 pt-3 cursor-pointer"
+                    <span className="text-[9px] font-black uppercase tracking-[0.15em] text-foreground/60 group-hover:text-primary transition-all font-heading">
+                      {user.name}
+                    </span>
+                    <ChevronDown className="w-3.5 h-3.5 text-foreground/30 group-hover:text-primary transition-colors" />
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="end"
+                    className="w-56 p-4 rounded-2xl border border-border/50 bg-background/95 backdrop-blur-xl shadow-2xl flex flex-col gap-2.5 z-150"
                   >
-                    <LogOut className="w-3.5 h-3.5" />
-                    Logout
-                  </button>
-                </PopoverContent>
-              </Popover>
-            ) : (
-              <button
-                onClick={() => openAuth("login")}
-                className="w-8 h-8 rounded-full border border-border flex items-center justify-center sm:hidden text-foreground/40"
-              >
-                <User className="w-4 h-4" />
-              </button>
-            )}
-
-            <div className="hidden sm:flex items-center gap-2">
-              {!user && (
+                    <div className="flex items-center gap-3 pb-3 border-b border-border/10">
+                      <div className="w-10 h-10 rounded-full border border-primary/50 overflow-hidden shrink-0">
+                        <img
+                          src="https://i.pravatar.cc/100"
+                          alt="Avatar"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex flex-col min-w-0">
+                        <span className="text-[11px] font-black font-heading uppercase tracking-widest text-foreground truncate">
+                          {user.name}
+                        </span>
+                        <span className="text-[9px] font-medium text-foreground/40 truncate">
+                          {user.email || "ayaan.ahmed@makhana.wellness"}
+                        </span>
+                      </div>
+                    </div>
+                    <Link href="/profile" className="w-full">
+                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
+                        <User className="w-3.5 h-3.5" />
+                        View Profile
+                      </button>
+                    </Link>
+                    <button
+                      onClick={handleLogout}
+                      className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-600 py-2 px-1 rounded-lg hover:bg-red-500/5 transition-all font-heading border-t border-border/10 pt-3 cursor-pointer"
+                    >
+                      <LogOut className="w-3.5 h-3.5" />
+                      Logout
+                    </button>
+                  </PopoverContent>
+                </Popover>
+              ) : (
                 <button
                   onClick={() => openAuth("login")}
-                  className="text-[9px] font-black uppercase tracking-widest text-foreground/40 hover:text-primary px-3 transition-all font-heading cursor-pointer"
+                  className="w-8 h-8 rounded-full border border-border flex items-center justify-center sm:hidden text-foreground/40"
                 >
-                  Login
+                  <User className="w-4 h-4" />
                 </button>
               )}
 
-              <Link href="/cart">
-                <div className="relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full glass hover:bg-primary hover:text-primary-foreground transition-all group">
-                  <ShoppingBag
-                    className="w-4 h-4 md:w-5 md:h-5"
-                    strokeWidth={2}
-                  />
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1 -right-1 flex h-4 w-4 md:h-5 md:w-5 items-center justify-center rounded-full bg-primary text-[8px] md:text-[10px] font-black text-primary-foreground shadow-lg border-2 border-background">
-                      {cartCount}
-                    </span>
-                  )}
-                </div>
-              </Link>
+              <div className="hidden sm:flex items-center gap-2">
+                {!user && (
+                  <button
+                    onClick={() => openAuth("login")}
+                    className="text-[9px] font-black uppercase tracking-widest text-foreground/40 hover:text-primary px-3 transition-all font-heading cursor-pointer"
+                  >
+                    Login
+                  </button>
+                )}
 
-              {!user && (
-                <Button
-                  onClick={() => openAuth("signup")}
-                  className="hidden md:flex h-12 px-8 rounded-full text-xs font-black tracking-widest uppercase group"
-                >
-                  Join Us{" "}
-                  <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                </Button>
-              )}
+                <Link href="/cart">
+                  <div className="relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full glass hover:bg-primary hover:text-primary-foreground transition-all group">
+                    <ShoppingBag
+                      className="w-4 h-4 md:w-5 md:h-5"
+                      strokeWidth={2}
+                    />
+                    {cartCount > 0 && (
+                      <span className="absolute -top-1 -right-1 flex h-4 w-4 md:h-5 md:w-5 items-center justify-center rounded-full bg-primary text-[8px] md:text-[10px] font-black text-primary-foreground shadow-lg border-2 border-background">
+                        {cartCount}
+                      </span>
+                    )}
+                  </div>
+                </Link>
+
+                {!user && (
+                  <Button
+                    onClick={() => openAuth("signup")}
+                    className="hidden md:flex h-12 px-8 rounded-full text-xs font-black tracking-widest uppercase group"
+                  >
+                    Join Us{" "}
+                    <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </nav>
+
+        {/* Mobile-only Announcement Bar (Under Navbar) */}
+        <div className="w-full bg-primary/10 border-b border-primary/20 text-primary text-[8px] font-black uppercase tracking-[0.2em] py-1.5 px-4 text-center select-none md:hidden leading-none">
+          ⚡ free shipping on orders over ₹499 • code: crunch15 ⚡
+        </div>
       </header>
 
       {hasOpenedAuth && (

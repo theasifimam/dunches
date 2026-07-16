@@ -3,7 +3,15 @@
 import { useSelector } from "react-redux";
 import { selectUser, selectAddresses } from "@/features/user/userSlice";
 import { motion } from "framer-motion";
-import { Crown, MapPin, ArrowRight, UserCircle, ShieldCheck, Flame, Package } from "lucide-react";
+import {
+  Crown,
+  MapPin,
+  ArrowRight,
+  UserCircle,
+  ShieldCheck,
+  Flame,
+  Package,
+} from "lucide-react";
 import Link from "next/link";
 import { isRealEmail } from "@/lib/utils";
 
@@ -14,7 +22,10 @@ export default function ProfileOverviewPage() {
   if (!user) return null;
 
   const memberSince = user.createdAt
-    ? new Date(user.createdAt).toLocaleDateString("en-IN", { month: "long", year: "numeric" })
+    ? new Date(user.createdAt).toLocaleDateString("en-IN", {
+        month: "long",
+        year: "numeric",
+      })
     : "Recently";
 
   const realEmail = isRealEmail(user.email) ? user.email : null;
@@ -74,17 +85,27 @@ export default function ProfileOverviewPage() {
               </h1>
             </div>
             <div className="text-right">
-              <p className="text-[9px] font-bold uppercase tracking-[0.25em] opacity-30">Since</p>
-              <p className="text-base sm:text-lg font-bold opacity-80">{memberSince}</p>
+              <p className="text-[9px] font-bold uppercase tracking-[0.25em] opacity-30">
+                Since
+              </p>
+              <p className="text-base sm:text-lg font-bold opacity-80">
+                {memberSince}
+              </p>
             </div>
           </div>
 
           <div className="flex items-end justify-between">
             <div className="space-y-1">
-              <p className="text-[9px] font-bold uppercase tracking-[0.2em] opacity-30">Member</p>
-              <p className="text-lg font-black font-heading tracking-tight">{user.name}</p>
+              <p className="text-[9px] font-bold uppercase tracking-[0.2em] opacity-30">
+                Member
+              </p>
+              <p className="text-lg font-black font-heading tracking-tight">
+                {user.name}
+              </p>
               {user.mobile && (
-                <p className="text-[10px] font-bold opacity-40">{user.mobile}</p>
+                <p className="text-[10px] font-bold opacity-40">
+                  {user.mobile}
+                </p>
               )}
             </div>
             <div className="bg-primary/15 rounded-full px-5 py-2 border border-primary/25">
@@ -110,13 +131,15 @@ export default function ProfileOverviewPage() {
       >
         {quickLinks.map(({ label, desc, href, icon: Icon }) => (
           <Link key={href} href={href}>
-            <div className="flex items-center justify-between p-5 bg-foreground/[0.02] border border-border/50 rounded-[1.5rem] hover:border-primary/30 hover:bg-primary/[0.03] transition-all group cursor-pointer h-full">
+            <div className="flex items-center justify-between p-5 bg-foreground/2 border border-border/50 rounded-3xl hover:border-primary/30 hover:bg-primary/3 transition-all group cursor-pointer h-full">
               <div className="flex items-center gap-4">
                 <div className="w-10 h-10 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 group-hover:bg-primary/20 transition-all">
                   <Icon className="w-5 h-5 text-primary" />
                 </div>
                 <div>
-                  <p className="text-[11px] font-black uppercase tracking-wider">{label}</p>
+                  <p className="text-[11px] font-black uppercase tracking-wider">
+                    {label}
+                  </p>
                   <p className="text-[9px] text-foreground/40 mt-0.5">{desc}</p>
                 </div>
               </div>
@@ -131,17 +154,25 @@ export default function ProfileOverviewPage() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.14 }}
-        className="p-6 sm:p-8 bg-foreground/[0.02] border border-border/50 rounded-[2rem] flex flex-col sm:flex-row items-center gap-6"
+        className="p-6 sm:p-8 bg-foreground/2 border border-border/50 rounded-4xl flex flex-col sm:flex-row items-center gap-6"
       >
         <div className="w-14 h-14 bg-primary/10 rounded-2xl flex items-center justify-center text-primary border border-primary/20 shrink-0">
           <Crown className="w-7 h-7" />
         </div>
         <div className="text-center sm:text-left flex-1">
-          <h3 className="text-base font-black font-heading mb-1">Secure Imperial Vault</h3>
+          <h3 className="text-base font-black font-heading mb-1">
+            Secure Imperial Vault
+          </h3>
           <p className="text-[10px] text-foreground/40 leading-relaxed">
             Your data is protected with high-standard encryption.
             {realEmail && (
-              <> Linked email: <span className="text-foreground/60 font-bold">{realEmail}</span></>
+              <>
+                {" "}
+                Linked email:{" "}
+                <span className="text-foreground/60 font-bold">
+                  {realEmail}
+                </span>
+              </>
             )}
           </p>
         </div>

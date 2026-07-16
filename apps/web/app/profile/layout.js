@@ -16,15 +16,41 @@ import {
   UserCircle,
   Package,
 } from "lucide-react";
-import { fetchProfile, setProfile, logoutUser, selectUser, selectUserLoading } from "@/features/user/userSlice";
+import {
+  fetchProfile,
+  setProfile,
+  logoutUser,
+  selectUser,
+  selectUserLoading,
+} from "@/features/user/userSlice";
 import AuthModal from "@/components/AuthModal";
 import { isRealEmail } from "@/lib/utils";
 
 const NAV = [
-  { label: "Profile", sublabel: "Personal details", href: "/profile", icon: UserCircle },
-  { label: "Orders", sublabel: "Order history", href: "/profile/orders", icon: Package },
-  { label: "Addresses", sublabel: "Delivery locations", href: "/profile/addresses", icon: MapPin },
-  { label: "Security", sublabel: "Account protection", href: "/profile/security", icon: ShieldCheck },
+  {
+    label: "Profile",
+    sublabel: "Personal details",
+    href: "/profile",
+    icon: UserCircle,
+  },
+  {
+    label: "Orders",
+    sublabel: "Order history",
+    href: "/profile/orders",
+    icon: Package,
+  },
+  {
+    label: "Addresses",
+    sublabel: "Delivery locations",
+    href: "/profile/addresses",
+    icon: MapPin,
+  },
+  {
+    label: "Security",
+    sublabel: "Account protection",
+    href: "/profile/security",
+    icon: ShieldCheck,
+  },
 ];
 
 export default function ProfileLayout({ children }) {
@@ -54,7 +80,10 @@ export default function ProfileLayout({ children }) {
   };
 
   const memberSince = user?.createdAt
-    ? new Date(user.createdAt).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
+    ? new Date(user.createdAt).toLocaleDateString("en-IN", {
+        month: "short",
+        year: "numeric",
+      })
     : null;
 
   const avatarSrc = user?.avatar
@@ -92,7 +121,10 @@ export default function ProfileLayout({ children }) {
           >
             Authenticate
           </button>
-          <Link href="/" className="block text-[10px] font-black uppercase tracking-widest text-primary/60 hover:text-primary transition-colors">
+          <Link
+            href="/"
+            className="block text-[10px] font-black uppercase tracking-widest text-primary/60 hover:text-primary transition-colors"
+          >
             ← Return to Grand Hall
           </Link>
         </motion.div>
@@ -110,26 +142,53 @@ export default function ProfileLayout({ children }) {
     );
   }
 
+  const isBaseProfile = pathname === "/profile";
+  const subPageName = pathname.split("/").pop();
+
   return (
     <div className="min-h-screen bg-background pb-28 sm:pb-16 pt-24 sm:pt-28">
       <div className="absolute inset-0 bg-grain pointer-events-none opacity-[0.03]" />
       <div className="absolute top-0 right-0 w-[45vw] h-[45vw] bg-primary/4 rounded-full blur-[160px] -z-10" />
 
       <div className="container mx-auto px-4 sm:px-6 max-w-6xl">
+        {/* Mobile App Title Slogan (Tailored Trends Style) */}
+        <div className="flex flex-col mb-4 md:hidden">
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground font-sans lowercase leading-none">
+            {isBaseProfile ? "your profile," : `${subPageName},`}
+          </h1>
+          <p className="text-[19px] text-foreground/45 font-serif italic lowercase leading-tight mt-1">
+            {isBaseProfile ? "account details." : "settings & options."}
+          </p>
+        </div>
+
+        {/* Mobile Back Button Link */}
+        {!isBaseProfile && (
+          <div className="md:hidden mb-4">
+            <Link
+              href="/profile"
+              className="inline-flex items-center gap-1.5 text-[9px] font-black uppercase tracking-widest text-primary hover:underline cursor-pointer"
+            >
+              ← back to profile
+            </Link>
+          </div>
+        )}
+
         <div className="flex flex-col lg:flex-row gap-6 lg:gap-10">
-
-          {/* ── Sidebar ─────────────────────────────────────────────────── */}
-          <aside className="lg:w-72 shrink-0 space-y-4">
-
+          {/* ── Sidebar (Hidden on mobile to show content immediately) ─── */}
+          <aside className="hidden lg:block lg:w-72 shrink-0 space-y-4">
             {/* Profile Card */}
-            <div className="bg-foreground/[0.03] border border-border/50 rounded-[2rem] p-6 text-center relative overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700" />
+            <div className="bg-foreground/3 border border-border/50 rounded-4xl p-6 text-center relative overflow-hidden group">
+              <div className="absolute inset-0 bg-linear-to-br from-primary/5 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-700" />
 
               <div className="relative z-10 flex flex-col items-center">
                 {/* Avatar */}
                 <div className="w-20 h-20 rounded-full bg-foreground/5 border-4 border-background shadow-2xl overflow-hidden flex items-center justify-center mb-4 ring-2 ring-primary/20">
                   {avatarSrc ? (
-                    <img src={avatarSrc} alt="avatar" className="w-full h-full object-cover" />
+                    <img
+                      src={avatarSrc}
+                      alt="avatar"
+                      className="w-full h-full object-cover"
+                    />
                   ) : (
                     <User className="w-8 h-8 text-foreground/20" />
                   )}
@@ -147,13 +206,19 @@ export default function ProfileLayout({ children }) {
                   {user?.name}
                 </h2>
                 <p className="text-[9px] font-bold uppercase tracking-[0.15em] text-foreground/30">
-                  {user?.mobile || (user?.email && isRealEmail(user.email) ? user.email : null) || "Phone member"}
+                  {user?.mobile ||
+                    (user?.email && isRealEmail(user.email)
+                      ? user.email
+                      : null) ||
+                    "Phone member"}
                 </p>
 
                 {/* Stats */}
                 {memberSince && (
                   <div className="mt-4 pt-4 border-t border-border/50 w-full">
-                    <p className="text-[8px] font-black uppercase tracking-[0.2em] text-foreground/20 mb-1">Member Since</p>
+                    <p className="text-[8px] font-black uppercase tracking-[0.2em] text-foreground/20 mb-1">
+                      Member Since
+                    </p>
                     <p className="text-sm font-black">{memberSince}</p>
                   </div>
                 )}
@@ -166,19 +231,29 @@ export default function ProfileLayout({ children }) {
                 const isActive = pathname === href;
                 return (
                   <Link key={href} href={href}>
-                    <div className={`flex items-center justify-between p-4 rounded-2xl border transition-all group cursor-pointer ${
-                      isActive
-                        ? "bg-primary/10 border-primary/30 text-primary"
-                        : "bg-foreground/[0.02] border-transparent hover:border-border hover:bg-foreground/[0.04]"
-                    }`}>
+                    <div
+                      className={`flex items-center justify-between p-4 rounded-2xl border transition-all group cursor-pointer ${
+                        isActive
+                          ? "bg-primary/10 border-primary/30 text-primary"
+                          : "bg-foreground/2 border-transparent hover:border-border hover:bg-foreground/4"
+                      }`}
+                    >
                       <div className="flex items-center gap-3">
-                        <Icon className={`w-4 h-4 shrink-0 ${isActive ? "text-primary" : "text-foreground/30 group-hover:text-primary/60"} transition-colors`} />
+                        <Icon
+                          className={`w-4 h-4 shrink-0 ${isActive ? "text-primary" : "text-foreground/30 group-hover:text-primary/60"} transition-colors`}
+                        />
                         <div>
-                          <p className="text-[10px] font-black uppercase tracking-widest leading-none">{label}</p>
-                          <p className="text-[8px] text-foreground/30 mt-0.5 font-medium">{sublabel}</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest leading-none">
+                            {label}
+                          </p>
+                          <p className="text-[8px] text-foreground/30 mt-0.5 font-medium">
+                            {sublabel}
+                          </p>
                         </div>
                       </div>
-                      <ChevronRight className={`w-3.5 h-3.5 transition-all ${isActive ? "opacity-100 text-primary" : "opacity-0 group-hover:opacity-60 group-hover:translate-x-0.5"}`} />
+                      <ChevronRight
+                        className={`w-3.5 h-3.5 transition-all ${isActive ? "opacity-100 text-primary" : "opacity-0 group-hover:opacity-60 group-hover:translate-x-0.5"}`}
+                      />
                     </div>
                   </Link>
                 );
@@ -190,17 +265,19 @@ export default function ProfileLayout({ children }) {
               >
                 <LogOut className="w-4 h-4 shrink-0" />
                 <div>
-                  <p className="text-[10px] font-black uppercase tracking-widest">End Session</p>
-                  <p className="text-[8px] text-red-400/50 mt-0.5 font-medium">Sign out of your account</p>
+                  <p className="text-[10px] font-black uppercase tracking-widest">
+                    End Session
+                  </p>
+                  <p className="text-[8px] text-red-400/50 mt-0.5 font-medium">
+                    Sign out of your account
+                  </p>
                 </div>
               </button>
             </nav>
           </aside>
 
           {/* ── Page Content ─────────────────────────────────────────────── */}
-          <main className="flex-1 min-w-0">
-            {children}
-          </main>
+          <main className="flex-1 min-w-0">{children}</main>
         </div>
       </div>
     </div>

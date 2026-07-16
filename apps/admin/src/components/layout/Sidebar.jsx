@@ -1,5 +1,6 @@
+/* eslint-disable @next/next/no-img-element */
 "use client";
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -8,386 +9,445 @@ import {
   Users,
   Package,
   Settings,
-  ChevronRight,
   BarChart3,
   Image as ImageIcon,
-  ChevronLeft,
-  HelpCircle,
-  LogOut,
   Flame,
-  Sparkles,
   LifeBuoy,
-  Calendar,
-  Leaf,
+  Bell,
+  User,
+  Sun,
+  Moon,
+  ChevronLeft,
+  ChevronRight,
+  Sparkles,
+  LogOut,
+  Shield,
+  ChevronUp,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
+import { useGetUnreadCountQuery } from "@/store/notificationApi";
+import { useAppDispatch, useAppSelector } from "@/store/store";
+import { selectCurrentUser, clearCredentials } from "@/store/authSlice";
+import { useLogoutMutation } from "@/store/authApi";
+import { useTheme } from "next-themes";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
+import dynamic from "next/dynamic";
 import { useConfigStore } from "@/store/useConfigStore";
-import { useState } from "react";
+
+const LogoutConfirmDialog = dynamic(
+  () =>
+    import("@/components/admin/LogoutConfirmDialog").then(
+      (mod) => mod.LogoutConfirmDialog,
+    ),
+  { ssr: false },
+);
 
 const menuItems = [
   { icon: LayoutDashboard, label: "Dashboard", href: "/" },
   { icon: Package, label: "Products", href: "/products" },
   { icon: ShoppingBag, label: "Orders", href: "/orders" },
   { icon: Users, label: "Customers", href: "/customers" },
+  { icon: Bell, label: "Notifications", href: "/notifications", badge: true },
   { icon: ImageIcon, label: "Banners", href: "/banners" },
   { icon: BarChart3, label: "Analytics", href: "/analytics" },
-  {
-    icon: Settings,
-    label: "Settings",
-    href: "/settings",
-    subItems: [
-      { label: "Web App Setup", href: "/settings" },
-      { label: "Boutique Profile", href: "/settings/profile" },
-      { label: "Administrative ID", href: "/settings/admin-id" },
-      { label: "Security Fortress", href: "/settings/security" },
-      { label: "Alert Protocols", href: "/settings/alerts" },
-      { label: "Payment Engines", href: "/settings/payments" },
-      { label: "Global Localization", href: "/settings/localization" },
-    ],
-  },
+  { icon: Settings, label: "Settings", href: "/settings" },
 ];
+
 export function Sidebar() {
   const pathname = usePathname();
   const { isSidebarCollapsed, toggleSidebar } = useConfigStore();
+  const { data: countData } = useGetUnreadCountQuery(undefined, { pollingInterval: 30000 });
+  const unreadCount = countData?.data?.count || 0;
+
+  const user = useAppSelector(selectCurrentUser);
+  const dispatch = useAppDispatch();
+  const [logout] = useLogoutMutation();
+  const router = useRouter();
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = React.useState(false);
+  const [isLogoutDialogOpen, setIsLogoutDialogOpen] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState([]);
-  const toggleMenu = (label) => {
-    setExpandedMenus((prev) =>
-      prev.includes(label) ? prev.filter((l) => l !== label) : [...prev, label],
-    );
+  const [profileOpen, setProfileOpen] = useState(false);
+  const profileRef = useRef(null);
+
+  React.useEffect(() => { setMounted(true); }, []);
+
+  // Close profile dropdown on outside click
+  useEffect(() => {
+    if (!profileOpen) return;
+    const handler = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, [profileOpen]);
+
+  const handleLogout = async () => {
+    try { await logout().unwrap(); } catch { /* ignore */ }
+    dispatch(clearCredentials());
+    toast.info("Session terminated.");
+    router.push("/login");
   };
+
+  const collapsed = isSidebarCollapsed;
+
   return (
     <>
-      {/* Desktop Sidebar */}
+      {/* ── Desktop Sidebar ─────────────────────────────────────── */}
       <motion.div
         initial={false}
-        animate={{ width: isSidebarCollapsed ? 88 : 260 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className="hidden md:flex h-full bg-transparent flex-col sticky top-4 z-50 group/sidebar"
+        animate={{ width: collapsed ? 72 : 240 }}
+        transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+        className="hidden md:flex h-full shrink-0 flex-col bg-card border border-border/30 rounded-[2rem] shadow-sm relative z-50 overflow-visible"
       >
-        {/* Sidebar Toggle Button */}
-        <button
+        {/* Subtle glow top */}
+        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
+
+        {/* ── Header: Logo + Toggle ──────────────────────── */}
+        <div
           onClick={toggleSidebar}
-          className={cn(
-            "absolute -right-4 top-20 h-8 w-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center shadow-[0_0_20px_rgba(107,142,110,0.3)] border-4 border-background z-100 hover:scale-110 active:scale-90 transition-all duration-300 group/toggle cursor-pointer",
-            isSidebarCollapsed
-              ? "opacity-100"
-              : "opacity-0 group-hover/sidebar:opacity-100",
-          )}
+          className={cn("flex items-center gap-3 relative z-10 shrink-0 border-b border-border/20 cursor-pointer select-none hover:bg-muted/30 transition-colors duration-200 rounded-t-[2rem]", collapsed ? "px-4 py-4 justify-center" : "px-5 py-4")}
         >
-          <ChevronLeft
-            className={cn(
-              "h-4 w-4 transition-transform duration-500",
-              isSidebarCollapsed && "rotate-180",
-            )}
-          />
-        </button>
-
-        {/* Floating Card Wrapper */}
-        <div className="flex flex-col h-full bg-card border border-border/30 rounded-[2rem] shadow-sm overflow-hidden relative">
-          {/* Glow Effect Background */}
-          <div className="absolute inset-0 bg-linear-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
-
-          {/* Logo Section */}
-          <div
-            className={cn(
-              "p-5 mb-2 transition-all duration-500 relative",
-              isSidebarCollapsed ? "px-4" : "px-6",
-            )}
-          >
-            <div className="flex items-center gap-4">
-              <div className="relative shrink-0">
-                <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full scale-150 animate-pulse" />
-                <div className="h-11 w-11 rounded-2xl bg-primary/10 border-2 border-primary/20 relative z-10 flex items-center justify-center">
-                  <Flame className="h-5 w-5 text-primary" />
-                </div>
-              </div>
-              {!isSidebarCollapsed && (
-                <motion.div
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.4 }}
-                  className="relative"
-                >
-                  <h1 className="text-xl font-light font-serif tracking-tighter leading-none text-foreground lowercase">
-                    Dunches
-                    <span className="text-primary italic font-sans font-black">
-                      .
-                    </span>
-                  </h1>
-                  <div className="flex items-center gap-1 mt-1">
-                    <Sparkles className="h-2.5 w-2.5 text-primary" />
-                    <p className="text-[8px] font-black uppercase tracking-[0.25em] text-muted-foreground opacity-60 font-heading">
-                      mindful admin
-                    </p>
-                  </div>
-                </motion.div>
-              )}
-            </div>
+          <div className="relative shrink-0 flex items-center justify-center w-10 h-10 rounded-2xl bg-primary/10 border border-primary/20">
+            <div className="absolute inset-0 bg-primary/10 blur-xl rounded-full scale-150 opacity-60" />
+            <Flame className="h-5 w-5 text-primary relative z-10" />
           </div>
 
-          {/* Navigation - Scrollable Area */}
-          <div className="flex-1 px-3 py-2 space-y-1.5 overflow-y-auto scrollbar-none relative z-10 transition-all duration-500">
-            {menuItems.map((item) => {
-              const isExpanded = expandedMenus.includes(item.label);
-              const hasSubItems = item.subItems && item.subItems.length > 0;
-              const isActive =
-                pathname === item.href ||
-                (hasSubItems && pathname.startsWith(item.href));
-              return (
-                <div key={item.label} className="space-y-1">
-                  <Link
-                    href={hasSubItems ? "#" : item.href}
-                    onClick={(e) => {
-                      if (hasSubItems) {
-                        e.preventDefault();
-                        toggleMenu(item.label);
-                      }
-                    }}
-                    className={cn(
-                      "group flex items-center py-2.5 px-4 rounded-xl transition-all duration-300 relative overflow-hidden",
-                      isActive
-                        ? "bg-primary/6 text-primary"
-                        : "text-muted-foreground hover:bg-muted/40 hover:text-foreground",
-                      isSidebarCollapsed &&
-                        "justify-center px-0 w-12 h-12 mx-auto",
+          <AnimatePresence>
+            {!collapsed && (
+              <motion.div
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -12 }}
+                transition={{ duration: 0.25 }}
+                className="overflow-hidden"
+              >
+                <h1 className="text-base font-light font-serif tracking-tight leading-none text-foreground lowercase whitespace-nowrap">
+                  Dunches<span className="text-primary italic font-sans font-black">.</span>
+                </h1>
+                <div className="flex items-center gap-1 mt-0.5">
+                  <Sparkles className="h-2 w-2 text-primary" />
+                  <p className="text-[8px] font-black uppercase tracking-[0.2em] text-muted-foreground/60 whitespace-nowrap">
+                    admin panel
+                  </p>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Collapse chevron inside header */}
+          <AnimatePresence>
+            {!collapsed && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="ml-auto shrink-0"
+              >
+                <ChevronLeft className="h-4 w-4 text-muted-foreground/50" />
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        {/* ── Navigation ───────────────────────────────────── */}
+        <nav className="flex-1 flex flex-col gap-0.5 overflow-y-auto scrollbar-none relative z-10 px-2.5 py-3">
+          {menuItems.map((item) => {
+            const Icon = item.icon;
+            const isActive =
+              item.href === "/"
+                ? pathname === "/"
+                : pathname === item.href || pathname.startsWith(item.href + "/");
+
+            return (
+              <div key={item.href} className="group relative">
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "relative flex items-center gap-3 rounded-xl transition-all duration-300 overflow-hidden",
+                    collapsed ? "w-12 h-12 justify-center mx-auto" : "px-3 py-2.5",
+                    isActive
+                      ? "bg-primary/10 text-primary"
+                      : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
+                  )}
+                >
+                  {/* Active left bar (expanded only) */}
+                  {isActive && !collapsed && (
+                    <motion.div
+                      layoutId="sidebarActiveBar"
+                      className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-0.5 bg-primary rounded-r-full"
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    />
+                  )}
+
+                  {/* Active background dot (collapsed) */}
+                  {isActive && collapsed && (
+                    <motion.div
+                      layoutId="sidebarActiveBg"
+                      className="absolute inset-0 bg-primary/10 rounded-xl"
+                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    />
+                  )}
+
+                  {/* Icon */}
+                  <div className="relative z-10 flex items-center justify-center shrink-0">
+                    <Icon className={cn("h-[18px] w-[18px] shrink-0 transition-all duration-300", isActive && "scale-110")} />
+                    {item.badge && unreadCount > 0 && (
+                      <span className="absolute -top-1.5 -right-1.5 h-4 min-w-4 px-0.5 rounded-full bg-red-500 text-white text-[8px] font-black flex items-center justify-center leading-none">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                      </span>
                     )}
-                  >
-                    {/* Highlight Background for Inactive */}
-                    {!isActive && (
-                      <div className="absolute inset-0 bg-muted/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 rounded-xl" />
-                    )}
+                  </div>
 
-                    <div
-                      className={cn(
-                        "flex items-center justify-center gap-4 relative z-10 w-full",
-                        isSidebarCollapsed && "gap-0",
-                      )}
-                    >
-                      <div
-                        className={cn(
-                          "p-1.5 rounded-lg transition-all duration-300 flex items-center justify-center",
-                          isActive
-                            ? "text-primary"
-                            : "text-muted-foreground group-hover:text-foreground",
-                        )}
-                      >
-                        <item.icon
-                          className={cn(
-                            "h-5 w-5 shrink-0",
-                            isActive ? "scale-110" : "group-hover:scale-110",
-                          )}
-                        />
-                      </div>
-
-                      <AnimatePresence>
-                        {!isSidebarCollapsed && (
-                          <motion.div
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            exit={{ opacity: 0, x: -10 }}
-                            transition={{ duration: 0.3 }}
-                            className="flex items-center justify-between flex-1"
-                          >
-                            <span className="text-[12.5px] font-medium tracking-tight whitespace-nowrap">
-                              {item.label}
-                            </span>
-                            {hasSubItems && (
-                              <ChevronRight
-                                className={cn(
-                                  "h-4 w-4 transition-transform duration-300 opacity-60",
-                                  isExpanded && "rotate-90",
-                                )}
-                              />
-                            )}
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-
-                    {!isSidebarCollapsed && isActive && !hasSubItems && (
-                      <motion.div
-                        layoutId="sidebarActiveIndicator"
-                        className="absolute left-0 top-1/2 -translate-y-1/2 h-5 w-1 bg-primary rounded-r-full"
-                        transition={{
-                          type: "spring",
-                          stiffness: 380,
-                          damping: 30,
-                        }}
-                      />
-                    )}
-
-                    {isSidebarCollapsed && (
-                      <div className="fixed left-[100px] px-4 py-2.5 bg-card backdrop-blur-md text-foreground rounded-xl text-[11px] font-medium opacity-0 group-hover:opacity-100 translate-x-[-15px] group-hover:translate-x-0 transition-all pointer-events-none shadow-md border border-border z-200 whitespace-nowrap">
-                        <div className="flex items-center gap-2">
-                          <div className="h-1.5 w-1.5 rounded-full bg-primary" />
-                          {item.label}
-                        </div>
-                      </div>
-                    )}
-                  </Link>
-
-                  {/* Submenu Items */}
+                  {/* Label */}
                   <AnimatePresence>
-                    {hasSubItems && isExpanded && !isSidebarCollapsed && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-                        className="overflow-hidden bg-primary/2 rounded-[1.25rem] border border-primary/5 ml-4"
+                    {!collapsed && (
+                      <motion.span
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -8 }}
+                        transition={{ duration: 0.2 }}
+                        className="text-[13px] font-medium tracking-tight whitespace-nowrap relative z-10 flex-1"
                       >
-                        <div className="py-1 px-2 space-y-1">
-                          {item.subItems.map((subItem) => {
-                            const isSubActive = pathname === subItem.href;
-                            return (
-                              <Link
-                                key={subItem.href}
-                                href={subItem.href}
-                                className={cn(
-                                  "flex items-center gap-3 py-2.5 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all duration-300",
-                                  isSubActive
-                                    ? "text-primary bg-primary/10 shadow-sm"
-                                    : "text-muted-foreground hover:text-foreground hover:bg-muted/50",
-                                )}
-                              >
-                                <div
-                                  className={cn(
-                                    "h-1.5 w-1.5 rounded-full transition-all duration-500",
-                                    isSubActive
-                                      ? "bg-primary scale-125 shadow-[0_0_8px_rgba(245,158,11,0.5)]"
-                                      : "bg-muted-foreground/30",
-                                  )}
-                                />
-                                {subItem.label}
-                              </Link>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
+                        {item.label}
+                      </motion.span>
                     )}
                   </AnimatePresence>
-                </div>
-              );
-            })}
+
+                  {/* Unread count label (expanded) */}
+                  {!collapsed && item.badge && unreadCount > 0 && (
+                    <AnimatePresence>
+                      <motion.span
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        className="ml-auto text-[9px] font-black bg-red-500 text-white px-1.5 py-0.5 rounded-full"
+                      >
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                      </motion.span>
+                    </AnimatePresence>
+                  )}
+                </Link>
+
+                {/* Collapsed tooltip */}
+                {collapsed && (
+                  <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-2 bg-foreground text-background rounded-xl text-[11px] font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 translate-x-[-6px] group-hover:translate-x-0 transition-all duration-200 shadow-xl z-[200]">
+                    {item.label}
+                    <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-foreground" />
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </nav>
+
+        {/* ── Bottom actions ────────────────────────────────── */}
+        <div className={cn("flex flex-col gap-0.5 relative z-10 px-2.5 py-3 border-t border-border/20", collapsed && "items-center")}>
+          {/* Theme toggle */}
+          <div className="group relative">
+            <button
+              onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+              className={cn(
+                "flex items-center gap-3 w-full rounded-xl text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-all duration-300",
+                collapsed ? "w-12 h-12 justify-center" : "px-3 py-2.5"
+              )}
+            >
+              {mounted && (
+                theme === "dark"
+                  ? <Sun className="h-[18px] w-[18px] shrink-0 group-hover:rotate-45 transition-transform duration-500" />
+                  : <Moon className="h-[18px] w-[18px] shrink-0 group-hover:-rotate-12 transition-transform duration-500" />
+              )}
+              <AnimatePresence>
+                {!collapsed && (
+                  <motion.span initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.2 }}
+                    className="text-[13px] font-medium tracking-tight whitespace-nowrap">
+                    {mounted && theme === "dark" ? "Light Mode" : "Dark Mode"}
+                  </motion.span>
+                )}
+              </AnimatePresence>
+            </button>
+            {collapsed && (
+              <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-2 bg-foreground text-background rounded-xl text-[11px] font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 translate-x-[-6px] group-hover:translate-x-0 transition-all duration-200 shadow-xl z-[200]">
+                {mounted && theme === "dark" ? "Light Mode" : "Dark Mode"}
+                <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-foreground" />
+              </div>
+            )}
           </div>
 
-          {/* Help / Support Replacement for Logout */}
-          <div className="p-4 mt-auto relative z-10 border-t border-border/30">
+          {/* Help */}
+          <div className="group relative">
             <Link
               href="/support"
               className={cn(
-                "group flex items-center py-2.5 px-4 rounded-xl transition-all duration-300 relative overflow-hidden",
-                pathname === "/support"
-                  ? "bg-primary/6 text-primary"
-                  : "text-muted-foreground hover:bg-muted/40 hover:text-foreground",
-                isSidebarCollapsed && "justify-center px-0 w-12 h-12 mx-auto",
+                "flex items-center gap-3 rounded-xl transition-all duration-300",
+                collapsed ? "w-12 h-12 justify-center" : "px-3 py-2.5 w-full",
+                pathname === "/support" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
               )}
             >
-              {pathname !== "/support" && (
-                <div className="absolute inset-0 bg-muted/20 -translate-x-full group-hover:translate-x-0 transition-transform duration-300 rounded-xl" />
-              )}
-
-              <div
-                className={cn(
-                  "flex items-center gap-4 relative z-10 w-full",
-                  isSidebarCollapsed && "gap-0",
+              <LifeBuoy className="h-[18px] w-[18px] shrink-0 transition-transform duration-300 group-hover:rotate-12" />
+              <AnimatePresence>
+                {!collapsed && (
+                  <motion.span initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.2 }}
+                    className="text-[13px] font-medium tracking-tight whitespace-nowrap">
+                    Help Center
+                  </motion.span>
                 )}
-              >
-                <div
-                  className={cn(
-                    "p-1.5 rounded-lg transition-all duration-300 flex items-center justify-center",
-                    pathname === "/support"
-                      ? "text-primary"
-                      : "text-muted-foreground group-hover:text-foreground",
-                  )}
-                >
-                  <LifeBuoy
-                    className={cn(
-                      "h-5 w-5 shrink-0 transition-all duration-500",
-                      pathname === "/support"
-                        ? "scale-110"
-                        : "group-hover:rotate-12",
-                    )}
-                  />
-                </div>
-
-                <AnimatePresence>
-                  {!isSidebarCollapsed && (
-                    <motion.div
-                      initial={{ opacity: 0, x: -10 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      exit={{ opacity: 0, x: -10 }}
-                      transition={{ duration: 0.3 }}
-                      className="flex flex-col"
-                    >
-                      <span className="text-[12.5px] font-medium tracking-tight whitespace-nowrap">
-                        Help Center
-                      </span>
-                      <span className="text-[9px] font-bold text-muted-foreground/60 uppercase tracking-widest mt-0.5 whitespace-nowrap">
-                        System Support
-                      </span>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {isSidebarCollapsed && (
-                <div className="fixed left-[100px] px-4 py-2.5 bg-card backdrop-blur-md text-foreground rounded-xl text-[11px] font-medium opacity-0 group-hover:opacity-100 translate-x-[-15px] group-hover:translate-x-0 transition-all pointer-events-none shadow-md border border-border z-200 whitespace-nowrap">
-                  Support Center
-                </div>
-              )}
+              </AnimatePresence>
             </Link>
+            {collapsed && (
+              <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-2 bg-foreground text-background rounded-xl text-[11px] font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 translate-x-[-6px] group-hover:translate-x-0 transition-all duration-200 shadow-xl z-[200]">
+                Help Center
+                <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-foreground" />
+              </div>
+            )}
+          </div>
+
+          {/* Profile button with dropdown */}
+          <div ref={profileRef} className="relative">
+            <button
+              onClick={() => setProfileOpen((p) => !p)}
+              className={cn(
+                "flex items-center gap-3 rounded-xl text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-all duration-300 w-full",
+                collapsed ? "w-12 h-12 justify-center" : "px-3 py-2",
+                profileOpen && "bg-muted/50 text-foreground"
+              )}
+            >
+              <div className="h-8 w-8 rounded-full overflow-hidden ring-2 ring-border group-hover:ring-primary/50 transition-all duration-300 shrink-0">
+                {user?.avatar ? (
+                  <img src={user.avatar} alt={user?.name || "Admin"} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-primary/10 flex items-center justify-center">
+                    <User className="h-4 w-4 text-primary" />
+                  </div>
+                )}
+              </div>
+              <AnimatePresence>
+                {!collapsed && (
+                  <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.2 }} className="text-left overflow-hidden flex-1 min-w-0">
+                    <p className="text-[12px] font-semibold text-foreground whitespace-nowrap truncate">{user?.name || "Admin"}</p>
+                    <p className="text-[9px] font-bold text-muted-foreground/60 uppercase tracking-wider">{user?.role || "Administrator"}</p>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+              {!collapsed && (
+                <ChevronUp className={cn("h-3.5 w-3.5 text-muted-foreground shrink-0 transition-transform duration-300", profileOpen ? "rotate-0" : "rotate-180")} />
+              )}
+            </button>
+
+            {/* Profile Dropdown — pops upward */}
+            <AnimatePresence>
+              {profileOpen && (
+                <motion.div
+                  initial={{ opacity: 0, y: 8, scale: 0.96 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.96 }}
+                  transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                  className="absolute bottom-full left-0 mb-2 w-64 bg-card border border-border/40 rounded-2xl shadow-2xl shadow-black/15 overflow-hidden z-[300]"
+                >
+                  {/* Profile Header */}
+                  <div className="flex items-center gap-3 px-4 py-4 border-b border-border/20 bg-muted/20">
+                    <div className="h-12 w-12 rounded-2xl overflow-hidden ring-2 ring-primary/20 shrink-0">
+                      {user?.avatar ? (
+                        <img src={user.avatar} alt={user?.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full bg-primary/10 flex items-center justify-center">
+                          <User className="h-6 w-6 text-primary" />
+                        </div>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="text-[13px] font-bold text-foreground truncate">{user?.name || "Admin User"}</p>
+                      <p className="text-[10px] text-muted-foreground/80 truncate">{user?.email || ""}</p>
+                      <span className="inline-block mt-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                        {user?.role || "Administrator"}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Menu items */}
+                  <div className="py-2">
+                    <button
+                      onClick={() => { setProfileOpen(false); router.push("/profile"); }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200"
+                    >
+                      <User className="h-4 w-4 shrink-0" />
+                      View Profile
+                    </button>
+                    <button
+                      onClick={() => { setProfileOpen(false); router.push("/settings"); }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200"
+                    >
+                      <Shield className="h-4 w-4 shrink-0" />
+                      Account Settings
+                    </button>
+                    <div className="mx-3 my-1.5 h-px bg-border/40" />
+                    <button
+                      onClick={() => { setProfileOpen(false); setIsLogoutDialogOpen(true); }}
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-[12px] font-medium text-destructive hover:bg-destructive/10 transition-all duration-200"
+                    >
+                      <LogOut className="h-4 w-4 shrink-0" />
+                      Sign Out
+                    </button>
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
+            {/* Collapsed tooltip */}
+            {collapsed && (
+              <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-2 bg-foreground text-background rounded-xl text-[11px] font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 translate-x-[-6px] group-hover:translate-x-0 transition-all duration-200 shadow-xl z-[200]">
+                <div className="font-bold">{user?.name || "Admin"}</div>
+                <div className="text-background/60 text-[9px] uppercase tracking-wider">Profile & settings</div>
+                <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-foreground" />
+              </div>
+            )}
           </div>
         </div>
       </motion.div>
 
-      {/* Mobile Bottom Navigation - Floating Pill */}
-      <div className="md:hidden fixed bottom-4 left-4 right-4 h-16 bg-card/90 backdrop-blur-xl border border-border/50 rounded-3xl z-100 flex items-center overflow-x-auto scrollbar-hide px-4 gap-2 shadow-2xl">
+      {/* ── Mobile Bottom Navigation ─────────────────────────────── */}
+      <div className="md:hidden fixed bottom-4 left-4 right-4 h-16 bg-card/95 backdrop-blur-xl border border-border/50 rounded-3xl z-50 flex items-center overflow-x-auto scrollbar-hide px-4 gap-2 shadow-2xl">
         {menuItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+          const Icon = item.icon;
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center justify-center min-w-[56px] py-2 rounded-xl transition-all duration-300 relative shrink-0",
+                "flex flex-col items-center justify-center min-w-[52px] py-2 rounded-xl transition-all duration-300 relative shrink-0",
                 isActive ? "text-primary" : "text-muted-foreground",
               )}
             >
-              <div
-                className={cn(
-                  "p-2 rounded-xl transition-all duration-300",
-                  isActive
-                    ? "bg-primary/20 scale-110 shadow-lg shadow-primary/10"
-                    : "hover:bg-muted",
+              <div className={cn("p-2 rounded-xl transition-all duration-300 relative", isActive ? "bg-primary/15 scale-110" : "hover:bg-muted")}>
+                <Icon className={cn("h-5 w-5", isActive && "text-primary")} />
+                {item.badge && unreadCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-red-500 text-white text-[7px] font-black flex items-center justify-center">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
                 )}
-              >
-                <item.icon
-                  className={cn("h-5 w-5", isActive && "text-primary")}
-                />
               </div>
-              <span
-                className={cn(
-                  "text-[9px] font-black uppercase tracking-widest mt-1.5 transition-all duration-300",
-                  isActive
-                    ? "opacity-100 translate-y-0"
-                    : "opacity-60 translate-y-0.5",
-                )}
-              >
-                {item.label}
+              <span className={cn("text-[8px] font-black uppercase tracking-widest mt-1", isActive ? "opacity-100" : "opacity-50")}>
+                {item.label.split(" ")[0]}
               </span>
               {isActive && (
-                <motion.div
-                  layoutId="mobileNavActive"
-                  className="absolute -top-1 left-1/2 -translate-x-1/2 h-1 w-4 bg-primary rounded-full shadow-[0_0_10px_rgba(245,158,11,0.5)]"
-                />
+                <motion.div layoutId="mobileActive" className="absolute -top-1 left-1/2 -translate-x-1/2 h-1 w-4 bg-primary rounded-full" />
               )}
             </Link>
           );
         })}
       </div>
+
+      <LogoutConfirmDialog
+        isOpen={isLogoutDialogOpen}
+        onOpenChange={setIsLogoutDialogOpen}
+        onConfirm={handleLogout}
+      />
     </>
   );
 }

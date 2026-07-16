@@ -55,7 +55,7 @@ export default function CartPage() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center pt-28 pb-32 px-4 text-center relative overflow-hidden bg-background">
+      <div className="min-h-screen flex flex-col items-center justify-center pt-24 pb-32 px-5 text-center relative overflow-hidden bg-background">
         {/* Background Decorative Elements */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full opacity-[0.05] pointer-events-none">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-screen h-[100vw] border border-primary/20 rounded-full animate-pulse" />
@@ -65,31 +65,30 @@ export default function CartPage() {
         <motion.div
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
-          className="relative z-10"
+          className="relative z-10 w-full max-w-md"
         >
-          <div className="w-40 h-40 bg-foreground/3 rounded-full flex items-center justify-center mb-10 mx-auto relative group">
+          <div className="w-28 h-28 md:w-40 md:h-40 bg-foreground/3 rounded-full flex items-center justify-center mb-6 md:mb-10 mx-auto relative group">
             <ShoppingBag
-              className="w-16 h-16 text-primary group-hover:scale-110 transition-transform duration-700"
+              className="w-12 h-12 md:w-16 md:h-16 text-primary group-hover:scale-110 transition-transform duration-700"
               strokeWidth={1}
             />
             <div className="absolute inset-0 bg-primary/5 rounded-full animate-ping" />
           </div>
 
-          <h1 className="text-6xl md:text-8xl font-black mb-6 tracking-tighter font-heading text-foreground">
-            Your Cart <br /> is{" "}
+          <h1 className="text-3xl sm:text-5xl md:text-8xl font-extrabold mb-4 md:mb-6 tracking-tight text-foreground font-sans lowercase leading-tight">
+            Your Cart <br className="hidden md:inline" /> is{" "}
             <span className="text-primary italic font-serif">Empty.</span>
           </h1>
 
-          <p className="text-foreground/40 mb-12 max-w-sm mx-auto text-xl font-medium leading-relaxed">
+          <p className="text-foreground/40 mb-8 md:mb-12 max-w-xs sm:max-w-sm mx-auto text-xs sm:text-sm md:text-xl font-medium leading-relaxed">
             Our delicious organic superfood snacks are waiting to be explored.
           </p>
 
           <Link href="/menu">
             <Button
-              size="lg"
-              className="rounded-full px-16 h-20 text-xl font-black tracking-widest hover:scale-105 transition-all shadow-2xl flex items-center gap-4"
+              className="rounded-full px-8 md:px-16 h-12 md:h-20 text-xs md:text-xl font-bold tracking-widest hover:scale-105 active:scale-95 transition-all shadow-lg md:shadow-2xl flex items-center gap-3 justify-center mx-auto uppercase"
             >
-              EXPLORE SHOP <ArrowLeft className="w-6 h-6 rotate-180" />
+              EXPLORE SHOP <ArrowLeft className="w-4 h-4 md:w-6 md:h-6 rotate-180" />
             </Button>
           </Link>
         </motion.div>
@@ -98,15 +97,25 @@ export default function CartPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background pt-32 pb-40 relative">
+    <div className="min-h-screen bg-background pt-24 md:pt-32 pb-40 relative">
       <div className="absolute inset-0 bg-grain pointer-events-none opacity-[0.03]" />
 
       <div className="container mx-auto px-6 max-w-7xl relative z-10">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-20 gap-8">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 md:mb-20 gap-8">
+          {/* Mobile App Title Slogan (Tailored Trends Style) */}
+          <div className="flex flex-col mb-4 md:hidden">
+            <h1 className="text-3xl font-extrabold tracking-tight text-foreground font-sans lowercase leading-none">
+              shopping cart,
+            </h1>
+            <p className="text-[19px] text-foreground/45 font-serif italic lowercase leading-tight mt-1">
+              your selection.
+            </p>
+          </div>
+
           <motion.div
             initial={{ opacity: 0, x: -30 }}
             animate={{ opacity: 1, x: 0 }}
-            className="space-y-4"
+            className="space-y-4 hidden md:block"
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass border-border">
               <Sparkles className="w-4 h-4 text-primary" />
@@ -257,70 +266,69 @@ export default function CartPage() {
           </div>
 
           {/* Checkout Summary */}
-          <div className="lg:col-span-4 mt-20 lg:mt-0">
+          <div className="lg:col-span-4 mt-12 lg:mt-0">
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="bg-foreground text-background rounded-[3rem] p-10 sticky top-32 shadow-[0_60px_120px_-30px_rgba(0,0,0,0.4)] overflow-hidden"
+              className="bg-foreground text-background rounded-3xl md:rounded-[3rem] p-6 md:p-10 sticky top-32 shadow-xl md:shadow-[0_60px_120px_-30px_rgba(0,0,0,0.4)] overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
 
-              <h2 className="text-4xl font-black mb-12 tracking-tighter font-heading border-b border-background/10 pb-8">
+              <h2 className="text-2xl md:text-4xl font-extrabold mb-8 md:mb-12 tracking-tight border-b border-background/10 pb-4 md:pb-8">
                 The Balance.
               </h2>
 
-              <div className="space-y-8 mb-16">
+              <div className="space-y-4 md:space-y-8 mb-8 md:mb-16">
                 <div className="flex justify-between items-center opacity-60">
-                  <span className="text-xs font-black tracking-widest uppercase">
+                  <span className="text-[10px] md:text-xs font-bold tracking-wider uppercase">
                     Archive Total
                   </span>
-                  <span className="text-2xl font-black font-heading">
+                  <span className="text-lg md:text-2xl font-bold">
                     ₹{cartTotal.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between items-center opacity-60">
-                  <span className="text-xs font-black tracking-widest uppercase">
+                  <span className="text-[10px] md:text-xs font-bold tracking-wider uppercase">
                     Levies & Taxes
                   </span>
-                  <span className="text-2xl font-black font-heading">
+                  <span className="text-lg md:text-2xl font-bold">
                     ₹{tax.toLocaleString()}
                   </span>
                 </div>
                 <div className="flex justify-between items-center">
                   <div className="flex flex-col">
-                    <span className="text-xs font-black tracking-widest uppercase opacity-60">
+                    <span className="text-[10px] md:text-xs font-bold tracking-wider uppercase opacity-60">
                       Logistic Fee
                     </span>
-                    <span className="text-[10px] text-primary italic font-serif mt-1">
+                    <span className="text-[8px] md:text-[10px] text-primary italic font-serif mt-0.5">
                       Complimentary Service
                     </span>
                   </div>
-                  <span className="text-primary italic font-serif text-2xl">
+                  <span className="text-primary italic font-serif text-lg md:text-2xl">
                     Free
                   </span>
                 </div>
               </div>
 
-              <div className="border-t border-background/10 pt-10 mb-16">
+              <div className="border-t border-background/10 pt-6 md:pt-10 mb-8 md:mb-16">
                 <div className="flex justify-between items-end">
-                  <span className="text-xs font-black tracking-widest uppercase opacity-30">
+                  <span className="text-[10px] md:text-xs font-bold tracking-wider uppercase opacity-30">
                     Final Invoice
                   </span>
-                  <span className="text-5xl font-black text-primary tracking-tighter font-heading">
+                  <span className="text-3xl md:text-5xl font-extrabold text-primary tracking-tight">
                     ₹{grandTotal.toLocaleString()}
                   </span>
                 </div>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-4 md:space-y-6">
                 <Button
-                  size="lg"
-                  className="w-full h-20 text-xl rounded-4xl shadow-2xl font-black tracking-widest uppercase hover:scale-[1.02] transition-all active:scale-[0.98] group relative overflow-hidden"
+                  className="w-full h-12 md:h-20 text-xs md:text-xl rounded-full md:rounded-4xl shadow-xl md:shadow-2xl font-bold tracking-widest uppercase hover:scale-[1.02] transition-all active:scale-[0.98] group relative overflow-hidden"
                   onClick={handleCheckout}
                 >
-                  <div className="relative z-10 flex items-center justify-center gap-4">
-                    <CreditCard className="w-6 h-6" />
+                  <div className="relative z-10 flex items-center justify-center gap-2 md:gap-4">
+                    <CreditCard className="w-4 h-4 md:w-6 md:h-6" />
                     Checkout
                   </div>
                   <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />

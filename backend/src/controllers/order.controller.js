@@ -1,9 +1,12 @@
 import Order from '../models/order.model.js';
 import Cart from '../models/cart.model.js';
 import Product from '../models/product.model.js';
+import User from '../models/user.model.js';
+import Notification from '../models/notification.model.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/apiError.js';
 import { ApiResponse } from '../utils/apiResponse.js';
+import { sendNewOrderAdminEmail } from '../utils/sendEmail.js';
 import Razorpay from 'razorpay';
 import crypto from 'crypto';
 
@@ -115,6 +118,26 @@ export const createOrder = asyncHandler(async (req, res) => {
     notes,
   });
 
+  // ── Fire admin notification + email (non-blocking) ──
+  const user = await User.findById(req.user.id).select('name email').lean();
+  const notifTitle = `New Order #${String(order._id).slice(-8).toUpperCase()}`;
+  const notifMsg = `${user?.name || 'A customer'} placed a ${paymentMethod.toUpperCase()} order for Rs.${totalAmount.toFixed(2)} (${orderItems.length} item${orderItems.length > 1 ? 's' : ''})`;
+  Notification.create({
+    type: 'new_order',
+    title: notifTitle,
+    message: notifMsg,
+    data: {
+      orderId: order._id,
+      userId: req.user.id,
+      amount: totalAmount,
+      customerName: user?.name,
+      customerEmail: user?.email,
+      paymentMethod,
+      itemCount: orderItems.length,
+    },
+  }).catch((e) => console.error('[Notification] Failed to save:', e.message));
+  sendNewOrderAdminEmail(order, user);
+
   if (paymentMethod === 'online') {
     const razorpay = new Razorpay({
       key_id: cleanEnv(process.env.RAZOR_KEY_ID),
@@ -187,6 +210,14 @@ export const verifyPayment = asyncHandler(async (req, res) => {
   order.paidAt = new Date();
   await order.save();
 
+  // ── Fire payment verified notification ──
+  Notification.create({
+    type: 'payment_verified',
+    title: `Payment Verified #${String(order._id).slice(-8).toUpperCase()}`,
+    message: `Online payment of Rs.${order.finalAmount.toFixed(2)} confirmed. Order marked as confirmed.`,
+    data: { orderId: order._id, amount: order.finalAmount, orderStatus: 'confirmed' },
+  }).catch((e) => console.error('[Notification] Failed to save:', e.message));
+
   res.status(200).json(new ApiResponse('Payment verified successfully', order));
 });
 
@@ -243,6 +274,15 @@ export const cancelOrder = asyncHandler(async (req, res) => {
 
   order.orderStatus = 'cancelled';
   await order.save();
+
+  // ── Fire cancellation notification ──
+  Notification.create({
+    type: 'order_cancelled',
+    title: `Order Cancelled #${String(order._id).slice(-8).toUpperCase()}`,
+    message: `A customer cancelled their order${order.paymentStatus === 'refunded' ? '. Refund initiated.' : '.'}`,
+    data: { orderId: order._id, amount: order.finalAmount, orderStatus: 'cancelled' },
+  }).catch((e) => console.error('[Notification] Failed to save:', e.message));
+
   res.status(200).json(new ApiResponse('Order cancelled', order));
 });
 

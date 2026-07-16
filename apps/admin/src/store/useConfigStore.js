@@ -1,8 +1,9 @@
 'use client';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+
 export const useConfigStore = create()(persist((set) => ({
-    isSidebarCollapsed: false,
+    isSidebarCollapsed: true,
     toggleSidebar: () => set((state) => ({ isSidebarCollapsed: !state.isSidebarCollapsed })),
     setSidebarCollapsed: (collapsed) => set({ isSidebarCollapsed: collapsed }),
 }), {

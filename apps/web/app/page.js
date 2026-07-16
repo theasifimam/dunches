@@ -13,23 +13,17 @@ import {
   selectSelectedCategory,
   setCategory,
 } from "@/features/menu/menuSlice";
-import { addToCart } from "@/features/cart/cartSlice";
 import {
   ChevronRight,
   ShoppingBag,
   Search,
-  MapPin,
-  Flame,
-  Sparkles,
-  Percent,
-  Truck,
-  Plus,
-  Check,
-  User,
+  SlidersHorizontal,
+  Sun,
+  Moon,
+  X,
 } from "lucide-react";
 import Link from "next/link";
-import Image from "next/image";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -39,38 +33,33 @@ export default function Home() {
   const selectedCategory = useSelector(selectSelectedCategory);
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [addedId, setAddedId] = useState(null);
-  const [greeting, setGreeting] = useState("Hey there!");
-  const [locationName, setLocationName] = useState("Mithila Hub");
   const [currentUser, setCurrentUser] = useState(null);
+  const [theme, setTheme] = useState("dark");
 
-  // Set greeting based on time of day and load username if logged in
   useEffect(() => {
-    const hours = new Date().getHours();
-    if (hours < 12) setGreeting("Good morning!");
-    else if (hours < 17) setGreeting("Good afternoon!");
-    else setGreeting("Good evening!");
-
     try {
       const savedUser = localStorage.getItem("user");
       if (savedUser) {
         setCurrentUser(JSON.parse(savedUser));
       }
+      const savedTheme = localStorage.getItem("theme") || "dark";
+      setTheme(savedTheme);
     } catch (e) {
       console.warn("localStorage is not accessible:", e);
     }
   }, []);
 
-  // Filter 3 popular products for trending scroller
-  const trendingPicks = menu
-    ? menu.filter((item) => ["2", "3", "5"].includes(item.id))
-    : [];
-
-  const handleQuickAdd = (e, item) => {
-    e.preventDefault();
-    dispatch(addToCart(item));
-    setAddedId(item.id);
-    setTimeout(() => setAddedId(null), 2000);
+  const toggleTheme = () => {
+    const newTheme = theme === "dark" ? "light" : "dark";
+    setTheme(newTheme);
+    localStorage.setItem("theme", newTheme);
+    if (newTheme === "dark") {
+      document.documentElement.classList.add("dark");
+      document.documentElement.classList.remove("light");
+    } else {
+      document.documentElement.classList.add("light");
+      document.documentElement.classList.remove("dark");
+    }
   };
 
   return (
@@ -81,42 +70,52 @@ export default function Home() {
       </div>
 
       {/* 2. Mobile App Dashboard (Visible on mobile/tablet only) */}
-      <div className="md:hidden pt-24 px-4 space-y-6 flex flex-col pb-32">
-        {/* Welcome Header */}
-        <div className="flex items-center justify-between">
-          <div className="space-y-0.5">
-            <h2 className="text-2xl font-black tracking-tight text-foreground font-heading">
-              Hi, {currentUser ? currentUser.name.split(" ")[0] : "Jack.L"}
-            </h2>
-            <p className="text-xs text-foreground/40 font-medium">
-              Best Snacks For you
-            </p>
-          </div>
-          {/* Avatar circle */}
-          <Link
-            href="/profile"
-            className="h-12 w-12 rounded-full overflow-hidden border-2 border-primary/20 shadow-md"
-          >
-            <img
-              src="https://i.pravatar.cc/100"
-              alt="Avatar"
-              className="h-full w-full object-cover"
+      <div className="md:hidden flex flex-col pb-32 relative">
+        {/* Background Design System Texture & Lighting */}
+        <div className="absolute inset-0 bg-grain pointer-events-none opacity-[0.03]" />
+        <div className="absolute top-[5%] right-[-10%] w-[70vw] h-[70vw] bg-primary/5 rounded-full blur-[100px] pointer-events-none -z-10" />
+        <div className="absolute top-[40%] left-[-15%] w-[60vw] h-[60vw] bg-accent/5 rounded-full blur-[90px] pointer-events-none -z-10" />
+
+        {/* Main Brand Typography Slogan */}
+        <div className="pt-24 pb-2 px-5 flex flex-col z-10">
+          <h1 className="text-3xl font-extrabold tracking-tight text-foreground font-sans lowercase leading-none">
+            spicy cravings,
+          </h1>
+          <p className="text-[19px] text-foreground/45 font-serif italic lowercase leading-tight mt-1">
+            handpicked for you.
+          </p>
+        </div>
+
+        {/* Search Bar & Custom Filter Row */}
+        <div className="flex items-center gap-3 px-5 py-2 z-10">
+          <div className="relative flex-1">
+            <input
+              type="text"
+              placeholder="search makhana, chips…"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full h-11 pl-10 pr-10 rounded-full border border-border/50 bg-foreground/3 text-[13px] tracking-wide focus:outline-none focus:border-primary/60 focus:bg-primary/4 focus:shadow-md transition-all font-medium text-foreground"
             />
+            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-foreground/30" />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 p-0.5 rounded-full hover:bg-foreground/10 text-foreground/45 transition-colors cursor-pointer"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+          <Link href="/explore">
+            <button className="w-11 h-11 rounded-full flex items-center justify-center bg-foreground/5 border border-border/50 text-foreground/60 hover:text-primary hover:bg-foreground/10 hover:border-primary/30 transition-all shrink-0 cursor-pointer active:scale-95">
+              <SlidersHorizontal className="w-4 h-4" />
+            </button>
           </Link>
         </div>
 
-        {/* Interactive Search Option -> Redirects to Explore */}
-        <Link href="/explore" className="block w-full">
-          <div className="flex items-center gap-3 w-full h-12 px-4 bg-foreground/3 border border-border/40 rounded-full text-xs text-foreground/35 font-medium transition-all hover:bg-foreground/5 shadow-sm">
-            <Search className="w-4 h-4 text-foreground/30" />
-            <span>Search chips, chocolates, savory bites...</span>
-          </div>
-        </Link>
-
-        {/* Categories Slider */}
-        <div className="space-y-2">
-          <div className="flex gap-2.5 overflow-x-auto pb-2 no-scrollbar -mx-4 px-4">
-            {/* Map over categories */}
+        {/* Category Pills (Tailored Trends Style) */}
+        <div className="py-3 px-5 transition-all duration-300 z-10">
+          <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-5 px-5">
             {categories.map((cat) => {
               const isSelected = selectedCategory === cat;
               return (
@@ -124,11 +123,11 @@ export default function Home() {
                   key={cat}
                   onClick={() => dispatch(setCategory(cat))}
                   className={`
-                    px-5 py-2.5 rounded-full text-xs font-black uppercase tracking-wider transition-all whitespace-nowrap border shrink-0
+                    px-5 py-2 rounded-full text-[10px] font-bold uppercase tracking-wider transition-all whitespace-nowrap shrink-0 cursor-pointer border
                     ${
                       isSelected
-                        ? "bg-foreground text-background border-foreground shadow-md"
-                        : "bg-background text-foreground/50 border-border/50 hover:border-foreground/30"
+                        ? "bg-primary text-primary-foreground border-primary shadow-md shadow-primary/25 scale-[1.04]"
+                        : "bg-foreground/5 text-foreground/40 border-transparent hover:border-border/60 hover:text-foreground"
                     }
                   `}
                 >
@@ -139,28 +138,30 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Collection Header & Vertical List of Large Premium Cards */}
-        <div className="space-y-4">
+        {/* ── Product List ─────────────────────────────────────── */}
+        <div className="px-5 pt-3 space-y-4 z-10">
           <div className="flex items-center justify-between">
-            <h3 className="text-sm font-black uppercase tracking-widest text-foreground/80 font-heading">
+            <h3 className="text-[14px] font-bold tracking-tight text-foreground/80 font-sans">
               {selectedCategory === "All" ? "Chips" : selectedCategory}{" "}
               Collections
             </h3>
             <Link
               href="/explore"
-              className="text-xs font-black text-primary hover:underline tracking-wider uppercase"
+              className="text-[10px] font-black text-primary hover:underline tracking-wider uppercase"
             >
               See all
             </Link>
           </div>
 
-          {/* Cards List */}
-          <div className="flex flex-col gap-6">
+          {/* Cards Grid */}
+          <div className="grid grid-cols-2 gap-3.5 pb-6">
             {(menu
               ? menu.filter(
                   (item) =>
-                    selectedCategory === "All" ||
-                    item.category === selectedCategory,
+                    (selectedCategory === "All" ||
+                      item.category === selectedCategory) &&
+                    (item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      item.description.toLowerCase().includes(searchQuery.toLowerCase())),
                 )
               : []
             ).map((item) => (
@@ -170,13 +171,15 @@ export default function Home() {
             {(menu
               ? menu.filter(
                   (item) =>
-                    selectedCategory === "All" ||
-                    item.category === selectedCategory,
+                    (selectedCategory === "All" ||
+                      item.category === selectedCategory) &&
+                    (item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      item.description.toLowerCase().includes(searchQuery.toLowerCase())),
                 )
               : []
             ).length === 0 && (
               <div className="py-20 text-center text-foreground/30 text-sm font-black uppercase tracking-widest font-heading">
-                No items available in this category
+                No items in this category
               </div>
             )}
           </div>

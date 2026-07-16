@@ -2,9 +2,11 @@ import mongoose from 'mongoose';
 import Review from '../models/review.model.js';
 import Order from '../models/order.model.js';
 import Product from '../models/product.model.js';
+import Notification from '../models/notification.model.js';
 import { asyncHandler } from '../utils/asyncHandler.js';
 import { ApiError } from '../utils/apiError.js';
 import { ApiResponse } from '../utils/apiResponse.js';
+import { sendNewComplaintAdminEmail } from '../utils/sendEmail.js';
 
 // GET /api/v1/reviews/product/:productId
 export const getProductReviews = asyncHandler(async (req, res) => {
@@ -86,7 +88,33 @@ export const createReview = asyncHandler(async (req, res) => {
     });
   }
 
-  const populated = await Review.findById(review._id).populate('user', 'name avatar');
+  const populated = await Review.findById(review._id).populate('user', 'name avatar email');
+
+  // ── Fire admin notification + email for new review (non-blocking) ──
+  const productDoc = await Product.findById(productId).select('name').lean();
+  const userDoc = populated?.user;
+  const isLowRating = review.rating <= 2;
+  const notifType = 'new_complaint';
+  const notifTitle = isLowRating
+    ? `Low Rating Alert - ${productDoc?.name || 'Product'}`
+    : `New Review - ${productDoc?.name || 'Product'}`;
+  const notifMsg = `${userDoc?.name || 'A customer'} gave ${review.rating} star${review.rating !== 1 ? 's' : ''}: "${review.comment.substring(0, 80)}${review.comment.length > 80 ? '...' : ''}"`;  
+  Notification.create({
+    type: notifType,
+    title: notifTitle,
+    message: notifMsg,
+    data: {
+      reviewId: review._id,
+      userId: req.user.id,
+      productId,
+      customerName: userDoc?.name,
+      customerEmail: userDoc?.email,
+      productName: productDoc?.name,
+      rating: review.rating,
+    },
+  }).catch((e) => console.error('[Notification] Failed to save:', e.message));
+  sendNewComplaintAdminEmail(review, userDoc, productDoc);
+
   res.status(201).json(new ApiResponse('Review submitted', populated));
 });
 
