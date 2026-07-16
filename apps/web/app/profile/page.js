@@ -1,7 +1,7 @@
 "use client";
 
-import { useSelector } from "react-redux";
-import { selectUser, selectAddresses } from "@/features/user/userSlice";
+import { useSelector, useDispatch } from "react-redux";
+import { selectUser, selectAddresses, logoutUser } from "@/features/user/userSlice";
 import { motion } from "framer-motion";
 import {
   Crown,
@@ -11,13 +11,22 @@ import {
   ShieldCheck,
   Flame,
   Package,
+  LogOut,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { isRealEmail } from "@/lib/utils";
 
 export default function ProfileOverviewPage() {
+  const dispatch = useDispatch();
+  const router = useRouter();
   const user = useSelector(selectUser);
   const addresses = useSelector(selectAddresses);
+
+  const handleLogout = async () => {
+    await dispatch(logoutUser());
+    router.push("/");
+  };
 
   if (!user) return null;
 
@@ -176,11 +185,20 @@ export default function ProfileOverviewPage() {
             )}
           </p>
         </div>
-        <Link href="/profile/security">
-          <button className="px-6 py-2.5 border border-border hover:border-primary/40 hover:text-primary rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap">
-            Manage
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-center sm:justify-end">
+          <Link href="/profile/security">
+            <button className="px-6 py-2.5 border border-border hover:border-primary/40 hover:text-primary rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap">
+              Manage
+            </button>
+          </Link>
+          <button
+            onClick={handleLogout}
+            className="px-6 py-2.5 border border-red-500/30 hover:border-red-500 text-red-500 hover:bg-red-500/5 rounded-full text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap flex items-center gap-2 cursor-pointer active:scale-95"
+          >
+            <LogOut className="w-3.5 h-3.5" />
+            Logout
           </button>
-        </Link>
+        </div>
       </motion.div>
     </div>
   );

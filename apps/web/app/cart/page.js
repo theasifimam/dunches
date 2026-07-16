@@ -131,19 +131,7 @@ export default function CartPage() {
             </h1>
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, x: 30 }}
-            animate={{ opacity: 1, x: 0 }}
-          >
-            <Button
-              variant="ghost"
-              className="h-14 px-8 text-foreground/40 hover:text-red-500 transition-all group font-black uppercase tracking-widest text-xs"
-              onClick={() => dispatch(clearCart())}
-            >
-              <Trash2 className="w-4 h-4 mr-3 group-hover:rotate-12 transition-transform" />
-              <span>Clear Cart</span>
-            </Button>
-          </motion.div>
+
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -253,20 +241,65 @@ export default function CartPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.5 }}
-              className="pt-10"
+              className="w-full"
             >
-              <Link
-                href="/menu"
-                className="inline-flex items-center gap-4 text-foreground/40 hover:text-primary transition-all font-black tracking-widest text-[10px] uppercase group"
-              >
-                <ArrowLeft className="w-5 h-5 group-hover:-translate-x-2 transition-transform" />
-                Return to menu archive
-              </Link>
+              {/* Mobile Summary Breakdown (Visible only on mobile) */}
+              <div className="lg:hidden mt-10 pt-8 border-t border-border/20 space-y-4">
+                <div className="flex justify-between items-center text-foreground/50">
+                  <span className="text-[10px] font-black uppercase tracking-wider">Subtotal</span>
+                  <span className="text-sm font-bold">₹{cartTotal.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center text-foreground/50">
+                  <span className="text-[10px] font-black uppercase tracking-wider">Taxes (5% GST)</span>
+                  <span className="text-sm font-bold">₹{tax.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between items-center text-foreground/50">
+                  <span className="text-[10px] font-black uppercase tracking-wider">Delivery Fee</span>
+                  <span className="text-primary italic font-serif text-sm">Free</span>
+                </div>
+                <div className="flex justify-between items-end pt-4 border-t border-border/10">
+                  <span className="text-[10px] font-black uppercase tracking-wider opacity-60">Grand Total</span>
+                  <span className="text-xl font-black text-primary">₹{grandTotal.toLocaleString()}</span>
+                </div>
+              </div>
+
+              {/* Action Buttons Row */}
+              <div className="pt-10 flex flex-col md:flex-row gap-6 items-center justify-between border-t border-border/30 mt-10 w-full">
+                <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
+                  <Link
+                    href="/menu"
+                    className="inline-flex items-center gap-3 text-foreground/50 hover:text-primary transition-all font-black tracking-widest text-[10px] uppercase group py-4 px-8 rounded-full border border-border/60 bg-foreground/2 hover:bg-foreground/5 justify-center"
+                  >
+                    <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1.5 transition-transform" />
+                    Back to Menu
+                  </Link>
+
+                  <Button
+                    variant="outline"
+                    className="h-14 px-6 text-foreground/45 hover:text-red-500 hover:bg-red-500/5 transition-all group font-black uppercase tracking-widest text-[10px] rounded-full border-border/60 justify-center w-full sm:w-auto"
+                    onClick={() => dispatch(clearCart())}
+                  >
+                    <Trash2 className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" />
+                    Clear Cart
+                  </Button>
+                </div>
+
+                <Button
+                  className="w-full md:w-auto h-14 px-8 text-xs rounded-full shadow-lg font-bold tracking-widest uppercase hover:scale-[1.02] transition-all active:scale-[0.98] group relative overflow-hidden"
+                  onClick={handleCheckout}
+                >
+                  <div className="relative z-10 flex items-center justify-center gap-2">
+                    <CreditCard className="w-4 h-4" />
+                    Checkout • ₹{grandTotal.toLocaleString()}
+                  </div>
+                  <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+                </Button>
+              </div>
             </motion.div>
           </div>
 
-          {/* Checkout Summary */}
-          <div className="lg:col-span-4 mt-12 lg:mt-0">
+          {/* Checkout Summary (Visible only on desktop) */}
+          <div className="hidden lg:block lg:col-span-4 lg:mt-0">
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
@@ -323,18 +356,7 @@ export default function CartPage() {
               </div>
 
               <div className="space-y-4 md:space-y-6">
-                <Button
-                  className="w-full h-12 md:h-20 text-xs md:text-xl rounded-full md:rounded-4xl shadow-xl md:shadow-2xl font-bold tracking-widest uppercase hover:scale-[1.02] transition-all active:scale-[0.98] group relative overflow-hidden"
-                  onClick={handleCheckout}
-                >
-                  <div className="relative z-10 flex items-center justify-center gap-2 md:gap-4">
-                    <CreditCard className="w-4 h-4 md:w-6 md:h-6" />
-                    Checkout
-                  </div>
-                  <div className="absolute inset-0 bg-linear-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
-                </Button>
-
-                <div className="flex items-center justify-center gap-3 opacity-20 py-2">
+                <div className="flex items-center justify-center gap-3 opacity-20 py-2 border-t border-background/10 pt-6">
                   <ShieldCheck className="w-5 h-5" />
                   <span className="text-[10px] font-black tracking-[0.3em] uppercase">
                     256-BIT ENCRYPTED

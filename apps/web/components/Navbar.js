@@ -121,17 +121,16 @@ export default function Navbar() {
 
   return (
     <>
-      <header
-        className="fixed top-0 left-0 w-full z-100 transition-all duration-500 p-0 md:px-8 md:py-4 flex flex-col"
-      >
+      <header className="fixed top-0 left-0 w-full z-100 transition-all duration-500 p-0 md:px-8 md:py-4 flex flex-col">
         <nav
           className={`
             flex items-center justify-between transition-all duration-500
             w-full h-14 px-5 border-b border-border/10 bg-background/90 backdrop-blur-2xl
             md:container md:mx-auto md:max-w-7xl md:h-16 md:px-6 md:rounded-full md:border md:border-border/50
-            ${isScrolled 
-              ? "md:bg-background/80 md:backdrop-blur-2xl md:shadow-2xl md:scale-[0.98] md:scale-100" 
-              : "md:bg-transparent md:border-transparent"
+            ${
+              isScrolled
+                ? "md:bg-background/80 md:backdrop-blur-2xl md:shadow-2xl md:scale-[0.98] md:scale-100"
+                : "md:bg-transparent md:border-transparent"
             }
           `}
         >
@@ -318,11 +317,6 @@ export default function Navbar() {
             </div>
           </div>
         </nav>
-
-        {/* Mobile-only Announcement Bar (Under Navbar) */}
-        <div className="w-full bg-primary/10 border-b border-primary/20 text-primary text-[8px] font-black uppercase tracking-[0.2em] py-1.5 px-4 text-center select-none md:hidden leading-none">
-          ⚡ free shipping on orders over ₹499 • code: crunch15 ⚡
-        </div>
       </header>
 
       {hasOpenedAuth && (

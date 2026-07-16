@@ -2,7 +2,6 @@ import { Plus_Jakarta_Sans, Lora, Syne } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import Navbar from "@/components/Navbar";
-import Footer from "@/components/Footer";
 import BottomNav from "@/components/BottomNav";
 
 const jakarta = Plus_Jakarta_Sans({
@@ -38,7 +37,6 @@ export default function RootLayout({ children }) {
           <main className="flex-1">
             {children}
           </main>
-          <Footer />
           <BottomNav />
         </Providers>
       </body>
