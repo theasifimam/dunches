@@ -4,7 +4,7 @@ import { use, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { useSelector, useDispatch } from "react-redux";
-import { selectDishById, selectMenu } from "@/features/menu/menuSlice";
+import { selectDishBySlug, selectMenu } from "@/features/menu/menuSlice";
 import { addToCart } from "@/features/cart/cartSlice";
 import { Button } from "@/components/ui/button";
 import { Minus, Plus, ArrowLeft, CheckCircle2, ShoppingBag, Sparkles, Flame, ArrowRight } from "lucide-react";
@@ -13,9 +13,9 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function ProductDetailPage({ params }) {
   const unwrappedParams = use(params);
-  const dishId = unwrappedParams.id;
+  const slug = unwrappedParams.slug;
   const dispatch = useDispatch();
-  const dish = useSelector((state) => selectDishById(state, dishId));
+  const dish = useSelector((state) => selectDishBySlug(state, slug));
   const menu = useSelector(selectMenu);
 
   const [quantity, setQuantity] = useState(1);
@@ -55,7 +55,7 @@ export default function ProductDetailPage({ params }) {
   const relatedItems = menu.filter(item => item.category === dish.category && item.id !== dish.id).slice(0, 4);
 
   return (
-    <div className="min-h-screen bg-background pt-32 pb-40 relative overflow-hidden">
+    <div className="min-h-screen bg-background pt-32 pb-48 sm:pb-40 relative overflow-hidden">
       <div className="absolute inset-0 bg-grain pointer-events-none opacity-[0.03]" />
 
       {/* Dynamic Background Blur */}
@@ -161,8 +161,77 @@ export default function ProductDetailPage({ params }) {
               </div>
             </div>
 
-            {/* Action Zone */}
-            <div className="pt-10 flex flex-col sm:flex-row items-center gap-6">
+            {/* Product Specifications & Nutrition Bento Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Specifications */}
+              <div className="p-8 glass rounded-4xl space-y-4">
+                <div className="flex items-center gap-3 text-primary">
+                  <Sparkles className="w-5 h-5" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Specifications</span>
+                </div>
+                <div className="space-y-3 pt-2">
+                  <div className="flex justify-between items-center py-1.5 border-b border-foreground/5 text-xs">
+                    <span className="opacity-40 uppercase font-bold tracking-wider">Brand</span>
+                    <span className="font-semibold uppercase tracking-wider">{dish.brand || 'makhāna'}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1.5 border-b border-foreground/5 text-xs">
+                    <span className="opacity-40 uppercase font-bold tracking-wider">Net Weight</span>
+                    <span className="font-semibold">{dish.netWeight ? `${dish.netWeight}g` : '80g'}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1.5 border-b border-foreground/5 text-xs">
+                    <span className="opacity-40 uppercase font-bold tracking-wider">Shelf Life</span>
+                    <span className="font-semibold">{dish.shelfLife || '6 Months'}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1.5 border-b border-foreground/5 text-xs">
+                    <span className="opacity-40 uppercase font-bold tracking-wider">SKU</span>
+                    <span className="font-mono opacity-75">{dish.sku || `MKH-0${dish.id}`}</span>
+                  </div>
+                  <div className="flex justify-between items-center py-1.5 text-xs">
+                    <span className="opacity-40 uppercase font-bold tracking-wider">Stock Status</span>
+                    <span className={`font-semibold ${dish.stock > 0 ? 'text-green-600' : 'text-red-500'}`}>
+                      {dish.stock > 0 ? `In Stock (${dish.stock} left)` : 'Out of Stock'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Nutrition Facts */}
+              <div className="p-8 glass rounded-4xl space-y-4">
+                <div className="flex items-center gap-3 text-primary">
+                  <Flame className="w-5 h-5" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest">Nutrition Facts (Per 100g)</span>
+                </div>
+                {dish.nutritionalValues ? (
+                  <div className="grid grid-cols-2 gap-3 pt-2 text-center">
+                    <div className="p-3 bg-foreground/5 rounded-2xl">
+                      <div className="text-[8px] font-bold opacity-45 uppercase tracking-widest mb-0.5">Calories</div>
+                      <div className="text-base font-bold font-serif">{dish.nutritionalValues.calories} kcal</div>
+                    </div>
+                    <div className="p-3 bg-foreground/5 rounded-2xl">
+                      <div className="text-[8px] font-bold opacity-45 uppercase tracking-widest mb-0.5">Protein</div>
+                      <div className="text-base font-bold font-serif">{dish.nutritionalValues.protein}g</div>
+                    </div>
+                    <div className="p-3 bg-foreground/5 rounded-2xl">
+                      <div className="text-[8px] font-bold opacity-45 uppercase tracking-widest mb-0.5">Carbs</div>
+                      <div className="text-base font-bold font-serif">{dish.nutritionalValues.carbohydrates}g</div>
+                    </div>
+                    <div className="p-3 bg-foreground/5 rounded-2xl">
+                      <div className="text-[8px] font-bold opacity-45 uppercase tracking-widest mb-0.5">Fat</div>
+                      <div className="text-base font-bold font-serif">{dish.nutritionalValues.fat}g</div>
+                    </div>
+                    <div className="p-3 bg-foreground/5 rounded-2xl col-span-2">
+                      <div className="text-[8px] font-bold opacity-45 uppercase tracking-widest mb-0.5">Dietary Fiber</div>
+                      <div className="text-base font-bold font-serif">{dish.nutritionalValues.fiber}g</div>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-xs opacity-50 italic pt-4">Nutritional values are not available.</p>
+                )}
+              </div>
+            </div>
+
+            {/* Desktop Action Zone */}
+            <div className="pt-10 hidden sm:flex flex-row items-center gap-6">
               <div className="flex items-center glass border border-border/50 rounded-4xl h-20 p-2 w-full sm:w-auto">
                 <button
                   onClick={() => setQuantity(q => Math.max(1, q - 1))}
@@ -218,6 +287,40 @@ export default function ProductDetailPage({ params }) {
             </div>
           </div>
         )}
+      </div>
+
+      {/* Mobile Sticky Action Bar */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t border-border/45 px-6 py-4 pb-8 flex items-center justify-between gap-4 shadow-xl">
+        <div className="flex items-center glass border border-border/50 rounded-full h-12 p-1">
+          <button
+            onClick={() => setQuantity(q => Math.max(1, q - 1))}
+            className="w-10 h-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all disabled:opacity-10"
+            disabled={quantity <= 1}
+          >
+            <Minus className="w-4 h-4" />
+          </button>
+          <span className="min-w-8 text-center font-bold text-lg font-serif">{quantity}</span>
+          <button
+            onClick={() => setQuantity(q => q + 1)}
+            className="w-10 h-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all"
+          >
+            <Plus className="w-4 h-4" />
+          </button>
+        </div>
+
+        <Button
+          size="lg"
+          className={`h-12 flex-1 text-[10px] font-bold tracking-[0.2em] uppercase rounded-full transition-all duration-700 shadow-lg relative overflow-hidden ${added ? 'bg-green-600 scale-95 opacity-80' : 'bg-primary'}`}
+          onClick={handleAddToCart}
+        >
+          <div className="relative z-10 flex items-center gap-2">
+            {added ? (
+              <>Added <CheckCircle2 className="w-4 h-4" /></>
+            ) : (
+              <>Add to Cart <ShoppingBag className="w-4 h-4" /></>
+            )}
+          </div>
+        </Button>
       </div>
 
     </div>

@@ -87,7 +87,7 @@ export default function ProfileLayout({ children }) {
     : null;
 
   const avatarSrc = user?.avatar
-    ? `${user.avatar.startsWith("/uploads") ? "" : "/uploads/"}${user.avatar.replace(/^\/uploads\//, "")}`
+    ? (user.avatar.startsWith("/uploads") ? user.avatar : `/uploads/${user.avatar}`)
     : null;
 
   if (!mounted) return null;
@@ -182,17 +182,15 @@ export default function ProfileLayout({ children }) {
 
               <div className="relative z-10 flex flex-col items-center">
                 {/* Avatar */}
-                <div className="w-20 h-20 rounded-full bg-foreground/5 border-4 border-background shadow-2xl overflow-hidden flex items-center justify-center mb-4 ring-2 ring-primary/20">
-                  {avatarSrc ? (
+                {avatarSrc && (
+                  <div className="w-20 h-20 rounded-full bg-foreground/5 border-4 border-background shadow-2xl overflow-hidden flex items-center justify-center mb-4 ring-2 ring-primary/20">
                     <img
                       src={avatarSrc}
                       alt="avatar"
                       className="w-full h-full object-cover"
                     />
-                  ) : (
-                    <User className="w-8 h-8 text-foreground/20" />
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {/* Badge */}
                 <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-primary/15 border border-primary/25 mb-3">

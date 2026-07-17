@@ -16,7 +16,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import {
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 import {
   useGetUnreadCountQuery,
   useGetNotificationsQuery,
@@ -87,7 +91,7 @@ export function NotificationPanel() {
 
   const { data: notifData, isLoading } = useGetNotificationsQuery(
     { limit: 10 },
-    { skip: !open, refetchOnMountOrArgChange: true }
+    { skip: !open, refetchOnMountOrArgChange: true },
   );
   const notifications = notifData?.data?.notifications || [];
 
@@ -103,7 +107,11 @@ export function NotificationPanel() {
       markAsRead(notif._id);
     }
     setOpen(false);
-    if (notif.type === "new_order" || notif.type === "order_cancelled" || notif.type === "payment_verified") {
+    if (
+      notif.type === "new_order" ||
+      notif.type === "order_cancelled" ||
+      notif.type === "payment_verified"
+    ) {
       router.push("/orders");
     } else if (notif.type === "new_complaint") {
       router.push("/customers");
@@ -120,10 +128,15 @@ export function NotificationPanel() {
           id="notification-bell-btn"
           className={cn(
             "h-10 w-10 rounded-full hover:bg-muted transition-all duration-300 relative shrink-0",
-            open && "bg-muted"
+            open && "bg-muted",
           )}
         >
-          <Bell className={cn("h-4 w-4", unreadCount > 0 ? "text-primary" : "text-muted-foreground")} />
+          <Bell
+            className={cn(
+              "h-4 w-4",
+              unreadCount > 0 ? "text-primary" : "text-muted-foreground",
+            )}
+          />
           {unreadCount > 0 && (
             <span className="absolute top-1.5 right-1.5 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-[9px] font-black text-white shadow-lg animate-pulse">
               {unreadCount > 99 ? "99+" : unreadCount}
@@ -142,7 +155,9 @@ export function NotificationPanel() {
               <Bell className="h-4 w-4 text-primary" />
             </div>
             <div>
-              <h3 className="text-sm font-black uppercase tracking-widest">Notifications</h3>
+              <h3 className="text-sm font-black uppercase tracking-widest">
+                Notifications
+              </h3>
               {unreadCount > 0 && (
                 <p className="text-[10px] text-muted-foreground font-semibold">
                   {unreadCount} unread
@@ -197,14 +212,14 @@ export function NotificationPanel() {
                     onClick={() => handleNotifClick(notif)}
                     className={cn(
                       "w-full flex items-start gap-3 px-5 py-4 text-left transition-all duration-200 hover:bg-muted/40 group",
-                      !notif.isRead && "bg-primary/[0.03]"
+                      !notif.isRead && "bg-primary/3",
                     )}
                   >
                     {/* Icon */}
                     <div
                       className={cn(
                         "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 transition-transform duration-300 group-hover:scale-110",
-                        config.bg
+                        config.bg,
                       )}
                     >
                       <Icon className={cn("h-4 w-4", config.color)} />
@@ -215,7 +230,9 @@ export function NotificationPanel() {
                         <p
                           className={cn(
                             "text-[11px] font-black uppercase tracking-wide leading-tight truncate",
-                            !notif.isRead ? "text-foreground" : "text-muted-foreground"
+                            !notif.isRead
+                              ? "text-foreground"
+                              : "text-muted-foreground",
                           )}
                         >
                           {notif.title}
@@ -237,7 +254,7 @@ export function NotificationPanel() {
                           "inline-block mt-1.5 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border",
                           config.bg,
                           config.color,
-                          config.border
+                          config.border,
                         )}
                       >
                         {config.label}
@@ -254,7 +271,10 @@ export function NotificationPanel() {
         <div className="px-5 py-3 border-t border-border/30 bg-muted/20">
           <Button
             variant="ghost"
-            onClick={() => { setOpen(false); router.push("/notifications"); }}
+            onClick={() => {
+              setOpen(false);
+              router.push("/notifications");
+            }}
             className="w-full h-9 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-primary/10 hover:text-primary justify-between group"
           >
             View All Notifications

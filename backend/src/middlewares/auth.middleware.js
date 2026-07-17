@@ -15,7 +15,23 @@ export const protect = asyncHandler(async (req, res, next) => {
 
   if (!token) {
     // Dev bypass mode: mock an admin user
+    // Ensure the bypass user exists in the DB so operations don't throw 404 User not found
     req.user = { id: '000000000000000000000000', role: 'admin' };
+    try {
+      const exists = await User.findById(req.user.id);
+      if (!exists) {
+        await User.create({
+          _id: req.user.id,
+          name: 'Developer Bypass',
+          email: 'dev@dunches.com',
+          password: 'bypasspassword123',
+          role: 'admin',
+          isEmailVerified: true
+        });
+      }
+    } catch (err) {
+      console.error('Bypass user seeding failed:', err.message);
+    }
     return next();
   }
 

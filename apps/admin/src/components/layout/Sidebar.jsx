@@ -58,7 +58,9 @@ const menuItems = [
 export function Sidebar() {
   const pathname = usePathname();
   const { isSidebarCollapsed, toggleSidebar } = useConfigStore();
-  const { data: countData } = useGetUnreadCountQuery(undefined, { pollingInterval: 30000 });
+  const { data: countData } = useGetUnreadCountQuery(undefined, {
+    pollingInterval: 30000,
+  });
   const unreadCount = countData?.data?.count || 0;
 
   const user = useAppSelector(selectCurrentUser);
@@ -72,7 +74,9 @@ export function Sidebar() {
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
 
-  React.useEffect(() => { setMounted(true); }, []);
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Close profile dropdown on outside click
   useEffect(() => {
@@ -87,7 +91,11 @@ export function Sidebar() {
   }, [profileOpen]);
 
   const handleLogout = async () => {
-    try { await logout().unwrap(); } catch { /* ignore */ }
+    try {
+      await logout().unwrap();
+    } catch {
+      /* ignore */
+    }
     dispatch(clearCredentials());
     toast.info("Session terminated.");
     router.push("/login");
@@ -105,12 +113,15 @@ export function Sidebar() {
         className="hidden md:flex h-full shrink-0 flex-col bg-card border border-border/30 rounded-[2rem] shadow-sm relative z-50 overflow-visible"
       >
         {/* Subtle glow top */}
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
+        <div className="absolute inset-0 bg-linear-to-b from-primary/5 via-transparent to-transparent pointer-events-none" />
 
         {/* ── Header: Logo + Toggle ──────────────────────── */}
         <div
           onClick={toggleSidebar}
-          className={cn("flex items-center gap-3 relative z-10 shrink-0 border-b border-border/20 cursor-pointer select-none hover:bg-muted/30 transition-colors duration-200 rounded-t-[2rem]", collapsed ? "px-4 py-4 justify-center" : "px-5 py-4")}
+          className={cn(
+            "flex items-center gap-3 relative z-10 shrink-0 border-b border-border/20 cursor-pointer select-none hover:bg-muted/30 transition-colors duration-200 rounded-t-[2rem]",
+            collapsed ? "px-4 py-4 justify-center" : "px-5 py-4",
+          )}
         >
           <div className="relative shrink-0 flex items-center justify-center w-10 h-10 rounded-2xl bg-primary/10 border border-primary/20">
             <div className="absolute inset-0 bg-primary/10 blur-xl rounded-full scale-150 opacity-60" />
@@ -127,7 +138,10 @@ export function Sidebar() {
                 className="overflow-hidden"
               >
                 <h1 className="text-base font-light font-serif tracking-tight leading-none text-foreground lowercase whitespace-nowrap">
-                  Dunches<span className="text-primary italic font-sans font-black">.</span>
+                  Dunches
+                  <span className="text-primary italic font-sans font-black">
+                    .
+                  </span>
                 </h1>
                 <div className="flex items-center gap-1 mt-0.5">
                   <Sparkles className="h-2 w-2 text-primary" />
@@ -162,7 +176,8 @@ export function Sidebar() {
             const isActive =
               item.href === "/"
                 ? pathname === "/"
-                : pathname === item.href || pathname.startsWith(item.href + "/");
+                : pathname === item.href ||
+                  pathname.startsWith(item.href + "/");
 
             return (
               <div key={item.href} className="group relative">
@@ -170,7 +185,9 @@ export function Sidebar() {
                   href={item.href}
                   className={cn(
                     "relative flex items-center gap-3 rounded-xl transition-all duration-300 overflow-hidden",
-                    collapsed ? "w-12 h-12 justify-center mx-auto" : "px-3 py-2.5",
+                    collapsed
+                      ? "w-12 h-12 justify-center mx-auto"
+                      : "px-3 py-2.5",
                     isActive
                       ? "bg-primary/10 text-primary"
                       : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
@@ -181,7 +198,11 @@ export function Sidebar() {
                     <motion.div
                       layoutId="sidebarActiveBar"
                       className="absolute left-0 top-1/2 -translate-y-1/2 h-4 w-0.5 bg-primary rounded-r-full"
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 30,
+                      }}
                     />
                   )}
 
@@ -190,13 +211,22 @@ export function Sidebar() {
                     <motion.div
                       layoutId="sidebarActiveBg"
                       className="absolute inset-0 bg-primary/10 rounded-xl"
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 400,
+                        damping: 30,
+                      }}
                     />
                   )}
 
                   {/* Icon */}
                   <div className="relative z-10 flex items-center justify-center shrink-0">
-                    <Icon className={cn("h-[18px] w-[18px] shrink-0 transition-all duration-300", isActive && "scale-110")} />
+                    <Icon
+                      className={cn(
+                        "h-[18px] w-[18px] shrink-0 transition-all duration-300",
+                        isActive && "scale-110",
+                      )}
+                    />
                     {item.badge && unreadCount > 0 && (
                       <span className="absolute -top-1.5 -right-1.5 h-4 min-w-4 px-0.5 rounded-full bg-red-500 text-white text-[8px] font-black flex items-center justify-center leading-none">
                         {unreadCount > 9 ? "9+" : unreadCount}
@@ -236,7 +266,7 @@ export function Sidebar() {
 
                 {/* Collapsed tooltip */}
                 {collapsed && (
-                  <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-2 bg-foreground text-background rounded-xl text-[11px] font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 translate-x-[-6px] group-hover:translate-x-0 transition-all duration-200 shadow-xl z-[200]">
+                  <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-2 bg-foreground text-background rounded-xl text-[11px] font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 translate-x-[-6px] group-hover:translate-x-0 transition-all duration-200 shadow-xl z-200">
                     {item.label}
                     <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-foreground" />
                   </div>
@@ -247,32 +277,43 @@ export function Sidebar() {
         </nav>
 
         {/* ── Bottom actions ────────────────────────────────── */}
-        <div className={cn("flex flex-col gap-0.5 relative z-10 px-2.5 py-3 border-t border-border/20", collapsed && "items-center")}>
+        <div
+          className={cn(
+            "flex flex-col gap-0.5 relative z-10 px-2.5 py-3 border-t border-border/20",
+            collapsed && "items-center",
+          )}
+        >
           {/* Theme toggle */}
           <div className="group relative">
             <button
               onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
               className={cn(
                 "flex items-center gap-3 w-full rounded-xl text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-all duration-300",
-                collapsed ? "w-12 h-12 justify-center" : "px-3 py-2.5"
+                collapsed ? "w-12 h-12 justify-center" : "px-3 py-2.5",
               )}
             >
-              {mounted && (
-                theme === "dark"
-                  ? <Sun className="h-[18px] w-[18px] shrink-0 group-hover:rotate-45 transition-transform duration-500" />
-                  : <Moon className="h-[18px] w-[18px] shrink-0 group-hover:-rotate-12 transition-transform duration-500" />
-              )}
+              {mounted &&
+                (theme === "dark" ? (
+                  <Sun className="h-[18px] w-[18px] shrink-0 group-hover:rotate-45 transition-transform duration-500" />
+                ) : (
+                  <Moon className="h-[18px] w-[18px] shrink-0 group-hover:-rotate-12 transition-transform duration-500" />
+                ))}
               <AnimatePresence>
                 {!collapsed && (
-                  <motion.span initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.2 }}
-                    className="text-[13px] font-medium tracking-tight whitespace-nowrap">
+                  <motion.span
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -8 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-[13px] font-medium tracking-tight whitespace-nowrap"
+                  >
                     {mounted && theme === "dark" ? "Light Mode" : "Dark Mode"}
                   </motion.span>
                 )}
               </AnimatePresence>
             </button>
             {collapsed && (
-              <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-2 bg-foreground text-background rounded-xl text-[11px] font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 translate-x-[-6px] group-hover:translate-x-0 transition-all duration-200 shadow-xl z-[200]">
+              <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-2 bg-foreground text-background rounded-xl text-[11px] font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 translate-x-[-6px] group-hover:translate-x-0 transition-all duration-200 shadow-xl z-200">
                 {mounted && theme === "dark" ? "Light Mode" : "Dark Mode"}
                 <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-foreground" />
               </div>
@@ -286,21 +327,28 @@ export function Sidebar() {
               className={cn(
                 "flex items-center gap-3 rounded-xl transition-all duration-300",
                 collapsed ? "w-12 h-12 justify-center" : "px-3 py-2.5 w-full",
-                pathname === "/support" ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"
+                pathname === "/support"
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-muted/50 hover:text-foreground",
               )}
             >
               <LifeBuoy className="h-[18px] w-[18px] shrink-0 transition-transform duration-300 group-hover:rotate-12" />
               <AnimatePresence>
                 {!collapsed && (
-                  <motion.span initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.2 }}
-                    className="text-[13px] font-medium tracking-tight whitespace-nowrap">
+                  <motion.span
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -8 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-[13px] font-medium tracking-tight whitespace-nowrap"
+                  >
                     Help Center
                   </motion.span>
                 )}
               </AnimatePresence>
             </Link>
             {collapsed && (
-              <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-2 bg-foreground text-background rounded-xl text-[11px] font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 translate-x-[-6px] group-hover:translate-x-0 transition-all duration-200 shadow-xl z-[200]">
+              <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-2 bg-foreground text-background rounded-xl text-[11px] font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 translate-x-[-6px] group-hover:translate-x-0 transition-all duration-200 shadow-xl z-200">
                 Help Center
                 <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-foreground" />
               </div>
@@ -314,12 +362,16 @@ export function Sidebar() {
               className={cn(
                 "flex items-center gap-3 rounded-xl text-muted-foreground hover:bg-muted/50 hover:text-foreground transition-all duration-300 w-full",
                 collapsed ? "w-12 h-12 justify-center" : "px-3 py-2",
-                profileOpen && "bg-muted/50 text-foreground"
+                profileOpen && "bg-muted/50 text-foreground",
               )}
             >
               <div className="h-8 w-8 rounded-full overflow-hidden ring-2 ring-border group-hover:ring-primary/50 transition-all duration-300 shrink-0">
                 {user?.avatar ? (
-                  <img src={user.avatar} alt={user?.name || "Admin"} className="w-full h-full object-cover" />
+                  <img
+                    src={user.avatar}
+                    alt={user?.name || "Admin"}
+                    className="w-full h-full object-cover"
+                  />
                 ) : (
                   <div className="w-full h-full bg-primary/10 flex items-center justify-center">
                     <User className="h-4 w-4 text-primary" />
@@ -328,14 +380,29 @@ export function Sidebar() {
               </div>
               <AnimatePresence>
                 {!collapsed && (
-                  <motion.div initial={{ opacity: 0, x: -8 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -8 }} transition={{ duration: 0.2 }} className="text-left overflow-hidden flex-1 min-w-0">
-                    <p className="text-[12px] font-semibold text-foreground whitespace-nowrap truncate">{user?.name || "Admin"}</p>
-                    <p className="text-[9px] font-bold text-muted-foreground/60 uppercase tracking-wider">{user?.role || "Administrator"}</p>
+                  <motion.div
+                    initial={{ opacity: 0, x: -8 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -8 }}
+                    transition={{ duration: 0.2 }}
+                    className="text-left overflow-hidden flex-1 min-w-0"
+                  >
+                    <p className="text-[12px] font-semibold text-foreground whitespace-nowrap truncate">
+                      {user?.name || "Admin"}
+                    </p>
+                    <p className="text-[9px] font-bold text-muted-foreground/60 uppercase tracking-wider">
+                      {user?.role || "Administrator"}
+                    </p>
                   </motion.div>
                 )}
               </AnimatePresence>
               {!collapsed && (
-                <ChevronUp className={cn("h-3.5 w-3.5 text-muted-foreground shrink-0 transition-transform duration-300", profileOpen ? "rotate-0" : "rotate-180")} />
+                <ChevronUp
+                  className={cn(
+                    "h-3.5 w-3.5 text-muted-foreground shrink-0 transition-transform duration-300",
+                    profileOpen ? "rotate-0" : "rotate-180",
+                  )}
+                />
               )}
             </button>
 
@@ -347,13 +414,17 @@ export function Sidebar() {
                   animate={{ opacity: 1, y: 0, scale: 1 }}
                   exit={{ opacity: 0, y: 8, scale: 0.96 }}
                   transition={{ duration: 0.18, ease: [0.16, 1, 0.3, 1] }}
-                  className="absolute bottom-full left-0 mb-2 w-64 bg-card border border-border/40 rounded-2xl shadow-2xl shadow-black/15 overflow-hidden z-[300]"
+                  className="absolute bottom-full left-0 mb-2 w-64 bg-card border border-border/40 rounded-2xl shadow-2xl shadow-black/15 overflow-hidden z-300"
                 >
                   {/* Profile Header */}
                   <div className="flex items-center gap-3 px-4 py-4 border-b border-border/20 bg-muted/20">
                     <div className="h-12 w-12 rounded-2xl overflow-hidden ring-2 ring-primary/20 shrink-0">
                       {user?.avatar ? (
-                        <img src={user.avatar} alt={user?.name} className="w-full h-full object-cover" />
+                        <img
+                          src={user.avatar}
+                          alt={user?.name}
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
                         <div className="w-full h-full bg-primary/10 flex items-center justify-center">
                           <User className="h-6 w-6 text-primary" />
@@ -361,8 +432,12 @@ export function Sidebar() {
                       )}
                     </div>
                     <div className="min-w-0">
-                      <p className="text-[13px] font-bold text-foreground truncate">{user?.name || "Admin User"}</p>
-                      <p className="text-[10px] text-muted-foreground/80 truncate">{user?.email || ""}</p>
+                      <p className="text-[13px] font-bold text-foreground truncate">
+                        {user?.name || "Admin User"}
+                      </p>
+                      <p className="text-[10px] text-muted-foreground/80 truncate">
+                        {user?.email || ""}
+                      </p>
                       <span className="inline-block mt-1 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full bg-primary/10 text-primary">
                         {user?.role || "Administrator"}
                       </span>
@@ -372,14 +447,20 @@ export function Sidebar() {
                   {/* Menu items */}
                   <div className="py-2">
                     <button
-                      onClick={() => { setProfileOpen(false); router.push("/profile"); }}
+                      onClick={() => {
+                        setProfileOpen(false);
+                        router.push("/profile");
+                      }}
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200"
                     >
                       <User className="h-4 w-4 shrink-0" />
                       View Profile
                     </button>
                     <button
-                      onClick={() => { setProfileOpen(false); router.push("/settings"); }}
+                      onClick={() => {
+                        setProfileOpen(false);
+                        router.push("/settings");
+                      }}
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-[12px] font-medium text-muted-foreground hover:text-foreground hover:bg-muted/50 transition-all duration-200"
                     >
                       <Shield className="h-4 w-4 shrink-0" />
@@ -387,7 +468,10 @@ export function Sidebar() {
                     </button>
                     <div className="mx-3 my-1.5 h-px bg-border/40" />
                     <button
-                      onClick={() => { setProfileOpen(false); setIsLogoutDialogOpen(true); }}
+                      onClick={() => {
+                        setProfileOpen(false);
+                        setIsLogoutDialogOpen(true);
+                      }}
                       className="w-full flex items-center gap-3 px-4 py-2.5 text-[12px] font-medium text-destructive hover:bg-destructive/10 transition-all duration-200"
                     >
                       <LogOut className="h-4 w-4 shrink-0" />
@@ -400,9 +484,11 @@ export function Sidebar() {
 
             {/* Collapsed tooltip */}
             {collapsed && (
-              <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-2 bg-foreground text-background rounded-xl text-[11px] font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 translate-x-[-6px] group-hover:translate-x-0 transition-all duration-200 shadow-xl z-[200]">
+              <div className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 px-3 py-2 bg-foreground text-background rounded-xl text-[11px] font-semibold whitespace-nowrap opacity-0 group-hover:opacity-100 translate-x-[-6px] group-hover:translate-x-0 transition-all duration-200 shadow-xl z-200">
                 <div className="font-bold">{user?.name || "Admin"}</div>
-                <div className="text-background/60 text-[9px] uppercase tracking-wider">Profile & settings</div>
+                <div className="text-background/60 text-[9px] uppercase tracking-wider">
+                  Profile & settings
+                </div>
                 <div className="absolute right-full top-1/2 -translate-y-1/2 border-4 border-transparent border-r-foreground" />
               </div>
             )}
@@ -413,7 +499,10 @@ export function Sidebar() {
       {/* ── Mobile Bottom Navigation ─────────────────────────────── */}
       <div className="md:hidden fixed bottom-4 left-4 right-4 h-16 bg-card/95 backdrop-blur-xl border border-border/50 rounded-3xl z-50 flex items-center overflow-x-auto scrollbar-hide px-4 gap-2 shadow-2xl">
         {menuItems.map((item) => {
-          const isActive = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
+          const isActive =
+            item.href === "/"
+              ? pathname === "/"
+              : pathname.startsWith(item.href);
           const Icon = item.icon;
           return (
             <Link
@@ -424,7 +513,12 @@ export function Sidebar() {
                 isActive ? "text-primary" : "text-muted-foreground",
               )}
             >
-              <div className={cn("p-2 rounded-xl transition-all duration-300 relative", isActive ? "bg-primary/15 scale-110" : "hover:bg-muted")}>
+              <div
+                className={cn(
+                  "p-2 rounded-xl transition-all duration-300 relative",
+                  isActive ? "bg-primary/15 scale-110" : "hover:bg-muted",
+                )}
+              >
                 <Icon className={cn("h-5 w-5", isActive && "text-primary")} />
                 {item.badge && unreadCount > 0 && (
                   <span className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-red-500 text-white text-[7px] font-black flex items-center justify-center">
@@ -432,11 +526,19 @@ export function Sidebar() {
                   </span>
                 )}
               </div>
-              <span className={cn("text-[8px] font-black uppercase tracking-widest mt-1", isActive ? "opacity-100" : "opacity-50")}>
+              <span
+                className={cn(
+                  "text-[8px] font-black uppercase tracking-widest mt-1",
+                  isActive ? "opacity-100" : "opacity-50",
+                )}
+              >
                 {item.label.split(" ")[0]}
               </span>
               {isActive && (
-                <motion.div layoutId="mobileActive" className="absolute -top-1 left-1/2 -translate-x-1/2 h-1 w-4 bg-primary rounded-full" />
+                <motion.div
+                  layoutId="mobileActive"
+                  className="absolute -top-1 left-1/2 -translate-x-1/2 h-1 w-4 bg-primary rounded-full"
+                />
               )}
             </Link>
           );

@@ -58,7 +58,7 @@ export default function EditProfilePage() {
   const avatarSrc =
     avatarPreview ||
     (user?.avatar
-      ? `${user.avatar.startsWith("/uploads") ? "" : "/uploads/"}${user.avatar.replace(/^\/uploads\//, "")}`
+      ? (user.avatar.startsWith("/uploads") ? user.avatar : `/uploads/${user.avatar}`)
       : null);
 
   const set = (field) => (e) => {

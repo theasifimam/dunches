@@ -17,7 +17,7 @@ export default function BottomNav() {
     { name: "Order", path: "/cart", icon: ShoppingBag, count: cartCount },
   ];
 
-  if (pathname?.startsWith('/book')) return null;
+  if (pathname?.startsWith('/book') || pathname?.startsWith('/product/')) return null;
 
   return (
     <nav className="sm:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-150 w-fit">

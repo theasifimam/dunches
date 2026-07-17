@@ -90,7 +90,11 @@ function formatTime(date) {
   if (hours < 24) return `${hours} hour${hours > 1 ? "s" : ""} ago`;
   if (days === 1) return "Yesterday";
   if (days < 7) return `${days} days ago`;
-  return d.toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" });
+  return d.toLocaleDateString("en-IN", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+  });
 }
 
 export default function NotificationsPage() {
@@ -106,12 +110,10 @@ export default function NotificationsPage() {
     ...(showUnreadOnly && { isRead: false }),
   };
 
-  const {
-    data,
-    isLoading,
-    isFetching,
-    refetch,
-  } = useGetNotificationsQuery(queryArgs, { refetchOnMountOrArgChange: true });
+  const { data, isLoading, isFetching, refetch } = useGetNotificationsQuery(
+    queryArgs,
+    { refetchOnMountOrArgChange: true },
+  );
 
   const notifications = data?.data?.notifications || [];
   const unreadCount = data?.data?.unreadCount || 0;
@@ -120,7 +122,8 @@ export default function NotificationsPage() {
   const [markAsRead] = useMarkAsReadMutation();
   const [markAllAsRead, { isLoading: markingAll }] = useMarkAllAsReadMutation();
   const [deleteNotification] = useDeleteNotificationMutation();
-  const [clearAll, { isLoading: clearing }] = useClearAllNotificationsMutation();
+  const [clearAll, { isLoading: clearing }] =
+    useClearAllNotificationsMutation();
 
   const handleTabChange = (tab) => {
     setActiveTab(tab);
@@ -129,7 +132,11 @@ export default function NotificationsPage() {
 
   const handleNotifClick = async (notif) => {
     if (!notif.isRead) await markAsRead(notif._id);
-    if (notif.type === "new_order" || notif.type === "order_cancelled" || notif.type === "payment_verified") {
+    if (
+      notif.type === "new_order" ||
+      notif.type === "order_cancelled" ||
+      notif.type === "payment_verified"
+    ) {
       router.push("/orders");
     } else if (notif.type === "new_complaint") {
       router.push("/customers");
@@ -154,7 +161,11 @@ export default function NotificationsPage() {
               variant="outline"
               className="h-10 rounded-xl px-4 text-[10px] font-black uppercase tracking-widest border-2 gap-2"
             >
-              {markingAll ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <CheckCheck className="h-3.5 w-3.5" />}
+              {markingAll ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <CheckCheck className="h-3.5 w-3.5" />
+              )}
               Mark All Read
             </Button>
           )}
@@ -164,7 +175,11 @@ export default function NotificationsPage() {
             variant="outline"
             className="h-10 rounded-xl px-4 text-[10px] font-black uppercase tracking-widest border-2 gap-2 text-destructive border-destructive/30 hover:bg-destructive hover:text-white"
           >
-            {clearing ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Trash2 className="h-3.5 w-3.5" />}
+            {clearing ? (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            ) : (
+              <Trash2 className="h-3.5 w-3.5" />
+            )}
             Clear All
           </Button>
           <Button
@@ -174,7 +189,9 @@ export default function NotificationsPage() {
             disabled={isFetching}
             className="h-10 w-10 rounded-xl"
           >
-            <RefreshCw className={cn("h-4 w-4", isFetching && "animate-spin")} />
+            <RefreshCw
+              className={cn("h-4 w-4", isFetching && "animate-spin")}
+            />
           </Button>
         </div>
       </PageHeader>
@@ -192,7 +209,7 @@ export default function NotificationsPage() {
                 "flex items-center gap-2 px-4 h-9 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all duration-300",
                 activeTab === tab.key
                   ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20"
-                  : "bg-card text-muted-foreground border-border/40 hover:border-primary/40 hover:text-foreground"
+                  : "bg-card text-muted-foreground border-border/40 hover:border-primary/40 hover:text-foreground",
               )}
             >
               <Icon className="h-3 w-3" />
@@ -201,12 +218,15 @@ export default function NotificationsPage() {
           );
         })}
         <button
-          onClick={() => { setShowUnreadOnly(!showUnreadOnly); setPage(1); }}
+          onClick={() => {
+            setShowUnreadOnly(!showUnreadOnly);
+            setPage(1);
+          }}
           className={cn(
             "flex items-center gap-2 px-4 h-9 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all duration-300 ml-auto",
             showUnreadOnly
               ? "bg-amber-500 text-white border-amber-500"
-              : "bg-card text-muted-foreground border-border/40 hover:border-amber-500/40"
+              : "bg-card text-muted-foreground border-border/40 hover:border-amber-500/40",
           )}
         >
           <Filter className="h-3 w-3" />
@@ -226,9 +246,13 @@ export default function NotificationsPage() {
               <BellOff className="h-10 w-10 text-muted-foreground/30" />
             </div>
             <div>
-              <p className="text-sm font-black uppercase tracking-widest text-muted-foreground">No notifications</p>
+              <p className="text-sm font-black uppercase tracking-widest text-muted-foreground">
+                No notifications
+              </p>
               <p className="text-xs text-muted-foreground/60 mt-1">
-                {showUnreadOnly ? "No unread notifications in this category." : "Nothing to show here yet."}
+                {showUnreadOnly
+                  ? "No unread notifications in this category."
+                  : "Nothing to show here yet."}
               </p>
             </div>
           </div>
@@ -242,14 +266,14 @@ export default function NotificationsPage() {
                   key={notif._id}
                   className={cn(
                     "group flex items-start gap-4 px-6 py-5 border-b border-border/20 last:border-0 transition-all duration-200 hover:bg-muted/30",
-                    !notif.isRead && "bg-primary/[0.02]"
+                    !notif.isRead && "bg-primary/2",
                   )}
                 >
                   {/* Icon */}
                   <div
                     className={cn(
                       "h-11 w-11 rounded-2xl flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-110",
-                      config.bg
+                      config.bg,
                     )}
                   >
                     <Icon className={cn("h-5 w-5", config.color)} />
@@ -264,7 +288,9 @@ export default function NotificationsPage() {
                       <p
                         className={cn(
                           "text-sm font-black uppercase tracking-wide",
-                          !notif.isRead ? "text-foreground" : "text-muted-foreground"
+                          !notif.isRead
+                            ? "text-foreground"
+                            : "text-muted-foreground",
                         )}
                       >
                         {notif.title}
@@ -285,7 +311,9 @@ export default function NotificationsPage() {
                       <span
                         className={cn(
                           "text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full border",
-                          config.bg, config.color, config.border
+                          config.bg,
+                          config.color,
+                          config.border,
                         )}
                       >
                         {config.label}
@@ -309,7 +337,10 @@ export default function NotificationsPage() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={(e) => { e.stopPropagation(); markAsRead(notif._id); }}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          markAsRead(notif._id);
+                        }}
                         className="h-8 w-8 rounded-xl hover:bg-primary/10 hover:text-primary"
                         title="Mark as read"
                       >
@@ -319,7 +350,10 @@ export default function NotificationsPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={(e) => { e.stopPropagation(); deleteNotification(notif._id); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteNotification(notif._id);
+                      }}
                       className="h-8 w-8 rounded-xl hover:bg-destructive/10 hover:text-destructive"
                       title="Delete"
                     >
@@ -336,7 +370,8 @@ export default function NotificationsPage() {
         {pagination.pages > 1 && (
           <div className="flex items-center justify-between px-6 py-4 border-t border-border/20 bg-muted/10">
             <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-              Page {pagination.page} of {pagination.pages} • {pagination.total} total
+              Page {pagination.page} of {pagination.pages} • {pagination.total}{" "}
+              total
             </p>
             <div className="flex gap-2">
               <Button
@@ -351,7 +386,9 @@ export default function NotificationsPage() {
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
+                onClick={() =>
+                  setPage((p) => Math.min(pagination.pages, p + 1))
+                }
                 disabled={page >= pagination.pages}
                 className="h-8 px-4 text-[10px] font-black uppercase tracking-widest rounded-xl"
               >

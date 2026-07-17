@@ -29,7 +29,12 @@ export const updateProfile = asyncHandler(async (req, res) => {
   if (name) user.name = name;
   if (mobile) user.mobile = mobile;
   if (gender) user.gender = gender;
-  if (dateOfBirth) user.dateOfBirth = new Date(dateOfBirth);
+  if (dateOfBirth) {
+    const dob = new Date(dateOfBirth);
+    if (!isNaN(dob.getTime())) {
+      user.dateOfBirth = dob;
+    }
+  }
 
   // Handle avatar upload
   if (req.file) {

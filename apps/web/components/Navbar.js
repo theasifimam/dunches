@@ -34,6 +34,9 @@ export default function Navbar() {
   const cartCount = useSelector(selectCartCount);
   const activeRestaurant = useSelector(selectActiveRestaurant);
   const user = useSelector(selectUser);
+  const avatarSrc = user?.avatar
+    ? (user.avatar.startsWith("/uploads") ? user.avatar : `/uploads/${user.avatar}`)
+    : null;
   const dispatch = useDispatch();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
@@ -146,15 +149,17 @@ export default function Navbar() {
 
           {/* Profile Welcome Row - Mobile Greeting Header */}
           <div className="flex items-center gap-3 md:hidden">
-            <Link href="/profile">
-              <div className="w-8 h-8 rounded-full border border-primary/20 overflow-hidden flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-transform">
-                <img
-                  src="https://i.pravatar.cc/100"
-                  alt="Avatar"
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            </Link>
+            {avatarSrc && (
+              <Link href="/profile">
+                <div className="w-8 h-8 rounded-full border border-primary/20 overflow-hidden flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-transform">
+                  <img
+                    src={avatarSrc}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </Link>
+            )}
             <div className="flex flex-col leading-none">
               <span className="text-[9px] text-foreground/40 font-bold uppercase tracking-wider font-sans">
                 hello,
@@ -201,13 +206,15 @@ export default function Navbar() {
               {user ? (
                 <Popover>
                   <PopoverTrigger className="flex items-center gap-2 border border-border/50 hover:border-primary/40 rounded-full p-1 pr-4 transition-all bg-foreground/2 hover:bg-foreground/4 group outline-hidden cursor-pointer">
-                    <div className="w-8 h-8 rounded-full border border-primary/50 overflow-hidden flex items-center justify-center shrink-0">
-                      <img
-                        src="https://i.pravatar.cc/100"
-                        alt="Avatar"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+                    {avatarSrc && (
+                      <div className="w-8 h-8 rounded-full border border-primary/50 overflow-hidden flex items-center justify-center shrink-0">
+                        <img
+                          src={avatarSrc}
+                          alt="Avatar"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    )}
                     <span className="text-[9px] font-black uppercase tracking-[0.15em] text-foreground/60 group-hover:text-primary transition-all font-heading">
                       {user.name}
                     </span>
@@ -218,13 +225,15 @@ export default function Navbar() {
                     className="w-56 p-4 rounded-2xl border border-border/50 bg-background/95 backdrop-blur-xl shadow-2xl flex flex-col gap-2.5 z-150"
                   >
                     <div className="flex items-center gap-3 pb-3 border-b border-border/10">
-                      <div className="w-10 h-10 rounded-full border border-primary/50 overflow-hidden shrink-0">
-                        <img
-                          src="https://i.pravatar.cc/100"
-                          alt="Avatar"
-                          className="w-full h-full object-cover"
-                        />
-                      </div>
+                      {avatarSrc && (
+                        <div className="w-10 h-10 rounded-full border border-primary/50 overflow-hidden shrink-0">
+                          <img
+                            src={avatarSrc}
+                            alt="Avatar"
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
                       <div className="flex flex-col min-w-0">
                         <span className="text-[11px] font-black font-heading uppercase tracking-widest text-foreground truncate">
                           {user.name}

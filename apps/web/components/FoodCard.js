@@ -23,7 +23,7 @@ export default function FoodCard({ dish }) {
       className="group relative bg-white/2 rounded-4xl sm:rounded-[2.5rem] p-3 transition-all duration-500 hover:bg-white/4 border border-white/5 hover:border-primary/20 overflow-hidden w-full"
     >
       <Link
-        href={`/product/${dish.id}`}
+        href={`/product/${dish.slug}`}
         className="flex flex-col sm:flex-row gap-3 sm:gap-6 p-1 sm:p-2 w-full"
       >
         {/* Left/Top: Image Exhibit */}

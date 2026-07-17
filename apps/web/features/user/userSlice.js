@@ -26,12 +26,15 @@ export const updateProfile = createAsyncThunk(
     try {
       // formData can be FormData (for avatar upload) or plain object
       const isFormData = formData instanceof FormData;
-      const res = await fetch(`${API}/profile`, {
+      const fetchOptions = {
         method: 'PATCH',
         credentials: 'include',
-        headers: isFormData ? undefined : { 'Content-Type': 'application/json' },
         body: isFormData ? formData : JSON.stringify(formData),
-      });
+      };
+      if (!isFormData) {
+        fetchOptions.headers = { 'Content-Type': 'application/json' };
+      }
+      const res = await fetch(`${API}/profile`, fetchOptions);
       const data = await res.json();
       if (!res.ok) return rejectWithValue(data.message || 'Failed to update profile');
       return data.data;

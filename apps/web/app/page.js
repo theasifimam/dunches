@@ -80,7 +80,7 @@ export default function Home() {
         (item) =>
           (selectedCategory === "All" || item.category === selectedCategory) &&
           (item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-            item.description.toLowerCase().includes(searchQuery.toLowerCase()))
+            item.description.toLowerCase().includes(searchQuery.toLowerCase())),
       )
     : [];
 
@@ -102,10 +102,14 @@ export default function Home() {
 
         {/* Main Brand Typography Slogan */}
         <div className="pt-24 pb-4 px-5 flex flex-col z-10">
-          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary/80 mb-1">DUNCHES PREMIUM</span>
+          <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary/80 mb-1">
+            DUNCHES PREMIUM
+          </span>
           <h1 className="text-4xl font-extrabold tracking-tight text-foreground font-sans lowercase leading-[0.9]">
-            fiery crunch, <br/>
-            <span className="font-serif italic font-normal text-foreground/45">guilt-free.</span>
+            fiery crunch, <br />
+            <span className="font-serif italic font-normal text-foreground/45">
+              guilt-free.
+            </span>
           </h1>
         </div>
 
@@ -139,9 +143,9 @@ export default function Home() {
         {/* Spotlight Promo Banner */}
         {spotlightSnack && !searchQuery && (
           <div className="px-5 py-3 z-10">
-            <div className="relative rounded-[32px] overflow-hidden bg-gradient-to-br from-primary/15 via-accent/5 to-transparent border border-primary/10 p-5 flex items-center justify-between shadow-xs">
+            <div className="relative rounded-[32px] overflow-hidden bg-linear-to-br from-primary/15 via-accent/5 to-transparent border border-primary/10 p-5 flex items-center justify-between shadow-xs">
               <div className="absolute top-0 right-0 w-24 h-24 bg-primary/20 rounded-full blur-2xl pointer-events-none -z-10" />
-              
+
               <div className="flex flex-col gap-2 max-w-[58%]">
                 <span className="inline-flex items-center gap-1 bg-primary/20 text-primary px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest w-fit">
                   <Flame className="w-2.5 h-2.5 fill-primary" /> Daily Crave
@@ -153,7 +157,9 @@ export default function Home() {
                   {spotlightSnack.description}
                 </p>
                 <div className="flex items-center gap-3 mt-1">
-                  <span className="text-sm font-extrabold text-foreground">₹{spotlightSnack.price}</span>
+                  <span className="text-sm font-extrabold text-foreground">
+                    ₹{spotlightSnack.price}
+                  </span>
                   <button
                     onClick={(e) => {
                       e.preventDefault();
@@ -165,7 +171,7 @@ export default function Home() {
                   </button>
                 </div>
               </div>
-              
+
               <div className="relative w-28 h-28 shrink-0 rounded-[24px] overflow-hidden bg-foreground/5 shadow-inner">
                 <motion.img
                   src={spotlightSnack.image}
@@ -175,7 +181,7 @@ export default function Home() {
                   transition={{
                     repeat: Infinity,
                     duration: 6,
-                    ease: "easeInOut"
+                    ease: "easeInOut",
                   }}
                 />
               </div>
@@ -197,7 +203,7 @@ export default function Home() {
                     ${
                       isSelected
                         ? "bg-foreground text-background border-foreground/10 shadow-sm scale-102"
-                        : "bg-foreground/[0.03] text-foreground/45 border-transparent hover:border-border/60 hover:text-foreground"
+                        : "bg-foreground/3 text-foreground/45 border-transparent hover:border-border/60 hover:text-foreground"
                     }
                   `}
                 >
@@ -224,10 +230,10 @@ export default function Home() {
               {trendingSnacks.map((item) => (
                 <Link
                   key={item.id}
-                  href={`/product/${item.id}`}
-                  className="group relative w-[210px] bg-foreground/[0.01] border border-foreground/[0.04] rounded-[32px] p-3 flex flex-col justify-between shrink-0 hover:border-primary/25 transition-all cursor-pointer active:scale-[0.99] h-[250px]"
+                  href={`/product/${item.slug}`}
+                  className="group relative w-[210px] bg-foreground/1 border border-foreground/4 rounded-[32px] p-3 flex flex-col justify-between shrink-0 hover:border-primary/25 transition-all cursor-pointer active:scale-[0.99] h-[250px]"
                 >
-                  <div className="relative w-full h-[130px] rounded-[24px] bg-foreground/[0.02] overflow-hidden mb-3">
+                  <div className="relative w-full h-[130px] rounded-[24px] bg-foreground/2 overflow-hidden mb-3">
                     <motion.img
                       src={item.image}
                       alt={item.name}
@@ -249,7 +255,7 @@ export default function Home() {
                       </p>
                     </div>
 
-                    <div className="flex items-center justify-between mt-2 pt-1 border-t border-foreground/[0.02]">
+                    <div className="flex items-center justify-between mt-2 pt-1 border-t border-foreground/2">
                       <div className="flex flex-col">
                         <span className="text-[6px] font-bold text-foreground/30 uppercase tracking-widest">
                           Price
@@ -280,7 +286,9 @@ export default function Home() {
         <div className="px-5 pt-3 space-y-4 z-10">
           <div className="flex items-center justify-between">
             <h3 className="text-[12px] font-black tracking-widest text-foreground/40 uppercase font-heading">
-              {selectedCategory === "All" ? "Full Collection" : `${selectedCategory} Collection`}
+              {selectedCategory === "All"
+                ? "Full Collection"
+                : `${selectedCategory} Collection`}
             </h3>
             <span className="text-[8px] font-black text-foreground/35 uppercase tracking-widest">
               {filteredMenu.length} items
@@ -292,10 +300,10 @@ export default function Home() {
             {filteredMenu.map((item) => (
               <Link
                 key={item.id}
-                href={`/product/${item.id}`}
-                className="group relative flex items-center gap-4 bg-foreground/[0.01] border border-foreground/[0.03] rounded-[30px] p-3 hover:bg-foreground/[0.02] hover:border-primary/20 transition-all cursor-pointer active:scale-[0.99]"
+                href={`/product/${item.slug}`}
+                className="group relative flex items-center gap-4 bg-foreground/1 border border-foreground/3 rounded-[30px] p-3 hover:bg-foreground/2 hover:border-primary/20 transition-all cursor-pointer active:scale-[0.99]"
               >
-                <div className="relative w-20 h-20 rounded-[20px] bg-foreground/[0.02] overflow-hidden shrink-0">
+                <div className="relative w-20 h-20 rounded-[20px] bg-foreground/2 overflow-hidden shrink-0">
                   <img
                     src={item.image}
                     alt={item.name}
