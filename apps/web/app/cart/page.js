@@ -136,7 +136,7 @@ export default function CartPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
           {/* Cart Items List */}
-          <div className="lg:col-span-8 space-y-10">
+          <div className="lg:col-span-8 space-y-4">
             <AnimatePresence mode="popLayout">
               {cartItems.map((item, index) => (
                 <motion.div

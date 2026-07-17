@@ -184,28 +184,6 @@ export default function Navbar() {
               </div>
             </Link>
 
-            <button
-              onClick={toggleTheme}
-              className="md:hidden w-8 h-8 rounded-full flex items-center justify-center text-foreground/45 hover:text-primary bg-foreground/5 active:scale-95 transition-all cursor-pointer shrink-0"
-            >
-              {theme === "dark" ? (
-                <Sun className="w-4 h-4" />
-              ) : (
-                <Moon className="w-4 h-4" />
-              )}
-            </button>
-
-            <Link href="/cart" className="md:hidden">
-              <div className="relative w-8 h-8 rounded-full flex items-center justify-center text-foreground/45 hover:text-primary bg-foreground/5 active:scale-95 transition-all cursor-pointer shrink-0">
-                <ShoppingBag className="w-4 h-4" />
-                {cartCount > 0 && (
-                  <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-[8px] font-black text-primary-foreground shadow-lg border-2 border-background">
-                    {cartCount}
-                  </span>
-                )}
-              </div>
-            </Link>
-
             {/* Desktop Actions */}
             <div className="hidden md:flex items-center gap-2">
               <button

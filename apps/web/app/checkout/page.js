@@ -8,7 +8,7 @@ import {
   selectCartHydrated,
   clearCart,
 } from "@/features/cart/cartSlice";
-import { fetchProfile, setProfile } from "@/features/user/userSlice";
+import { fetchProfile, setProfile, addAddress, selectUser } from "@/features/user/userSlice";
 import { Button } from "@/components/ui/button";
 import CheckoutSteps from "@/components/CheckoutSteps";
 import { motion, AnimatePresence } from "framer-motion";
@@ -396,11 +396,30 @@ function AuthStep({ onSuccess }) {
 
 // ─── Step 2: Address ──────────────────────────────────────────────────────────
 function AddressStep({ user, onConfirm }) {
+  const defaultAddress = user?.addresses?.find((a) => a.isDefault) || user?.addresses?.[0];
   const [form, setForm] = useState({
     ...EMPTY_ADDRESS,
     fullName: user?.name || "",
     mobile: user?.mobile?.replace(/^\+91/, "") || "",
   });
+  const [hasLoadedDefault, setHasLoadedDefault] = useState(false);
+
+  useEffect(() => {
+    if (defaultAddress && !hasLoadedDefault) {
+      setForm({
+        label: defaultAddress.label || "Home",
+        fullName: defaultAddress.fullName || user?.name || "",
+        line1: defaultAddress.line1 || "",
+        line2: defaultAddress.line2 || "",
+        city: defaultAddress.city || "",
+        state: defaultAddress.state || "",
+        pincode: defaultAddress.pincode || "",
+        mobile: (defaultAddress.mobile || user?.mobile || "").replace(/^\+91/, ""),
+      });
+      setHasLoadedDefault(true);
+    }
+  }, [defaultAddress, user, hasLoadedDefault]);
+
   const [gpsLoading, setGpsLoading] = useState(false);
   const [gpsError, setGpsError] = useState("");
   const [confirmed, setConfirmed] = useState(false);
@@ -975,6 +994,12 @@ export default function CheckoutPage() {
   const cartItems = useSelector(selectCartItems);
   const cartTotal = useSelector(selectCartTotal);
   const cartHydrated = useSelector(selectCartHydrated);
+  const reduxUser = useSelector(selectUser);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchProfile());
+  }, [dispatch]);
 
   // Initialise synchronously from localStorage — avoids the auth step flash
   // for users who are already logged in
@@ -1064,8 +1089,20 @@ export default function CheckoutPage() {
                 exit={{ opacity: 0 }}
               >
                 <AddressStep
-                  user={user}
-                  onConfirm={(addr) => {
+                  user={reduxUser || user}
+                  onConfirm={async (addr) => {
+                    const hasAddresses = (reduxUser || user)?.addresses?.length > 0;
+                    if (!hasAddresses) {
+                      try {
+                        await dispatch(addAddress({
+                          ...addr,
+                          isDefault: true,
+                          country: "India",
+                        })).unwrap();
+                      } catch (err) {
+                        console.error("Failed to save address:", err);
+                      }
+                    }
                     setAddress(addr);
                     setStep(3);
                   }}
@@ -1080,7 +1117,7 @@ export default function CheckoutPage() {
                 exit={{ opacity: 0 }}
               >
                 <PaymentStep
-                  user={user}
+                  user={reduxUser || user}
                   address={address}
                   cartItems={cartItems}
                   cartTotal={cartTotal}

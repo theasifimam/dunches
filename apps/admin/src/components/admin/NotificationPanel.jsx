@@ -16,6 +16,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useRouter } from "next/navigation";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import {
   useGetUnreadCountQuery,
   useGetNotificationsQuery,
@@ -110,164 +111,157 @@ export function NotificationPanel() {
   };
 
   return (
-    <div className="relative">
-      {/* Bell Button */}
-      <Button
-        variant="ghost"
-        size="icon"
-        id="notification-bell-btn"
-        onClick={() => setOpen((prev) => !prev)}
-        className={cn(
-          "h-10 w-10 rounded-full hover:bg-muted transition-all duration-300 relative shrink-0",
-          open && "bg-muted"
-        )}
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        {/* Bell Button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          id="notification-bell-btn"
+          className={cn(
+            "h-10 w-10 rounded-full hover:bg-muted transition-all duration-300 relative shrink-0",
+            open && "bg-muted"
+          )}
+        >
+          <Bell className={cn("h-4 w-4", unreadCount > 0 ? "text-primary" : "text-muted-foreground")} />
+          {unreadCount > 0 && (
+            <span className="absolute top-1.5 right-1.5 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-[9px] font-black text-white shadow-lg animate-pulse">
+              {unreadCount > 99 ? "99+" : unreadCount}
+            </span>
+          )}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent
+        align="end"
+        className="w-[380px] p-0 border border-border/40 bg-card rounded-3xl overflow-hidden shadow-2xl shadow-black/20 mt-2 z-50 animate-in fade-in slide-in-from-top-4 duration-300"
       >
-        <Bell className={cn("h-4 w-4", unreadCount > 0 ? "text-primary" : "text-muted-foreground")} />
-        {unreadCount > 0 && (
-          <span className="absolute top-1.5 right-1.5 h-4 w-4 bg-red-500 rounded-full flex items-center justify-center text-[9px] font-black text-white shadow-lg animate-pulse">
-            {unreadCount > 99 ? "99+" : unreadCount}
-          </span>
-        )}
-      </Button>
-
-      {/* Dropdown Panel */}
-      {open && (
-        <>
-          {/* Backdrop */}
-          <div
-            className="fixed inset-0 z-40"
-            onClick={() => setOpen(false)}
-          />
-          <div className="absolute right-0 top-14 z-50 w-[380px] rounded-3xl bg-card border border-border/40 shadow-2xl shadow-black/20 overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300">
-            {/* Panel Header */}
-            <div className="flex items-center justify-between px-5 py-4 border-b border-border/30 bg-card">
-              <div className="flex items-center gap-3">
-                <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center">
-                  <Bell className="h-4 w-4 text-primary" />
-                </div>
-                <div>
-                  <h3 className="text-sm font-black uppercase tracking-widest">Notifications</h3>
-                  {unreadCount > 0 && (
-                    <p className="text-[10px] text-muted-foreground font-semibold">
-                      {unreadCount} unread
-                    </p>
-                  )}
-                </div>
-              </div>
-              <div className="flex items-center gap-1">
-                {unreadCount > 0 && (
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={handleMarkAllRead}
-                    disabled={markingAll}
-                    className="h-8 px-3 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-primary/10 hover:text-primary"
-                  >
-                    {markingAll ? (
-                      <Loader2 className="h-3 w-3 animate-spin" />
-                    ) : (
-                      <CheckCheck className="h-3 w-3 mr-1" />
-                    )}
-                    All Read
-                  </Button>
-                )}
-              </div>
+        {/* Panel Header */}
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border/30 bg-card">
+          <div className="flex items-center gap-3">
+            <div className="h-8 w-8 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Bell className="h-4 w-4 text-primary" />
             </div>
-
-            {/* Notifications List */}
-            <div className="max-h-[400px] overflow-y-auto scrollbar-hide">
-              {isLoading ? (
-                <div className="flex items-center justify-center py-12">
-                  <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                </div>
-              ) : notifications.length === 0 ? (
-                <div className="flex flex-col items-center justify-center py-12 text-center gap-3">
-                  <div className="h-14 w-14 rounded-2xl bg-muted/50 flex items-center justify-center">
-                    <BellOff className="h-7 w-7 text-muted-foreground/40" />
-                  </div>
-                  <p className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">
-                    All caught up!
-                  </p>
-                </div>
-              ) : (
-                <div className="divide-y divide-border/20">
-                  {notifications.map((notif) => {
-                    const config = TYPE_CONFIG[notif.type] || TYPE_CONFIG.new_order;
-                    const Icon = config.icon;
-                    return (
-                      <button
-                        key={notif._id}
-                        id={`notif-${notif._id}`}
-                        onClick={() => handleNotifClick(notif)}
-                        className={cn(
-                          "w-full flex items-start gap-3 px-5 py-4 text-left transition-all duration-200 hover:bg-muted/40 group",
-                          !notif.isRead && "bg-primary/[0.03]"
-                        )}
-                      >
-                        {/* Icon */}
-                        <div
-                          className={cn(
-                            "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 transition-transform duration-300 group-hover:scale-110",
-                            config.bg
-                          )}
-                        >
-                          <Icon className={cn("h-4 w-4", config.color)} />
-                        </div>
-                        {/* Content */}
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-start justify-between gap-2 mb-1">
-                            <p
-                              className={cn(
-                                "text-[11px] font-black uppercase tracking-wide leading-tight truncate",
-                                !notif.isRead ? "text-foreground" : "text-muted-foreground"
-                              )}
-                            >
-                              {notif.title}
-                            </p>
-                            <div className="flex items-center gap-1.5 shrink-0">
-                              {!notif.isRead && (
-                                <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
-                              )}
-                              <span className="text-[9px] font-bold text-muted-foreground/60 uppercase tracking-wide">
-                                {formatRelativeTime(notif.createdAt)}
-                              </span>
-                            </div>
-                          </div>
-                          <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
-                            {notif.message}
-                          </p>
-                          <span
-                            className={cn(
-                              "inline-block mt-1.5 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border",
-                              config.bg,
-                              config.color,
-                              config.border
-                            )}
-                          >
-                            {config.label}
-                          </span>
-                        </div>
-                      </button>
-                    );
-                  })}
-                </div>
+            <div>
+              <h3 className="text-sm font-black uppercase tracking-widest">Notifications</h3>
+              {unreadCount > 0 && (
+                <p className="text-[10px] text-muted-foreground font-semibold">
+                  {unreadCount} unread
+                </p>
               )}
             </div>
-
-            {/* Footer */}
-            <div className="px-5 py-3 border-t border-border/30 bg-muted/20">
+          </div>
+          <div className="flex items-center gap-1">
+            {unreadCount > 0 && (
               <Button
                 variant="ghost"
-                onClick={() => { setOpen(false); router.push("/notifications"); }}
-                className="w-full h-9 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-primary/10 hover:text-primary justify-between group"
+                size="sm"
+                onClick={handleMarkAllRead}
+                disabled={markingAll}
+                className="h-8 px-3 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-primary/10 hover:text-primary"
               >
-                View All Notifications
-                <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+                {markingAll ? (
+                  <Loader2 className="h-3 w-3 animate-spin" />
+                ) : (
+                  <CheckCheck className="h-3 w-3 mr-1" />
+                )}
+                All Read
               </Button>
-            </div>
+            )}
           </div>
-        </>
-      )}
-    </div>
+        </div>
+
+        {/* Notifications List */}
+        <div className="max-h-[400px] overflow-y-auto scrollbar-hide">
+          {isLoading ? (
+            <div className="flex items-center justify-center py-12">
+              <Loader2 className="h-6 w-6 animate-spin text-primary" />
+            </div>
+          ) : notifications.length === 0 ? (
+            <div className="flex flex-col items-center justify-center py-12 text-center gap-3">
+              <div className="h-14 w-14 rounded-2xl bg-muted/50 flex items-center justify-center">
+                <BellOff className="h-7 w-7 text-muted-foreground/40" />
+              </div>
+              <p className="text-xs font-black uppercase tracking-widest text-muted-foreground/60">
+                All caught up!
+              </p>
+            </div>
+          ) : (
+            <div className="divide-y divide-border/20">
+              {notifications.map((notif) => {
+                const config = TYPE_CONFIG[notif.type] || TYPE_CONFIG.new_order;
+                const Icon = config.icon;
+                return (
+                  <button
+                    key={notif._id}
+                    id={`notif-${notif._id}`}
+                    onClick={() => handleNotifClick(notif)}
+                    className={cn(
+                      "w-full flex items-start gap-3 px-5 py-4 text-left transition-all duration-200 hover:bg-muted/40 group",
+                      !notif.isRead && "bg-primary/[0.03]"
+                    )}
+                  >
+                    {/* Icon */}
+                    <div
+                      className={cn(
+                        "h-9 w-9 rounded-xl flex items-center justify-center shrink-0 mt-0.5 transition-transform duration-300 group-hover:scale-110",
+                        config.bg
+                      )}
+                    >
+                      <Icon className={cn("h-4 w-4", config.color)} />
+                    </div>
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-1">
+                        <p
+                          className={cn(
+                            "text-[11px] font-black uppercase tracking-wide leading-tight truncate",
+                            !notif.isRead ? "text-foreground" : "text-muted-foreground"
+                          )}
+                        >
+                          {notif.title}
+                        </p>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {!notif.isRead && (
+                            <span className="h-1.5 w-1.5 rounded-full bg-primary shrink-0" />
+                          )}
+                          <span className="text-[9px] font-bold text-muted-foreground/60 uppercase tracking-wide">
+                            {formatRelativeTime(notif.createdAt)}
+                          </span>
+                        </div>
+                      </div>
+                      <p className="text-[11px] text-muted-foreground leading-snug line-clamp-2">
+                        {notif.message}
+                      </p>
+                      <span
+                        className={cn(
+                          "inline-block mt-1.5 text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full border",
+                          config.bg,
+                          config.color,
+                          config.border
+                        )}
+                      >
+                        {config.label}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="px-5 py-3 border-t border-border/30 bg-muted/20">
+          <Button
+            variant="ghost"
+            onClick={() => { setOpen(false); router.push("/notifications"); }}
+            className="w-full h-9 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-primary/10 hover:text-primary justify-between group"
+          >
+            View All Notifications
+            <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+          </Button>
+        </div>
+      </PopoverContent>
+    </Popover>
   );
 }
