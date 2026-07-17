@@ -69,7 +69,16 @@ export const protectStrict = asyncHandler(async (req, res, next) => {
   const secret = process.env.JWT_ACCESS_SECRET;
   if (!secret) throw new ApiError(500, 'JWT secret not configured');
 
-  const decoded = jwt.verify(token, secret);
+  let decoded;
+  try {
+    decoded = jwt.verify(token, secret);
+  } catch (err) {
+    if (err.name === 'TokenExpiredError') {
+      throw new ApiError(401, 'Session expired. Please log in again.');
+    }
+    throw new ApiError(401, 'Invalid token. Please log in again.');
+  }
+
   const user = await User.findOne({ _id: decoded.id, isDeleted: false }).select('_id role');
   if (!user) throw new ApiError(401, 'User not found or has been removed.');
 
