@@ -17,7 +17,8 @@ export default function BottomNav() {
     { name: "Order", path: "/cart", icon: ShoppingBag, count: cartCount },
   ];
 
-  if (pathname?.startsWith('/book') || pathname?.startsWith('/product/')) return null;
+  if (pathname?.startsWith("/book") || pathname?.startsWith("/product/"))
+    return null;
 
   return (
     <nav className="sm:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-150 w-fit">
@@ -39,7 +40,7 @@ export default function BottomNav() {
               {isActive && (
                 <motion.div
                   layoutId="active-pill-bg"
-                  className="absolute inset-0 bg-gradient-to-tr from-primary to-accent rounded-full -z-10 shadow-lg shadow-primary/30"
+                  className="absolute inset-0 bg-linear-to-tr from-primary to-accent rounded-full -z-10 shadow-lg shadow-primary/30"
                   transition={{ type: "spring", stiffness: 350, damping: 25 }}
                 />
               )}
@@ -50,10 +51,8 @@ export default function BottomNav() {
                   ${isActive ? "text-primary-foreground" : "text-foreground/35 hover:text-foreground/60"}
                 `}
               >
-                <Icon
-                  className="w-5 h-5 stroke-[2.5px] shrink-0"
-                />
-                
+                <Icon className="w-5 h-5 stroke-[2.5px] shrink-0" />
+
                 <span className="text-[7px] font-black uppercase tracking-widest mt-1 leading-none">
                   {tab.name}
                 </span>
