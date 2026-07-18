@@ -8,17 +8,17 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-import Order from './src/models/order.model.js';
+import Product from './src/models/product.model.js';
 
 async function run() {
   try {
     await mongoose.connect(process.env.MONGODB_URI);
-    console.log('Connected.');
+    console.log('Connected to MongoDB.');
 
-    const onlineOrders = await Order.find({ paymentMethod: 'online' }).sort({ createdAt: -1 });
-    console.log(`Found ${onlineOrders.length} online orders.`);
-    for (const order of onlineOrders) {
-      console.log(`ID: ${order._id}, Status: ${order.paymentStatus}, Razorpay ID: ${order.razorpayOrderId}, Created: ${order.createdAt}`);
+    const products = await Product.find();
+    console.log('All Products in DB:');
+    for (const p of products) {
+      console.log(`_id: ${p._id}, Name: ${p.name}, Slug: ${p.slug}, Price: ${p.price}, Stock: ${p.stock}, IsActive: ${p.isActive}`);
     }
   } catch (err) {
     console.error(err);

@@ -139,7 +139,7 @@ export const createOrder = asyncHandler(async (req, res) => {
       },
     });
 
-    await sendNewOrderAdminEmail(order, user);
+    sendNewOrderAdminEmail(order, user);
   } catch (error) {
     console.error('[Order Notification Error]:', error.message);
   }

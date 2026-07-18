@@ -22,7 +22,7 @@ export default function BottomNav() {
 
   return (
     <nav className="sm:hidden fixed bottom-6 left-1/2 -translate-x-1/2 z-150 w-fit">
-      <div className="bg-background/90 backdrop-blur-3xl border border-border/50 rounded-full h-16 flex items-center justify-center gap-3 px-4 shadow-[0_20px_60px_rgba(0,0,0,0.35)] relative overflow-hidden group">
+      <div className="bg-background backdrop-blur-3xl border border-border/50 rounded-full h-16 flex items-center justify-center gap-3 px-4 shadow-[0_20px_60px_rgba(0,0,0,0.35)] relative overflow-hidden group">
         {/* Subtle Glow Background */}
         <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
 

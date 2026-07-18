@@ -101,7 +101,7 @@ export default function Home() {
         <div className="absolute top-[40%] left-[-15%] w-[60vw] h-[60vw] bg-accent/5 rounded-full blur-[90px] pointer-events-none -z-10" />
 
         {/* Main Brand Typography Slogan */}
-        <div className="pt-24 pb-4 px-5 flex flex-col z-10">
+        <div className="pt-24 pb-6 px-5 flex flex-col z-10">
           <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary/80 mb-1">
             DUNCHES PREMIUM
           </span>
@@ -114,7 +114,7 @@ export default function Home() {
         </div>
 
         {/* Search Bar & Custom Filter Row */}
-        <div className="flex items-center gap-3 px-5 py-2 z-10">
+        <div className="flex items-center gap-3 px-5 pt-2 pb-5 z-10">
           <div className="relative flex-1">
             <input
               type="text"
@@ -142,7 +142,7 @@ export default function Home() {
 
         {/* Spotlight Promo Banner */}
         {spotlightSnack && !searchQuery && (
-          <div className="px-5 py-3 z-10">
+          <div className="px-5 pt-2 pb-6 z-10">
             <div className="relative rounded-[32px] overflow-hidden bg-linear-to-br from-primary/15 via-accent/5 to-transparent border border-primary/10 p-5 flex items-center justify-between shadow-xs">
               <div className="absolute top-0 right-0 w-24 h-24 bg-primary/20 rounded-full blur-2xl pointer-events-none -z-10" />
 
@@ -190,7 +190,7 @@ export default function Home() {
         )}
 
         {/* Category Pills (Dribbble App Style) */}
-        <div className="py-2 px-5 transition-all duration-300 z-10">
+        <div className="pt-2 pb-6 px-5 transition-all duration-300 z-10">
           <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-5 px-5">
             {categories.map((cat) => {
               const isSelected = selectedCategory === cat;
@@ -216,7 +216,7 @@ export default function Home() {
 
         {/* Trending Snacks (Horizontal Carousel) */}
         {!searchQuery && (
-          <div className="pt-2 z-10">
+          <div className="pt-4 pb-8 z-10">
             <div className="px-5 flex items-center justify-between mb-3">
               <h3 className="text-[12px] font-black tracking-widest text-foreground/40 uppercase font-heading">
                 Trending Cravings
@@ -283,7 +283,7 @@ export default function Home() {
         )}
 
         {/* ── Product List ─────────────────────────────────────── */}
-        <div className="px-5 pt-3 space-y-4 z-10">
+        <div className="px-5 pt-4 space-y-4 z-10">
           <div className="flex items-center justify-between">
             <h3 className="text-[12px] font-black tracking-widest text-foreground/40 uppercase font-heading">
               {selectedCategory === "All"
