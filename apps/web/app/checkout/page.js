@@ -123,14 +123,13 @@ export default function CheckoutPage() {
                 <AddressStep
                   user={reduxUser || user}
                   onConfirm={async (addr) => {
-                    const hasAddresses =
-                      (reduxUser || user)?.addresses?.length > 0;
-                    if (!hasAddresses) {
+                    if (addr.isNew) {
                       try {
+                        const { isNew, ...addressToSave } = addr;
                         await dispatch(
                           addAddress({
-                            ...addr,
-                            isDefault: true,
+                            ...addressToSave,
+                            isDefault: (reduxUser || user)?.addresses?.length === 0,
                             country: "India",
                           }),
                         ).unwrap();
@@ -138,7 +137,8 @@ export default function CheckoutPage() {
                         console.error("Failed to save address:", err);
                       }
                     }
-                    setAddress(addr);
+                    const { isNew, ...finalAddress } = addr;
+                    setAddress(finalAddress);
                     setStep(3);
                   }}
                 />

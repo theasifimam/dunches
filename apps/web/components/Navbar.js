@@ -12,6 +12,10 @@ import {
   LogOut,
   ChevronDown,
   Search,
+  HelpCircle,
+  Lock,
+  BookOpen,
+  MessageSquare,
 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { selectCartCount } from "@/features/cart/cartSlice";
@@ -27,6 +31,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import dynamic from "next/dynamic";
+import BottomSheet from "./BottomSheet";
 
 const AuthModal = dynamic(() => import("./AuthModal"), { ssr: false });
 
@@ -44,6 +49,8 @@ export default function Navbar() {
   const [authMode, setAuthMode] = useState("login");
   const [theme, setTheme] = useState("dark");
   const [mounted, setMounted] = useState(false);
+  const [isGuestMenuOpen, setIsGuestMenuOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -150,19 +157,20 @@ export default function Navbar() {
           {/* Profile Welcome Row - Mobile Greeting Header */}
           <div className="flex items-center gap-3 md:hidden">
             {user && (
-              <Link href="/profile">
-                <div className="w-8 h-8 rounded-full border border-primary/20 overflow-hidden flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-transform bg-foreground/5">
-                  {avatarSrc ? (
-                    <img
-                      src={avatarSrc}
-                      alt="Avatar"
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    <User className="w-4 h-4 text-foreground/45" />
-                  )}
-                </div>
-              </Link>
+              <button
+                onClick={() => setIsUserMenuOpen(true)}
+                className="w-8 h-8 rounded-full border border-primary/20 overflow-hidden flex items-center justify-center shrink-0 cursor-pointer active:scale-95 transition-transform bg-foreground/5 outline-hidden"
+              >
+                {avatarSrc ? (
+                  <img
+                    src={avatarSrc}
+                    alt="Avatar"
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <User className="w-4 h-4 text-foreground/45" />
+                )}
+              </button>
             )}
             <div className="flex flex-col leading-none">
               <span className="text-[9px] text-foreground/40 font-bold uppercase tracking-wider font-sans">
@@ -182,6 +190,12 @@ export default function Navbar() {
             <Link href="/menu" className={navLinkClass("/menu")}>
               Shop
             </Link>
+            <Link href="/about" className={navLinkClass("/about")}>
+              About Us
+            </Link>
+            <Link href="/contact" className={navLinkClass("/contact")}>
+              Contact
+            </Link>
           </div>
 
           {/* Actions - Cleaned for Mobile */}
@@ -193,12 +207,77 @@ export default function Navbar() {
               </div>
             </Link>
 
+            {/* Guest Actions - Desktop Popover */}
+            {!user && (
+              <div className="hidden md:block">
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <button
+                      className="w-10 h-10 rounded-full flex items-center justify-center text-foreground/45 hover:text-primary bg-foreground/5 hover:bg-foreground/10 active:scale-95 transition-all cursor-pointer shrink-0"
+                    >
+                      <Menu className="w-4 h-4" />
+                    </button>
+                  </PopoverTrigger>
+                  <PopoverContent
+                    align="end"
+                    className="w-56 p-4 rounded-2xl border border-border/50 bg-background/95 backdrop-blur-xl shadow-2xl flex flex-col gap-2 z-150"
+                  >
+                    <div className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/30 px-1 pb-1 border-b border-border/10">
+                      Menu
+                    </div>
+
+                    <button
+                      onClick={toggleTheme}
+                      className="w-full flex items-center justify-between text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2">
+                        {theme === "dark" ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+                        Theme Mode
+                      </span>
+                      <span className="text-[8px] opacity-40 font-bold">{theme === "dark" ? "Dark" : "Light"}</span>
+                    </button>
+
+                    <div className="h-px bg-border/10 my-1" />
+
+                    <Link href="/about" className="w-full">
+                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
+                        <HelpCircle className="w-3.5 h-3.5" />
+                        About Us
+                      </button>
+                    </Link>
+
+                    <Link href="/privacy" className="w-full">
+                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
+                        <Lock className="w-3.5 h-3.5" />
+                        Privacy Policy
+                      </button>
+                    </Link>
+
+                    <Link href="/terms" className="w-full">
+                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
+                        <BookOpen className="w-3.5 h-3.5" />
+                        Terms & Conditions
+                      </button>
+                    </Link>
+
+                    <Link href="/contact" className="w-full">
+                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        Contact Us
+                      </button>
+                    </Link>
+                  </PopoverContent>
+                </Popover>
+              </div>
+            )}
+
+            {/* Guest Actions - Mobile Menu Button */}
             {!user && (
               <button
-                onClick={() => openAuth("login")}
+                onClick={() => setIsGuestMenuOpen(true)}
                 className="md:hidden w-8 h-8 rounded-full flex items-center justify-center text-foreground/45 hover:text-primary bg-foreground/5 active:scale-95 transition-all cursor-pointer shrink-0"
               >
-                <User className="w-4 h-4" />
+                <Menu className="w-4 h-4" />
               </button>
             )}
 
@@ -266,6 +345,49 @@ export default function Navbar() {
                         View Profile
                       </button>
                     </Link>
+
+                    {/* Theme Toggle (especially for mobile) */}
+                    <button
+                      onClick={toggleTheme}
+                      className="w-full flex items-center justify-between text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer"
+                    >
+                      <span className="flex items-center gap-2">
+                        {theme === "dark" ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+                        Theme Mode
+                      </span>
+                      <span className="text-[8px] opacity-40 font-bold">{theme === "dark" ? "Dark" : "Light"}</span>
+                    </button>
+
+                    <div className="h-px bg-border/10 my-1" />
+
+                    <Link href="/about" className="w-full">
+                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
+                        <HelpCircle className="w-3.5 h-3.5" />
+                        About Us
+                      </button>
+                    </Link>
+
+                    <Link href="/privacy" className="w-full">
+                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
+                        <Lock className="w-3.5 h-3.5" />
+                        Privacy Policy
+                      </button>
+                    </Link>
+
+                    <Link href="/terms" className="w-full">
+                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
+                        <BookOpen className="w-3.5 h-3.5" />
+                        Terms & Conditions
+                      </button>
+                    </Link>
+
+                    <Link href="/contact" className="w-full">
+                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
+                        <MessageSquare className="w-3.5 h-3.5" />
+                        Contact Us
+                      </button>
+                    </Link>
+
                     <button
                       onClick={handleLogout}
                       className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-600 py-2 px-1 rounded-lg hover:bg-red-500/5 transition-all font-heading border-t border-border/10 pt-3 cursor-pointer"
@@ -332,6 +454,260 @@ export default function Navbar() {
             localStorage.setItem("user", JSON.stringify(userData));
           }}
         />
+      )}
+
+      {/* Guest Bottom Sheet */}
+      <BottomSheet isOpen={isGuestMenuOpen} onClose={() => setIsGuestMenuOpen(false)}>
+        <div className="flex flex-col gap-3.5 text-center">
+          <div className="text-center pb-4 mb-2 border-b border-border/10">
+            <div className="text-[10px] font-black uppercase tracking-[0.25em] text-primary/85">
+              dunches experiences
+            </div>
+            <div className="text-[9px] text-foreground/45 uppercase tracking-widest font-bold mt-1">
+              Select a channel to explore
+            </div>
+          </div>
+          
+          {/* Theme Mode */}
+          <button
+            onClick={() => {
+              toggleTheme();
+              setIsGuestMenuOpen(false);
+            }}
+            className="w-full flex items-center justify-between text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group"
+          >
+            <span className="flex items-center gap-4">
+              <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
+                {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+              </div>
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Theme Mode</p>
+                <p className="text-[9px] text-foreground/40 font-medium mt-0.5">Toggle between dark and light themes</p>
+              </div>
+            </span>
+            <span className="text-[9px] uppercase font-black text-primary/75 tracking-widest bg-primary/5 px-2.5 py-1 rounded-md">{theme === "dark" ? "Dark" : "Light"}</span>
+          </button>
+
+          {/* About Us */}
+          <Link href="/about" className="w-full" onClick={() => setIsGuestMenuOpen(false)}>
+            <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+              <span className="flex items-center gap-4">
+                <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
+                  <HelpCircle className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">About Us</p>
+                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">Our story, promise & organic sourcing</p>
+                </div>
+              </span>
+            </button>
+          </Link>
+
+          {/* Contact Us */}
+          <Link href="/contact" className="w-full" onClick={() => setIsGuestMenuOpen(false)}>
+            <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+              <span className="flex items-center gap-4">
+                <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
+                  <MessageSquare className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Contact Support</p>
+                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">WhatsApp, Email, support box to admin</p>
+                </div>
+              </span>
+            </button>
+          </Link>
+
+          {/* Privacy Policy */}
+          <Link href="/privacy" className="w-full" onClick={() => setIsGuestMenuOpen(false)}>
+            <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+              <span className="flex items-center gap-4">
+                <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
+                  <Lock className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Privacy Policy</p>
+                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">How we encrypt and protect cookies</p>
+                </div>
+              </span>
+            </button>
+          </Link>
+
+          {/* Terms & Conditions */}
+          <Link href="/terms" className="w-full" onClick={() => setIsGuestMenuOpen(false)}>
+            <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+              <span className="flex items-center gap-4">
+                <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
+                  <BookOpen className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Terms of Use</p>
+                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">COD policies and food allergens warning</p>
+                </div>
+              </span>
+            </button>
+          </Link>
+
+          {/* Login Actions */}
+          <div className="flex flex-col gap-2.5 border-t border-border/10 pt-5 mt-3">
+            <button
+              onClick={() => {
+                setIsGuestMenuOpen(false);
+                openAuth("login");
+              }}
+              className="w-full flex items-center justify-center gap-2 py-4.5 rounded-2xl bg-primary text-primary-foreground font-black text-[11px] uppercase tracking-[0.15em] hover:bg-primary/90 transition-all shadow-lg shadow-primary/25 cursor-pointer hover:scale-[1.01] active:scale-[0.99] duration-200"
+            >
+              <User className="w-4 h-4" />
+              Login to Account
+            </button>
+            <button
+              onClick={() => {
+                setIsGuestMenuOpen(false);
+                openAuth("signup");
+              }}
+              className="w-full flex items-center justify-center gap-2 py-4.5 rounded-2xl border-2 border-primary/20 text-primary font-black text-[11px] uppercase tracking-[0.15em] hover:bg-primary/5 transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99] duration-200"
+            >
+              Join the Crave Club
+            </button>
+          </div>
+        </div>
+      </BottomSheet>
+
+      {/* User Bottom Sheet */}
+      {user && (
+        <BottomSheet isOpen={isUserMenuOpen} onClose={() => setIsUserMenuOpen(false)}>
+          <div className="flex flex-col gap-3.5">
+            {/* User Profile Info Card */}
+            <div className="flex items-center gap-4 pb-5 mb-2 border-b border-border/10">
+              <div className="w-14 h-14 rounded-2xl border border-primary/45 overflow-hidden shrink-0 flex items-center justify-center bg-foreground/5 shadow-inner">
+                {avatarSrc ? (
+                  <img
+                    src={avatarSrc}
+                    alt="Avatar"
+                    className="w-full h-full object-cover animate-fade-in"
+                  />
+                ) : (
+                  <User className="w-6 h-6 text-foreground/45" />
+                )}
+              </div>
+              <div className="flex flex-col min-w-0">
+                <span className="text-[14px] font-black font-heading uppercase tracking-widest text-foreground truncate">
+                  {user.name}
+                </span>
+                <span className="text-[10px] font-medium text-foreground/45 mt-0.5 truncate">
+                  {user.email || "craver@makhana.wellness"}
+                </span>
+              </div>
+            </div>
+
+            {/* Profile Dashboard Link */}
+            <Link href="/profile" className="w-full" onClick={() => setIsUserMenuOpen(false)}>
+              <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+                <span className="flex items-center gap-4">
+                  <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
+                    <User className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Profile Dashboard</p>
+                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">Manage details, orders & saved addresses</p>
+                  </div>
+                </span>
+              </button>
+            </Link>
+
+            {/* Theme Mode */}
+            <button
+              onClick={() => {
+                toggleTheme();
+                setIsUserMenuOpen(false);
+              }}
+              className="w-full flex items-center justify-between text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group"
+            >
+              <span className="flex items-center gap-4">
+                <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
+                  {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                </div>
+                <div>
+                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Theme Mode</p>
+                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">Toggle between dark and light themes</p>
+                </div>
+              </span>
+              <span className="text-[9px] uppercase font-black text-primary/75 tracking-widest bg-primary/5 px-2.5 py-1 rounded-md">{theme === "dark" ? "Dark" : "Light"}</span>
+            </button>
+
+            {/* About Us */}
+            <Link href="/about" className="w-full" onClick={() => setIsUserMenuOpen(false)}>
+              <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+                <span className="flex items-center gap-4">
+                  <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
+                    <HelpCircle className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">About Us</p>
+                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">Our story, promise & organic sourcing</p>
+                  </div>
+                </span>
+              </button>
+            </Link>
+
+            {/* Contact Us */}
+            <Link href="/contact" className="w-full" onClick={() => setIsUserMenuOpen(false)}>
+              <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+                <span className="flex items-center gap-4">
+                  <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
+                    <MessageSquare className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Contact Support</p>
+                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">WhatsApp, Email, support box to admin</p>
+                  </div>
+                </span>
+              </button>
+            </Link>
+
+            {/* Privacy Policy */}
+            <Link href="/privacy" className="w-full" onClick={() => setIsUserMenuOpen(false)}>
+              <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+                <span className="flex items-center gap-4">
+                  <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
+                    <Lock className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Privacy Policy</p>
+                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">How we encrypt and protect cookies</p>
+                  </div>
+                </span>
+              </button>
+            </Link>
+
+            {/* Terms & Conditions */}
+            <Link href="/terms" className="w-full" onClick={() => setIsUserMenuOpen(false)}>
+              <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+                <span className="flex items-center gap-4">
+                  <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
+                    <BookOpen className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Terms of Use</p>
+                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">COD policies and food allergens warning</p>
+                  </div>
+                </span>
+              </button>
+            </Link>
+
+            {/* Logout button */}
+            <button
+              onClick={() => {
+                setIsUserMenuOpen(false);
+                handleLogout();
+              }}
+              className="w-full flex items-center justify-center gap-2 py-4.5 rounded-2xl bg-red-500/10 hover:bg-red-500/15 text-red-500 hover:text-red-600 border border-red-500/20 hover:border-red-500/35 font-black text-[11px] uppercase tracking-[0.15em] transition-all mt-4 cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
+            >
+              <LogOut className="w-4 h-4" />
+              Sign Out of Account
+            </button>
+          </div>
+        </BottomSheet>
       )}
     </>
   );

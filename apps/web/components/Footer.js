@@ -94,7 +94,7 @@ export default function Footer() {
             </div>
             <div className="space-y-3">
               <p className="text-foreground/40 text-sm sm:text-base font-medium leading-relaxed italic md:pr-10">
-                "Fiery snacks for late-night cravings and bold routines."
+                &quot;Fiery snacks for late-night cravings and bold routines.&quot;
               </p>
               <div className="flex items-center gap-1.5 text-xs text-foreground/40">
                 <Star className="w-3.5 h-3.5 text-primary fill-primary" />
@@ -105,15 +105,39 @@ export default function Footer() {
               </div>
             </div>
             {/* Socials */}
+            {/* Socials */}
             <div className="flex gap-4">
-              {[Globe, MessageCircle, Share2].map((Icon, i) => (
-                <button
-                  key={i}
-                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-full glass border border-border flex items-center justify-center text-foreground/40 hover:text-primary transition-all"
-                >
-                  <Icon className="w-5 h-5" />
-                </button>
-              ))}
+              <a
+                href="https://instagram.com/eatdunches"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full glass border border-border/50 flex items-center justify-center text-foreground/40 hover:text-primary transition-all hover:scale-105"
+                title="Instagram"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                  <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                  <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+                </svg>
+              </a>
+              <a
+                href="https://fb.com/eatdunches"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full glass border border-border/50 flex items-center justify-center text-foreground/40 hover:text-primary transition-all hover:scale-105"
+                title="Facebook"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
+                  <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                </svg>
+              </a>
+              <a
+                href="mailto:eatdunches@gmail.com"
+                className="w-10 h-10 sm:w-12 sm:h-12 rounded-full glass border border-border/50 flex items-center justify-center text-foreground/40 hover:text-primary transition-all hover:scale-105"
+                title="Email"
+              >
+                <Mail className="w-5 h-5" />
+              </a>
             </div>
           </div>
 

@@ -152,177 +152,130 @@ export default function ProductsPage() {
 
 
   return (
-    <div className="space-y-8 md:space-y-12 animate-in fade-in slide-in-from-bottom-4 duration-700 outline-none">
-      <PageHeader
-        badgeIcon={Package}
-        badgeText="Inventory Command"
-        titleMain="The Product"
-        titleAccent="Archive"
-        description="Managing the blueprint of precision. Every lens, frame, and accessory meticulously cataloged for global distribution."
-      >
-        <div className="h-16 md:h-20 px-6 md:px-8 rounded-2xl md:rounded-[2rem] bg-card/80 backdrop-blur-md border-2 border-primary/10 shadow-sm flex flex-col justify-center gap-0.5 md:gap-1 min-w-[180px] md:min-w-[200px] hover:border-primary/30 transition-all duration-500">
-          <p className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
-            Active SKU Count
-          </p>
-          <div className="flex items-end justify-between">
-            <h4 className="text-xl md:text-2xl font-black italic leading-none">
-              {pagination?.total || 0}
-            </h4>
-            <div className="flex items-center gap-1 text-primary text-[9px] md:text-[10px] font-black italic uppercase">
-              <TrendingUp className="h-3 w-3" /> Alpha
-            </div>
-          </div>
+    <div className="space-y-6 animate-in fade-in duration-700">
+      {/* Header Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-4 bg-card border border-border/40 px-5 py-3 rounded-2xl shadow-sm">
+          <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Total SKUs:</div>
+          <div className="text-xl font-black text-primary font-serif leading-none">{pagination?.total || 0}</div>
         </div>
-        <Button
-          onClick={() => setIsBulkImportDialogOpen(true)}
-          variant="outline"
-          size="xl"
-          className="h-16 md:h-20 w-full sm:w-auto px-8 md:px-10 rounded-2xl md:rounded-[2rem] border-2 group/bulk"
-        >
-          <div className="flex flex-col items-center gap-0.5 md:gap-1">
-            <FileUp className="h-4 w-4 md:h-5 md:w-5 group-hover/bulk:translate-y-[-2px] transition-transform duration-500" />
-            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em]">
-              Bulk Archive Import
-            </span>
-          </div>
-        </Button>
-        <Button
-          onClick={openAddProductDialog}
-          variant="signature"
-          size="xl"
-          className="h-16 md:h-20 w-full sm:w-auto px-8 md:px-10"
-        >
-          <div className="flex flex-col items-center gap-0.5 md:gap-1">
-            <Plus className="h-4 w-4 md:h-5 md:w-5 group-hover/btn:rotate-90 transition-transform duration-500" />
-            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em]">
-              Add Signature Piece
-            </span>
-          </div>
-        </Button>
-      </PageHeader>
+        <div className="flex flex-wrap items-center gap-3">
+          <Button
+            onClick={() => setIsBulkImportDialogOpen(true)}
+            variant="outline"
+            className="rounded-full px-5 h-11 text-xs font-bold uppercase tracking-wider"
+          >
+            Bulk Import
+          </Button>
+          <Button
+            onClick={openAddProductDialog}
+            variant="signature"
+            className="rounded-full px-5 h-11 text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground hover:bg-primary/95"
+          >
+            + Add Product
+          </Button>
+        </div>
+      </div>
 
       {/* Inventory Health Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 px-4 md:px-0">
-        {stats.map((stat, i) => (
-          <div
-            key={i}
-            className="p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] bg-card border shadow-sm flex items-center gap-4 md:gap-5 group hover:border-primary/20 transition-all"
-          >
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {stats.map((stat, i) => {
+          const Icon = stat.icon;
+          return (
             <div
-              className={cn(
-                "h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110",
-                stat.color === "primary"
-                  ? "bg-primary text-primary-foreground"
-                  : stat.color === "destructive"
-                    ? "bg-destructive/10 text-destructive"
-                    : "bg-orange-500/10 text-orange-600",
-              )}
+              key={i}
+              className="bg-card border border-border/40 p-5 rounded-3xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group"
             >
-              <stat.icon className="h-4 w-4 md:h-5 md:w-5" />
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Icon className="h-16 w-16 text-primary" />
+              </div>
+              <div className={cn(
+                "w-10 h-10 rounded-2xl flex items-center justify-center mb-4", 
+                stat.color === "primary" ? "bg-primary/10 text-primary" : 
+                stat.color === "destructive" ? "bg-red-500/10 text-red-500" : "bg-orange-500/10 text-orange-500"
+              )}>
+                <Icon className="h-5 w-5" />
+              </div>
+              <p className="text-xs font-semibold text-muted-foreground mb-1">{stat.label}</p>
+              <h4 className="text-2xl font-bold text-foreground leading-none">{stat.value}</h4>
             </div>
-            <div>
-              <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">
-                {stat.label}
-              </p>
-              <h4 className="text-lg md:text-xl font-black italic">
-                {stat.value}
-              </h4>
-            </div>
-            <ArrowRight className="h-4 w-4 ml-auto text-muted-foreground/30 group-hover:translate-x-1 group-hover:text-primary transition-all shrink-0" />
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Filters Bar */}
-      <div className="flex flex-col md:flex-row items-center gap-4 p-4 rounded-[2rem] bg-card/50 border border-primary/5 backdrop-blur-md mx-4 md:mx-0">
-        <div className="relative flex-1 w-full group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
-          <Input
-            placeholder="Search by product name, ID or category..."
-            className="h-11 md:h-12 w-full pl-12 pr-4 bg-muted/20 border-none rounded-2xl font-bold text-sm focus-visible:ring-2 focus-visible:ring-primary/20"
-            value={productSearchTerm}
-            onChange={(e) => setProductSearchTerm(e.target.value)}
-          />
-        </div>
+      <div className="relative group w-full">
+        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+        <Input
+          placeholder="Search by product name, ID or category..."
+          className="h-12 w-full pl-12 pr-4 bg-card border border-border/60 rounded-2xl font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+          value={productSearchTerm}
+          onChange={(e) => setProductSearchTerm(e.target.value)}
+        />
       </div>
 
       {/* Products Table */}
-      <div className="rounded-[3rem] bg-card border shadow-md border-primary/5 overflow-hidden relative mx-4 md:mx-0">
+      <div className="rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b bg-muted/10">
-                <th className="p-4 md:p-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 w-24 text-center">
-                  Preview
-                </th>
-                <th className="p-4 md:p-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
-                  Product DNA
-                </th>
-                <th className="p-4 md:p-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
-                  Category
-                </th>
-                <th className="p-4 md:p-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
-                  Stock Status
-                </th>
-                <th className="p-4 md:p-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
-                  MSRP
-                </th>
-                <th className="p-4 md:p-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
-                  Visibility
-                </th>
-                <th className="p-4 md:p-6 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-right">
-                  Actions
-                </th>
+          <table className="w-full text-left text-sm">
+            <thead className="bg-muted/30 text-muted-foreground font-semibold">
+              <tr>
+                <th className="px-4 py-4 w-16 text-center">Preview</th>
+                <th className="px-4 py-4">Product DNA</th>
+                <th className="px-4 py-4 hidden sm:table-cell">Category</th>
+                <th className="px-4 py-4">Stock Status</th>
+                <th className="px-4 py-4">MSRP</th>
+                <th className="px-4 py-4 hidden md:table-cell">Visibility</th>
+                <th className="px-4 py-4 text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-primary/5">
+            <tbody className="divide-y divide-border/20">
               {products.map((product) => (
                 <tr
                   key={product._id}
-                  className="group hover:bg-primary/3 transition-all duration-500"
+                  className="group hover:bg-muted/10 transition-colors"
                 >
-                  <td className="p-4 md:p-6">
-                    <div className="relative h-20 w-20 mx-auto">
-                      <div className="absolute inset-0 bg-primary/10 blur-xl rounded-full scale-75 opacity-0 group-hover:opacity-100 transition-opacity" />
-                      <div className="relative h-full w-full rounded-2xl overflow-hidden border border-white/10 shadow-sm bg-muted shrink-0 z-10">
+                  <td className="px-4 py-4">
+                    <div className="relative h-12 w-12 mx-auto">
+                      <div className="relative h-full w-full rounded-xl overflow-hidden border border-border/30 shadow-sm bg-muted shrink-0 z-10">
                         {product.images?.[0] ? (
                           <img
                             src={product.images[0]}
                             alt={product.name}
-                            className="h-full w-full object-cover group-hover:scale-125 transition-transform duration-700"
+                            className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
                           />
                         ) : (
                           <div className="h-full w-full flex items-center justify-center">
-                            <Package className="h-8 w-8 text-muted-foreground/20" />
+                            <Package className="h-5 w-5 text-muted-foreground/30" />
                           </div>
                         )}
                       </div>
                     </div>
                   </td>
-                  <td className="p-4 md:p-6">
-                    <div className="max-w-[200px]">
-                      <p className="font-black text-[13px] uppercase tracking-tight line-height-1 mb-1 leading-none">
+                  <td className="px-4 py-4">
+                    <div className="max-w-[150px] sm:max-w-[200px]">
+                      <p className="font-bold text-sm text-foreground mb-1 leading-tight truncate">
                         {product.name}
                       </p>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1.5 opacity-60">
+                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest flex items-center gap-1 opacity-70">
                         <Layers className="h-3 w-3" /> {product.sku}
                       </p>
                     </div>
                   </td>
-                  <td className="p-4 md:p-6">
-                    <span className="px-4 py-1.5 rounded-xl bg-muted/50 border border-primary/5 text-[10px] font-black uppercase tracking-[0.15em] text-muted-foreground group-hover:text-primary transition-colors">
+                  <td className="px-4 py-4 hidden sm:table-cell">
+                    <span className="px-2.5 py-1 rounded-full bg-muted text-xs font-bold uppercase tracking-wider">
                       {typeof product.category === "object"
                         ? product.category.name
                         : product.category}
                     </span>
                   </td>
-                  <td className="p-4 md:p-6">
-                    <div className="flex flex-col gap-2 min-w-[120px]">
-                      <div className="flex items-center justify-between text-[10px] font-black uppercase tracking-widest">
+                  <td className="px-4 py-4">
+                    <div className="flex flex-col gap-1.5 min-w-[80px] sm:min-w-[120px]">
+                      <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                         <span
                           className={cn(
                             product.stock > 10
-                              ? "text-primary"
+                              ? "text-primary font-black"
                               : product.stock > 0
                                 ? "text-orange-500"
                                 : "text-destructive",
@@ -330,17 +283,16 @@ export default function ProductsPage() {
                         >
                           {product.stock} units
                         </span>
-                        <span className="opacity-30">/ Max</span>
                       </div>
                       <div className="h-1.5 w-full bg-muted rounded-full overflow-hidden">
                         <div
                           className={cn(
-                            "h-full rounded-full transition-all duration-1000 ease-out",
+                            "h-full rounded-full transition-all duration-500 ease-out",
                             product.stock > 10
-                              ? "bg-primary shadow-[0_0_8px_rgba(245,158,11,0.5)]"
+                              ? "bg-primary"
                               : product.stock > 0
                                 ? "bg-orange-500"
-                                : "bg-destructive shadow-[0_0_8px_rgba(239,68,68,0.5)]",
+                                : "bg-destructive",
                           )}
                           style={{
                             width: `${Math.min((product.stock / 50) * 100, 100)}%`,
@@ -349,15 +301,15 @@ export default function ProductsPage() {
                       </div>
                     </div>
                   </td>
-                  <td className="p-4 md:p-6">
-                    <span className="text-sm font-black italic tracking-tighter">
-                      ${product.price.toFixed(2)}
+                  <td className="px-4 py-4">
+                    <span className="font-bold text-primary font-serif">
+                      ₹{product.price.toFixed(2)}
                     </span>
                   </td>
-                  <td className="p-4 md:p-6">
+                  <td className="px-4 py-4 hidden md:table-cell">
                     <div
                       className={cn(
-                        "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border",
+                        "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
                         product.isActive
                           ? "bg-primary/5 text-primary border-primary/20"
                           : "bg-destructive/5 text-destructive border-destructive/20",
@@ -365,7 +317,7 @@ export default function ProductsPage() {
                     >
                       <div
                         className={cn(
-                          "h-1.5 w-1.5 rounded-full animate-pulse",
+                          "h-1.5 w-1.5 rounded-full",
                           product.isActive
                             ? "bg-primary shadow-[0_0_8px_rgba(245,158,11,1)]"
                             : "bg-destructive shadow-[0_0_8px_rgba(239,68,68,1)]",
@@ -374,24 +326,24 @@ export default function ProductsPage() {
                       {product.isActive ? "Active" : "Inactive"}
                     </div>
                   </td>
-                  <td className="p-4 md:p-6 text-right">
-                    <div className="flex items-center justify-end gap-2 translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
+                  <td className="px-4 py-4 text-right">
+                    <div className="flex items-center justify-end gap-1 sm:gap-1.5 sm:opacity-0 group-hover:opacity-100 transition-opacity">
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => openEditProductDialog(product)}
-                        className="h-12 w-12 rounded-xl hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20 transition-all"
+                        className="h-8 w-8 rounded-xl hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20 transition-all"
                       >
-                        <Edit2 className="h-4 w-4" />
+                        <Edit2 className="h-3.5 w-3.5" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
                         disabled={isDeleting}
                         onClick={() => handleDelete(product._id)}
-                        className="h-12 w-12 rounded-xl hover:bg-destructive/10 hover:text-destructive border border-transparent hover:border-destructive/20 transition-all"
+                        className="h-8 w-8 rounded-xl hover:bg-destructive/10 hover:text-destructive border border-transparent hover:border-destructive/20 transition-all"
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-3.5 w-3.5" />
                       </Button>
                     </div>
                   </td>
@@ -402,10 +354,9 @@ export default function ProductsPage() {
         </div>
 
         {/* Pagination */}
-        <div className="p-4 md:p-6 border-t border-primary/5 bg-primary/1 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-center sm:text-left">
-            Catalog sync: {products.length} verified units from{" "}
-            {pagination?.total || 0} total
+        <div className="p-4 md:p-6 border-t border-border/40 bg-muted/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-muted-foreground">
+            Showing {products.length} of {pagination?.total || 0} items
           </p>
           <Pagination
             currentPage={page}

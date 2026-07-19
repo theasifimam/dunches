@@ -132,83 +132,68 @@ export default function OrdersPage() {
     );
   }
   return (
-    <div className="space-y-8 md:space-y-12 pb-10 animate-in fade-in duration-700">
-      <PageHeader
-        badgeIcon={ShoppingBag}
-        badgeText="Fulfillment Console"
-        titleMain="Order"
-        titleAccent="Logistics"
-        description="Monitoring the lifecycle of luxury. From order inception to signature delivery, every shipment is a promise kept."
-        showAction={false}
-      >
-        <div className="h-16 md:h-20 px-6 md:px-8 rounded-2xl md:rounded-[2rem] bg-card/80 backdrop-blur-md border-2 border-primary/10 shadow-sm flex flex-col justify-center gap-0.5 md:gap-1 min-w-[180px] md:min-w-[200px] hover:border-primary/30 transition-all duration-500">
-          <p className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
-            Monthly Velocity
+    <div className="flex flex-col gap-6 w-full max-w-7xl mx-auto pb-12 animate-in fade-in duration-700">
+      {/* Header Actions */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-serif font-light tracking-tight text-foreground">
+            Orders <span className="text-primary italic font-black font-sans">Fulfillment</span>
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Monitor the lifecycle of luxury. From order inception to signature delivery.
           </p>
-          <div className="flex items-end justify-between">
-            <h4 className="text-xl md:text-2xl font-black italic leading-none">
-              1,248
-            </h4>
-            <div className="flex items-center gap-1 text-primary text-[9px] md:text-[10px] font-black italic uppercase">
-              <TrendingUp className="h-3 w-3" /> +18.4%
-            </div>
-          </div>
         </div>
-        <Button
-          variant="outline"
-          size="xl"
-          className="h-16 md:h-20 w-full sm:w-auto"
-        >
-          <div className="flex flex-col items-center gap-0.5 md:gap-1">
-            <Download className="h-4 w-4 md:h-5 md:w-5" />
-            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em]">
-              Export Ledger
-            </span>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-4 bg-card border border-border/40 px-5 py-3 rounded-2xl shadow-sm">
+            <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">Monthly Velocity:</div>
+            <div className="text-xl font-black text-primary font-serif leading-none">1,248</div>
           </div>
-        </Button>
-      </PageHeader>
+          <Button
+            variant="outline"
+            className="rounded-full px-5 h-11 text-xs font-bold uppercase tracking-wider"
+          >
+            Export Ledger
+          </Button>
+        </div>
+      </div>
 
       {/* Fulfillment Pulse Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 px-4 md:px-0">
-        {pulseStats.map((stat, i) => (
-          <div
-            key={i}
-            className="p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] bg-card border shadow-sm border-primary/5 flex items-center gap-4 group hover:border-primary/20 transition-all"
-          >
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {pulseStats.map((stat, i) => {
+          const Icon = stat.icon;
+          return (
             <div
-              className={cn(
-                "h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110",
-                stat.color === "primary"
-                  ? "bg-primary text-primary-foreground"
-                  : "bg-muted text-foreground",
-              )}
+              key={i}
+              className="bg-card border border-border/40 p-5 rounded-3xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group"
             >
-              <stat.icon className="h-4 w-4 md:h-5 md:w-5" />
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Icon className="h-16 w-16 text-primary" />
+              </div>
+              <div className={cn(
+                "w-10 h-10 rounded-2xl flex items-center justify-center mb-4", 
+                stat.color === "primary" ? "bg-primary/10 text-primary" : "bg-muted text-foreground"
+              )}>
+                <Icon className="h-5 w-5" />
+              </div>
+              <p className="text-xs font-semibold text-muted-foreground mb-1">{stat.label}</p>
+              <h4 className="text-2xl font-bold text-foreground leading-none">{stat.value}</h4>
             </div>
-            <div>
-              <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">
-                {stat.label}
-              </p>
-              <h4 className="text-lg md:text-xl font-black italic">
-                {stat.value}
-              </h4>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Filters Bar */}
-      <div className="flex flex-col lg:flex-row items-center gap-4 p-4 rounded-[2rem] bg-card/50 border border-primary/5 backdrop-blur-md mx-4 md:mx-0">
+      <div className="flex flex-col lg:flex-row items-center gap-4 p-4 rounded-2xl bg-card border border-border/40 w-full">
         <div className="relative flex-1 w-full group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             placeholder="Search by order ID, customer name, or email..."
-            className="h-12 w-full pl-12 pr-4 bg-muted/20 border-none rounded-xl font-bold text-sm focus-visible:ring-2 focus-visible:ring-primary/20"
+            className="h-12 w-full pl-12 pr-4 bg-card border border-border/60 rounded-xl font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="flex gap-2 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 scrollbar-none">
+        <div className="flex flex-wrap gap-2 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 scrollbar-none">
           {[
             "All Status",
             "placed",
@@ -221,108 +206,89 @@ export default function OrdersPage() {
               key={filter}
               onClick={() => setFilterStatus(filter)}
               className={cn(
-                "px-5 h-12 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all whitespace-nowrap border-2",
+                "px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all border",
                 filterStatus === filter
-                  ? "bg-primary text-primary-foreground border-primary shadow-lg shadow-primary/20"
-                  : "bg-muted/20 border-transparent text-muted-foreground hover:bg-muted/40",
+                  ? "bg-primary text-primary-foreground border-primary shadow-md"
+                  : "bg-background border-border/60 text-muted-foreground hover:bg-muted",
               )}
             >
               {filter}
             </button>
           ))}
-          <div className="h-12 w-[2px] bg-border/50 mx-1 shrink-0" />
+          <div className="h-10 w-[1px] bg-border/40 mx-2 shrink-0 self-center hidden sm:block" />
           <Button
             variant="ghost"
             size="icon"
-            className="h-12 w-12 rounded-xl bg-muted/20 shrink-0"
+            className="h-10 w-10 rounded-xl hover:bg-muted border border-border/60 shrink-0"
           >
-            <Filter className="h-4 w-4" />
+            <Filter className="h-4 w-4 text-muted-foreground" />
           </Button>
         </div>
       </div>
 
-      {/* Orders Table - Enhanced High-End List */}
-      <div className="rounded-[3rem] bg-card border shadow-md border-primary/5 overflow-hidden relative mx-4 md:mx-0">
+      {/* Orders Table */}
+      <div className="rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
-            <thead>
-              <tr className="border-b bg-muted/10">
-                <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
-                  ID
-                </th>
-                <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center">
-                  Date
-                </th>
-                <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
-                  Customer
-                </th>
-                <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 w-16 text-center">
-                  Units
-                </th>
-                <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
-                  Ledger Total
-                </th>
-                <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
-                  Delivery
-                </th>
-                <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
-                  Status
-                </th>
-                <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-right">
-                  View
-                </th>
+          <table className="w-full text-left text-sm">
+            <thead className="bg-muted/30 text-muted-foreground font-semibold">
+              <tr>
+                <th className="px-4 py-4">ID</th>
+                <th className="px-4 py-4 text-center hidden sm:table-cell">Date</th>
+                <th className="px-4 py-4">Customer</th>
+                <th className="px-4 py-4 text-center w-12 hidden md:table-cell">Units</th>
+                <th className="px-4 py-4">Total</th>
+                <th className="px-4 py-4 hidden lg:table-cell">Delivery</th>
+                <th className="px-4 py-4">Status</th>
+                <th className="px-4 py-4 text-right">View</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-primary/5">
+            <tbody className="divide-y divide-border/20">
               {orders.map((order) => {
                 const StatusIcon = statusIcons[order.orderStatus] || Clock;
                 return (
                   <tr
                     key={order._id}
-                    className="group hover:bg-primary/3 transition-all duration-500"
+                    className="group hover:bg-muted/10 transition-colors"
                   >
-                    <td className="p-8">
-                      <span className="font-black text-xs uppercase tracking-widest text-primary italic leading-none">
-                        #{order._id.slice(-8)}
-                      </span>
+                    <td className="px-4 py-4 font-bold text-xs uppercase tracking-wider text-primary font-serif">
+                      #{order._id.slice(-8)}
                     </td>
-                    <td className="p-8 text-center text-xs font-bold text-muted-foreground whitespace-nowrap">
+                    <td className="px-4 py-4 text-center text-xs font-medium text-muted-foreground whitespace-nowrap hidden sm:table-cell">
                       {new Date(order.createdAt).toLocaleDateString()}
                     </td>
-                    <td className="p-8">
-                      <div className="flex items-center gap-4">
-                        <div className="h-10 w-10 rounded-2xl bg-linear-to-br from-muted to-muted/50 flex items-center justify-center shrink-0 border border-white/10 shadow-sm relative overflow-hidden group-hover:scale-110 transition-transform">
+                    <td className="px-4 py-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-9 w-9 rounded-xl bg-primary/15 flex items-center justify-center shrink-0 border border-primary/10">
                           {order.user?.name ? (
-                            <span className="font-black text-primary capitalize">
+                            <span className="font-bold text-primary capitalize text-sm">
                               {order.user.name[0]}
                             </span>
                           ) : (
                             <User className="h-4 w-4 text-primary" />
                           )}
-                          <div className="absolute inset-x-0 bottom-0 h-[2px] bg-primary scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
                         </div>
                         <div>
-                          <p className="font-black text-[12px] uppercase tracking-tight leading-none mb-1">
+                          <p className="font-bold text-sm text-foreground mb-0.5 leading-tight max-w-[100px] truncate">
                             {order.user?.name || "Unknown User"}
                           </p>
-                          <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest opacity-60">
+                          <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide opacity-80 max-w-[100px] truncate hidden sm:block">
                             {order.user?.email || "N/A"}
                           </p>
                         </div>
                       </div>
                     </td>
-                    <td className="p-8 text-center font-black text-xs">
+                    <td className="px-4 py-4 text-center font-bold text-xs hidden md:table-cell">
                       {order.items.reduce((acc, item) => acc + item.qty, 0)}
                     </td>
-                    <td className="p-8">
-                      <span className="text-sm font-black italic tracking-tighter">
+                    <td className="px-4 py-4">
+                      <span className="font-bold text-primary font-serif">
                         ₹{order.finalAmount.toFixed(2)}
                       </span>
                     </td>
-                    <td className="p-8">
+                    <td className="px-4 py-4 hidden lg:table-cell">
                       <div
                         className={cn(
-                          "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border",
+                          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
                           statusStyles[order.orderStatus],
                         )}
                       >
@@ -330,7 +296,7 @@ export default function OrdersPage() {
                         {order.orderStatus}
                       </div>
                     </td>
-                    <td className="p-8">
+                    <td className="px-4 py-4">
                       <div className="flex items-center gap-2">
                         <div
                           className={cn(
@@ -340,22 +306,22 @@ export default function OrdersPage() {
                               : "bg-orange-500",
                           )}
                         />
-                        <span className="text-[10px] font-black uppercase tracking-widest text-muted-foreground opacity-70">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground opacity-80">
                           {order.paymentMethod}
                         </span>
                       </div>
                     </td>
-                    <td className="p-8 text-right">
+                    <td className="px-4 py-4 text-right">
                       <Button
                         variant="ghost"
                         size="icon"
-                        className="h-12 w-12 rounded-xl hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20 transition-all group/eye"
+                        className="h-8 w-8 rounded-xl hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20 transition-all"
                         onClick={() => {
                           setSelectedOrder(order);
                           setIsDialogOpen(true);
                         }}
                       >
-                        <Eye className="h-4 w-4 group-hover:scale-125 transition-transform" />
+                        <Eye className="h-4 w-4" />
                       </Button>
                     </td>
                   </tr>
@@ -365,20 +331,20 @@ export default function OrdersPage() {
           </table>
         </div>
 
-        {/* Footer Audit - Refined Footer */}
-        <div className="p-6 md:p-8 border-t border-primary/5 bg-primary/1 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-4 md:gap-5">
-            <div className="h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
-              <Activity className="h-5 w-5 md:h-6 md:w-6" />
+        {/* Footer Audit */}
+        <div className="p-4 md:p-6 border-t border-border/40 bg-muted/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
+              <Activity className="h-5 w-5" />
             </div>
             <div>
-              <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
                 Average Basket Value
               </p>
-              <h4 className="text-lg md:text-xl font-black italic">
+              <h4 className="text-base font-bold text-foreground font-serif">
                 ₹
-                {orders.reduce((acc, order) => acc + order.finalAmount, 0) /
-                  orders.length}
+                {orders.length > 0 ? (orders.reduce((acc, order) => acc + order.finalAmount, 0) /
+                  orders.length).toFixed(2) : '0.00'}
               </h4>
             </div>
           </div>

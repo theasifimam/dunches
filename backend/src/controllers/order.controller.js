@@ -299,11 +299,21 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params['id']);
   if (!order) throw new ApiError(404, 'Order not found');
 
-  if (orderStatus) order.orderStatus = orderStatus;
+  if (orderStatus) {
+    order.orderStatus = orderStatus;
+    if (orderStatus === 'delivered') {
+      order.deliveredAt = new Date();
+      order.paymentStatus = 'paid';
+      order.paidAt = new Date();
+    }
+  }
   if (trackingNumber) order.trackingNumber = trackingNumber;
-  if (paymentStatus) order.paymentStatus = paymentStatus;
-  if (orderStatus === 'delivered') order.deliveredAt = new Date();
-  if (paymentStatus === 'paid') order.paidAt = new Date();
+  if (paymentStatus) {
+    order.paymentStatus = paymentStatus;
+    if (paymentStatus === 'paid' && !order.paidAt) {
+      order.paidAt = new Date();
+    }
+  }
 
   await order.save();
   res.status(200).json(new ApiResponse('Order status updated', order));

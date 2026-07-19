@@ -23,6 +23,8 @@ import {
   LogOut,
   Shield,
   ChevronUp,
+  Brain,
+  Menu,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { motion, AnimatePresence } from "framer-motion";
@@ -51,7 +53,7 @@ const menuItems = [
   { icon: Users, label: "Customers", href: "/customers" },
   { icon: Bell, label: "Notifications", href: "/notifications", badge: true },
   { icon: ImageIcon, label: "Banners", href: "/banners" },
-  { icon: BarChart3, label: "Analytics", href: "/analytics" },
+  { icon: Brain, label: "Consumer Intel", href: "/consumer-intelligence" },
   { icon: Settings, label: "Settings", href: "/settings" },
 ];
 
@@ -73,6 +75,21 @@ export function Sidebar() {
   const [expandedMenus, setExpandedMenus] = useState([]);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef(null);
+  const [isMobileMoreOpen, setIsMobileMoreOpen] = useState(false);
+
+  const mobileMenuItems = [
+    { icon: LayoutDashboard, label: "Dashboard", href: "/" },
+    { icon: Package, label: "Products", href: "/products" },
+    { icon: ShoppingBag, label: "Orders", href: "/orders" },
+    { icon: Brain, label: "Intel", href: "/consumer-intelligence" },
+  ];
+
+  const moreItems = [
+    { icon: Users, label: "Customers", href: "/customers" },
+    { icon: Bell, label: "Notifications", href: "/notifications", badge: true },
+    { icon: ImageIcon, label: "Banners", href: "/banners" },
+    { icon: Settings, label: "Settings", href: "/settings" },
+  ];
 
   React.useEffect(() => {
     setMounted(true);
@@ -496,9 +513,99 @@ export function Sidebar() {
         </div>
       </motion.div>
 
+      {/* ── Mobile More Overlay ─────────────────────────────────── */}
+      <AnimatePresence>
+        {isMobileMoreOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: 100 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 100 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="md:hidden fixed bottom-24 left-4 right-4 bg-card/95 backdrop-blur-xl border border-border/50 rounded-3xl p-6 shadow-2xl z-50 flex flex-col gap-4 max-h-[60vh] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between border-b border-border/20 pb-3">
+              <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-widest">More Menu</h3>
+              <button 
+                onClick={() => setIsMobileMoreOpen(false)}
+                className="text-xs font-bold uppercase tracking-wider text-primary"
+              >
+                Close
+              </button>
+            </div>
+            
+            <div className="grid grid-cols-2 gap-2">
+              {moreItems.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href || pathname.startsWith(item.href + "/");
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={() => setIsMobileMoreOpen(false)}
+                    className={cn(
+                      "flex items-center gap-3 p-3 rounded-xl transition-all duration-200 border",
+                      isActive 
+                        ? "bg-primary/10 border-primary/20 text-primary" 
+                        : "bg-muted/10 border-transparent text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <Icon className="h-4 w-4 shrink-0" />
+                    <span className="text-xs font-medium tracking-tight whitespace-nowrap">{item.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+            
+            <hr className="border-border/20" />
+            
+            {/* Theme Toggle, Help & Logout */}
+            <div className="flex flex-col gap-2">
+              <Link
+                href="/profile"
+                onClick={() => setIsMobileMoreOpen(false)}
+                className="flex items-center gap-3 p-3 rounded-xl bg-muted/10 text-muted-foreground hover:text-foreground"
+              >
+                <User className="h-4 w-4" />
+                <span className="text-xs font-medium tracking-tight ml-2">My Profile</span>
+              </Link>
+              <button
+                onClick={() => {
+                  setTheme(theme === "dark" ? "light" : "dark");
+                  setIsMobileMoreOpen(false);
+                }}
+                className="flex items-center gap-3 p-3 rounded-xl bg-muted/10 text-muted-foreground hover:text-foreground w-full text-left"
+              >
+                {theme === "dark" ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                <span className="text-xs font-medium tracking-tight ml-2">
+                  {theme === "dark" ? "Light Mode" : "Dark Mode"}
+                </span>
+              </button>
+              <Link
+                href="/support"
+                onClick={() => setIsMobileMoreOpen(false)}
+                className="flex items-center gap-3 p-3 rounded-xl bg-muted/10 text-muted-foreground hover:text-foreground"
+              >
+                <LifeBuoy className="h-4 w-4" />
+                <span className="text-xs font-medium tracking-tight ml-2">Help Center</span>
+              </Link>
+              <button
+                onClick={() => {
+                  setIsMobileMoreOpen(false);
+                  setIsLogoutDialogOpen(true);
+                }}
+                className="flex items-center gap-3 p-3 rounded-xl bg-destructive/10 text-destructive w-full text-left"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="text-xs font-medium tracking-tight ml-2">Sign Out</span>
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* ── Mobile Bottom Navigation ─────────────────────────────── */}
-      <div className="md:hidden fixed bottom-4 left-4 right-4 h-16 bg-card/95 backdrop-blur-xl border border-border/50 rounded-3xl z-50 flex items-center overflow-x-auto scrollbar-hide px-4 gap-2 shadow-2xl">
-        {menuItems.map((item) => {
+      <div className="md:hidden fixed bottom-4 left-4 right-4 h-16 bg-card/95 backdrop-blur-xl border border-border/50 rounded-3xl z-50 flex items-center justify-between px-4 gap-2 shadow-2xl">
+        {mobileMenuItems.map((item) => {
           const isActive =
             item.href === "/"
               ? pathname === "/"
@@ -509,7 +616,7 @@ export function Sidebar() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center justify-center min-w-[52px] py-2 rounded-xl transition-all duration-300 relative shrink-0",
+                "flex flex-col items-center justify-center py-2 rounded-xl transition-all duration-300 relative shrink-0 flex-1",
                 isActive ? "text-primary" : "text-muted-foreground",
               )}
             >
@@ -520,11 +627,6 @@ export function Sidebar() {
                 )}
               >
                 <Icon className={cn("h-5 w-5", isActive && "text-primary")} />
-                {item.badge && unreadCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 h-3.5 w-3.5 rounded-full bg-red-500 text-white text-[7px] font-black flex items-center justify-center">
-                    {unreadCount > 9 ? "9+" : unreadCount}
-                  </span>
-                )}
               </div>
               <span
                 className={cn(
@@ -532,17 +634,37 @@ export function Sidebar() {
                   isActive ? "opacity-100" : "opacity-50",
                 )}
               >
-                {item.label.split(" ")[0]}
+                {item.label}
               </span>
-              {isActive && (
-                <motion.div
-                  layoutId="mobileActive"
-                  className="absolute -top-1 left-1/2 -translate-x-1/2 h-1 w-4 bg-primary rounded-full"
-                />
-              )}
             </Link>
           );
         })}
+
+        {/* More Button */}
+        <button
+          onClick={() => setIsMobileMoreOpen(!isMobileMoreOpen)}
+          className={cn(
+            "flex flex-col items-center justify-center py-2 rounded-xl transition-all duration-300 relative shrink-0 flex-1",
+            isMobileMoreOpen ? "text-primary" : "text-muted-foreground",
+          )}
+        >
+          <div
+            className={cn(
+              "p-2 rounded-xl transition-all duration-300 relative",
+              isMobileMoreOpen ? "bg-primary/15 scale-110" : "hover:bg-muted",
+            )}
+          >
+            <Menu className="h-5 w-5" />
+          </div>
+          <span
+            className={cn(
+              "text-[8px] font-black uppercase tracking-widest mt-1",
+              isMobileMoreOpen ? "opacity-100" : "opacity-50",
+            )}
+          >
+            More
+          </span>
+        </button>
       </div>
 
       <LogoutConfirmDialog

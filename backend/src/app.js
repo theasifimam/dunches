@@ -18,6 +18,7 @@ import subscriberRoutes from './routes/subscriber.routes.js';
 import settingRoutes from './routes/setting.routes.js';
 import bookingRoutes from './routes/booking.routes.js';
 import notificationRoutes from './routes/notification.routes.js';
+import feedbackRoutes from './routes/feedback.routes.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 
 // Environment variables are loaded in the main entry point (index.js)
@@ -70,6 +71,7 @@ app.use('/api/v1/subscribers', subscriberRoutes);
 app.use('/api/v1/settings', settingRoutes);
 app.use('/api/v1/bookings', bookingRoutes);
 app.use('/api/v1/notifications', notificationRoutes);
+app.use('/api/v1/feedbacks', feedbackRoutes);
 
 // 404 handler
 app.use((_req, res) => {

@@ -78,6 +78,29 @@ export default function DashboardPage() {
     );
   }
   const { monthlyRevenue, monthLabels, recentOrders } = dashboardData;
+  const colorStyles = {
+    primary: {
+      bg: "bg-primary/10 text-primary",
+      border: "hover:border-primary/30",
+      badge: "bg-primary/10 text-primary",
+    },
+    blue: {
+      bg: "bg-blue-500/10 text-blue-500",
+      border: "hover:border-blue-500/30",
+      badge: "bg-blue-500/10 text-blue-500",
+    },
+    purple: {
+      bg: "bg-purple-500/10 text-purple-500",
+      border: "hover:border-purple-500/30",
+      badge: "bg-purple-500/10 text-purple-500",
+    },
+    orange: {
+      bg: "bg-orange-500/10 text-orange-500",
+      border: "hover:border-orange-500/30",
+      badge: "bg-orange-500/10 text-orange-500",
+    },
+  };
+
   return (
     <div className="space-y-8 md:space-y-12 pb-10">
       <PageHeader
@@ -97,63 +120,67 @@ export default function DashboardPage() {
             <div className="h-full w-full bg-primary rounded-full animate-pulse" />
           </div>
         </div>
-        <div className="p-6 rounded-3xl bg-primary text-primary-foreground shadow-lg shadow-primary/20 flex flex-col gap-2 min-w-[140px] md:min-w-[160px]">
-          <p className="text-[10px] font-black uppercase tracking-widest opacity-60">
+        <div className="p-6 rounded-3xl bg-card/50 backdrop-blur-md border border-white/10 shadow-sm flex flex-col gap-2 min-w-[140px] md:min-w-[160px]">
+          <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
             Revenue Target
           </p>
-          <h4 className="text-xl font-black">Trending</h4>
-          <div className="h-1 w-full bg-white/20 rounded-full overflow-hidden">
-            <div className="h-full w-[84%] bg-white rounded-full" />
+          <h4 className="text-xl font-black text-foreground">Trending</h4>
+          <div className="h-1 w-full bg-primary/20 rounded-full overflow-hidden">
+            <div className="h-full w-[84%] bg-primary rounded-full" />
           </div>
         </div>
       </PageHeader>
 
       {/* Stats Grid - Reduced Shadows */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 px-4 md:px-0">
-        {stats.map((stat, i) => (
-          <div
-            key={i}
-            className="group p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] bg-card border hover:border-primary/50 transition-all duration-500 shadow-sm hover:shadow-md relative overflow-hidden"
-          >
-            <div className="flex items-start justify-between mb-6 md:mb-8">
-              <div
-                className={cn(
-                  "h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 duration-500",
-                  stat.color === "primary"
-                    ? "bg-primary text-primary-foreground"
-                    : "bg-muted text-foreground",
-                )}
-              >
-                <stat.icon className="h-4 w-4 md:h-5 md:w-5" />
+        {stats.map((stat, i) => {
+          const colors = colorStyles[stat.color] || colorStyles.primary;
+          return (
+            <div
+              key={i}
+              className={cn(
+                "group p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] bg-card border transition-all duration-500 shadow-sm hover:shadow-md relative overflow-hidden",
+                colors.border
+              )}
+            >
+              <div className="flex items-start justify-between mb-6 md:mb-8">
+                <div
+                  className={cn(
+                    "h-10 w-10 md:h-12 md:w-12 rounded-xl md:rounded-2xl flex items-center justify-center transition-transform group-hover:scale-110 duration-500",
+                    colors.bg
+                  )}
+                >
+                  <stat.icon className="h-4 w-4 md:h-5 md:w-5" />
+                </div>
+                <div
+                  className={cn(
+                    "px-2 py-0.5 rounded-full text-[8px] md:text-[9px] font-black tracking-widest flex items-center gap-1 uppercase",
+                    stat.isPositive
+                      ? colors.badge
+                      : "bg-destructive/10 text-destructive",
+                  )}
+                >
+                  {stat.isPositive ? (
+                    <ArrowUpRight className="h-2 w-2 md:h-2.5 md:w-2.5" />
+                  ) : (
+                    <ArrowDownRight className="h-2 w-2 md:h-2.5 md:w-2.5" />
+                  )}
+                  {stat.change}
+                </div>
               </div>
-              <div
-                className={cn(
-                  "px-2 rounded-full text-[8px] md:text-[9px] font-black tracking-widest flex items-center gap-1 uppercase",
-                  stat.isPositive
-                    ? "bg-primary/10 text-primary"
-                    : "bg-destructive/10 text-destructive",
-                )}
-              >
-                {stat.isPositive ? (
-                  <ArrowUpRight className="h-2 w-2 md:h-2.5 md:w-2.5" />
-                ) : (
-                  <ArrowDownRight className="h-2 w-2 md:h-2.5 md:w-2.5" />
-                )}
-                {stat.change}
-              </div>
-            </div>
 
-            <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-1">
-              {stat.label}
-            </p>
-            <h3 className="text-xl md:text-2xl font-black tracking-tighter mb-2">
-              {stat.value}
-            </h3>
-            <p className="text-[8px] md:text-[9px] font-bold text-muted-foreground/60 uppercase tracking-widest">
-              {stat.description}
-            </p>
-          </div>
-        ))}
+              <p className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground mb-1">
+                {stat.label}
+              </p>
+              <h3 className="text-xl md:text-2xl font-black tracking-tighter mb-2">
+                {stat.value}
+              </h3>
+              <p className="text-[8px] md:text-[9px] font-bold text-muted-foreground/60 uppercase tracking-widest">
+                {stat.description}
+              </p>
+            </div>
+          );
+        })}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 px-4 md:px-0">

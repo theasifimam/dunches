@@ -33,15 +33,15 @@ export const getDashboardMetrics = asyncHandler(async (req, res) => {
         recentOrders
     ] = await Promise.all([
         Order.aggregate([
-            { $match: { paymentStatus: 'paid' } },
+            { $match: { orderStatus: 'delivered' } },
             { $group: { _id: null, total: { $sum: '$finalAmount' } } }
         ]),
         Order.aggregate([
-            { $match: { paymentStatus: 'paid', createdAt: { $gte: thirtyDaysAgo } } },
+            { $match: { orderStatus: 'delivered', createdAt: { $gte: thirtyDaysAgo } } },
             { $group: { _id: null, total: { $sum: '$finalAmount' } } }
         ]),
         Order.aggregate([
-            { $match: { paymentStatus: 'paid', createdAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } } },
+            { $match: { orderStatus: 'delivered', createdAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo } } },
             { $group: { _id: null, total: { $sum: '$finalAmount' } } }
         ]),
         Order.countDocuments({
@@ -65,7 +65,7 @@ export const getDashboardMetrics = asyncHandler(async (req, res) => {
             createdAt: { $gte: sixtyDaysAgo, $lt: thirtyDaysAgo }
         }),
         Order.aggregate([
-            { $match: { paymentStatus: 'paid', createdAt: { $gte: last12Months } } },
+            { $match: { orderStatus: 'delivered', createdAt: { $gte: last12Months } } },
             {
                 $group: {
                     _id: { month: { $month: "$createdAt" }, year: { $year: "$createdAt" } },

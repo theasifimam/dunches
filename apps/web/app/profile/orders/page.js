@@ -180,7 +180,7 @@ export default function OrdersPage() {
     fetchOrders(1);
   }, [user]);
 
-  const fetchOrders = async (pageNum) => {
+  async function fetchOrders(pageNum) {
     setLoading(true);
     setError("");
     try {
@@ -197,7 +197,7 @@ export default function OrdersPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   if (!user) return null;
 

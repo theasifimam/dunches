@@ -3,46 +3,40 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Package, Layers } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { LayoutDashboard, PlusCircle, List, BarChart2, BrainCircuit } from 'lucide-react';
 
-export default function ProductsLayout({ children }) {
+const navItems = [
+  { href: '/consumer-intelligence', label: 'Dashboard', icon: LayoutDashboard },
+  { href: '/consumer-intelligence/new', label: 'New Feedback', icon: PlusCircle },
+  { href: '/consumer-intelligence/list', label: 'Feedback List', icon: List },
+  { href: '/consumer-intelligence/analytics', label: 'Analytics', icon: BarChart2 },
+  { href: '/consumer-intelligence/insights', label: 'AI Insights', icon: BrainCircuit },
+];
+
+export default function ConsumerIntelligenceLayout({ children }) {
   const pathname = usePathname();
-  const tabs = [
-    {
-      id: 'products',
-      label: 'Signature Pieces',
-      href: '/products',
-      icon: Package,
-    },
-    {
-      id: 'categories',
-      label: 'Collection Categories',
-      href: '/products/categories',
-      icon: Layers,
-    },
-  ];
 
   return (
     <div className="flex flex-col gap-6 w-full max-w-7xl mx-auto pb-12">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-serif font-light tracking-tight text-foreground">
-          Products <span className="text-primary italic font-black font-sans">Catalog</span>
+          Consumer <span className="text-primary italic font-black font-sans">Intelligence</span>
         </h1>
         <p className="text-sm text-muted-foreground">
-          Manage the blueprint of precision. Every snack category, recipe, and SKU cataloged for distribution.
+          Collect, analyze, and extract insights from customer sampling and feedback.
         </p>
       </div>
 
       {/* Sub-Navigation */}
       <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-hide border-b border-border/30">
-        {tabs.map((tab) => {
-          const isActive = pathname === tab.href;
-          const Icon = tab.icon;
+        {navItems.map((item) => {
+          const isActive = pathname === item.href;
+          const Icon = item.icon;
           return (
             <Link
-              key={tab.id}
-              href={tab.href}
+              key={item.href}
+              href={item.href}
               className={cn(
                 'flex items-center gap-2 px-4 py-2.5 rounded-t-xl text-sm font-medium transition-all duration-200 border-b-2',
                 isActive
@@ -51,7 +45,7 @@ export default function ProductsLayout({ children }) {
               )}
             >
               <Icon className="h-4 w-4 shrink-0" />
-              <span className="whitespace-nowrap">{tab.label}</span>
+              <span className="whitespace-nowrap">{item.label}</span>
             </Link>
           );
         })}

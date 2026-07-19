@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element, react-hooks/exhaustive-deps */
 "use client";
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import {
   Search,
@@ -22,6 +23,7 @@ const UserDialog = dynamic(
   () => import("@/components/admin/UserDialog").then((mod) => mod.UserDialog),
   { ssr: false },
 );
+
 const BroadcastDialog = dynamic(
   () =>
     import("@/components/admin/BroadcastDialog").then(
@@ -51,14 +53,22 @@ export default function UsersPage() {
   // Subscribers Modals & state
   const [isBroadcastDialogOpen, setIsBroadcastDialogOpen] = useState(false);
   // RTK Query
-  const { data: usersData, isLoading: isUsersLoading, isError: isUsersError } = useGetUsersQuery();
+  const {
+    data: usersData,
+    isLoading: isUsersLoading,
+    isError: isUsersError,
+  } = useGetUsersQuery();
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
   const { data: subscribersData, isLoading: isSubLoading } =
     useGetSubscribersQuery();
   const [sendNewsletter, { isLoading: isSending }] =
     useSendNewsletterMutation();
-  const users = usersData?.data && usersData.data.length > 0 ? usersData.data : DUMMY_USERS;
-  const subscribers = subscribersData?.data && subscribersData.data.length > 0 ? subscribersData.data : DUMMY_SUBSCRIBERS;
+  const users =
+    usersData?.data && usersData.data.length > 0 ? usersData.data : DUMMY_USERS;
+  const subscribers =
+    subscribersData?.data && subscribersData.data.length > 0
+      ? subscribersData.data
+      : DUMMY_SUBSCRIBERS;
   const activeCount = subscribers.filter((s) => s.isActive).length;
   const filteredUsers = useMemo(() => {
     const lowSearch = debouncedSearch.toLowerCase();
@@ -118,7 +128,8 @@ export default function UsersPage() {
       }
     }
   };
-  const isLoadingCombined = (isUsersLoading || isSubLoading) && !usersData && !subscribersData;
+  const isLoadingCombined =
+    (isUsersLoading || isSubLoading) && !usersData && !subscribersData;
   if (isLoadingCombined) {
     return (
       <div className="flex h-[400px] items-center justify-center">
@@ -127,180 +138,149 @@ export default function UsersPage() {
     );
   }
   return (
-    <div className="space-y-8 md:space-y-12 pb-10">
-      <PageHeader
-        badgeIcon={Shield}
-        badgeText="Identity Command"
-        titleMain="The Citizen"
-        titleAccent="Registry"
-        description="Curating the global community of makhāna ambassadors. Managing privileges and profiles with architectural precision."
-      >
-        <div className="h-16 md:h-20 px-6 md:px-8 rounded-2xl md:rounded-[2rem] bg-card/80 backdrop-blur-md border-2 border-primary/10 shadow-sm flex flex-col justify-center gap-0.5 md:gap-1 min-w-[180px] md:min-w-[200px] hover:border-primary/30 transition-all duration-500">
-          <p className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
-            Verified Ambassadors
+    <div className="flex flex-col gap-6 w-full max-w-7xl mx-auto pb-12 animate-in fade-in duration-700">
+      {/* Header Actions */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-serif font-light tracking-tight text-foreground">
+            Ambassadors{" "}
+            <span className="text-primary italic font-black font-sans">
+              Registry
+            </span>
+          </h1>
+          <p className="text-sm text-muted-foreground">
+            Curate the community of snack lovers. Manage privileges, profiles,
+            and active subscribers.
           </p>
-          <div className="flex items-end justify-between">
-            <h4 className="text-xl md:text-2xl font-black italic leading-none">
-              {users.length * 312}
-            </h4>
-            <div className="flex items-center gap-1 text-primary text-[9px] md:text-[10px] font-black italic uppercase">
-              <TrendingUp className="h-3 w-3" /> +24
-            </div>
-          </div>
         </div>
-        <div className="h-16 md:h-20 px-6 md:px-8 rounded-2xl md:rounded-[2rem] bg-card/80 backdrop-blur-md border-2 border-primary/10 shadow-sm flex flex-col justify-center gap-0.5 md:gap-1 min-w-[180px] md:min-w-[200px]">
-          <p className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
-            Active Subscribers
-          </p>
-          <div className="flex items-end justify-between">
-            <h4 className="text-xl md:text-2xl font-black italic leading-none">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="flex items-center gap-4 bg-card border border-border/40 px-5 py-3 rounded-2xl shadow-sm">
+            <div className="text-xs text-muted-foreground uppercase font-bold tracking-wider">
+              Subscribers:
+            </div>
+            <div className="text-xl font-black text-primary font-serif leading-none">
               {activeCount}
-            </h4>
-            <div className="flex items-center gap-1 text-primary text-[9px] md:text-[10px] font-black italic uppercase">
-              <ShieldCheck className="h-3 w-3" /> Verified
             </div>
           </div>
-        </div>
-        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
           <Button
             onClick={() => setIsBroadcastDialogOpen(true)}
-            variant="signature"
-            size="xl"
-            className="h-16 md:h-20 w-full sm:w-auto"
+            variant="outline"
+            className="rounded-full px-5 h-11 text-xs font-bold uppercase tracking-wider"
           >
-            <div className="flex flex-col items-center gap-0.5 md:gap-1">
-              <Send className="h-4 w-4 md:h-5 md:w-5 group-hover/btn:scale-110 transition-transform duration-500" />
-              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em]">
-                Broadcast
-              </span>
-            </div>
+            Broadcast
           </Button>
           <Button
             onClick={openAddDialog}
             variant="signature"
-            size="xl"
-            className="h-16 md:h-20 w-full sm:w-auto"
+            className="rounded-full px-5 h-11 text-xs font-bold uppercase tracking-wider bg-primary text-primary-foreground hover:bg-primary/95"
           >
-            <div className="flex flex-col items-center gap-0.5 md:gap-1">
-              <UserIcon className="h-4 w-4 md:h-5 md:w-5 group-hover/btn:scale-110 transition-transform duration-500" />
-              <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em]">
-                Enroll
-              </span>
-            </div>
+            + Enroll User
           </Button>
         </div>
-      </PageHeader>
+      </div>
 
       {/* Registry Health Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 px-4 md:px-0">
-        {pulseStats.map((stat, i) => (
-          <div
-            key={i}
-            className="p-5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] bg-card border shadow-sm flex items-center gap-4 md:gap-5 group hover:border-primary/20 transition-all"
-          >
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {pulseStats.map((stat, i) => {
+          const Icon = stat.icon;
+          return (
             <div
-              className={cn(
-                "h-10 w-10 md:h-12 md:w-12 rounded-2xl md:rounded-2xl flex items-center justify-center shrink-0 transition-transform group-hover:scale-110",
-                stat.color === "primary"
-                  ? "bg-primary text-primary-foreground"
-                  : stat.color === "purple"
-                    ? "bg-purple-500/10 text-purple-600"
-                    : "bg-orange-500/10 text-orange-600",
-              )}
+              key={i}
+              className="bg-card border border-border/40 p-5 rounded-3xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group"
             >
-              <stat.icon className="h-4 w-4 md:h-5 md:w-5" />
-            </div>
-            <div>
-              <p className="text-[9px] md:text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">
+              <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                <Icon className="h-16 w-16 text-primary" />
+              </div>
+              <div
+                className={cn(
+                  "w-10 h-10 rounded-2xl flex items-center justify-center mb-4",
+                  stat.color === "primary"
+                    ? "bg-primary/10 text-primary"
+                    : "bg-muted text-foreground",
+                )}
+              >
+                <Icon className="h-5 w-5" />
+              </div>
+              <p className="text-xs font-semibold text-muted-foreground mb-1">
                 {stat.label}
               </p>
-              <h4 className="text-lg md:text-xl font-black italic">
+              <h4 className="text-2xl font-bold text-foreground leading-none">
                 {stat.value}
               </h4>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Filters Bar */}
-      <div className="flex flex-col md:flex-row items-center gap-4 p-4 rounded-[2rem] bg-card/50 border border-primary/5 backdrop-blur-md mx-4 md:mx-0">
+      <div className="flex flex-col md:flex-row items-center gap-4 p-4 rounded-2xl bg-card border border-border/40 w-full">
         <div className="relative flex-1 w-full group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
             placeholder="Search by name, email or registry ID..."
-            className="h-11 md:h-12 w-full pl-12 pr-4 bg-muted/20 border-none rounded-2xl font-bold text-sm focus-visible:ring-2 focus-visible:ring-primary/20"
+            className="h-12 w-full pl-12 pr-4 bg-card border border-border/60 rounded-xl font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="flex gap-2 w-full md:w-auto">
-          <div className="flex bg-muted/20 p-1 rounded-2xl border border-primary/5 items-center">
-            {["all", "user", "moderator", "admin", "subscribers"].map(
-              (role) => (
-                <button
-                  key={role}
-                  onClick={() => setRoleFilter(role)}
-                  className={cn(
-                    "px-4 py-2 rounded-lg text-[9px] font-black uppercase tracking-widest transition-all",
-                    roleFilter === role
-                      ? "bg-primary text-primary-foreground shadow-lg"
-                      : "text-muted-foreground hover:text-primary",
-                  )}
-                >
-                  {role}
-                </button>
-              ),
-            )}
-          </div>
+        <div className="flex gap-2 w-full md:w-auto overflow-x-auto pb-2 md:pb-0 scrollbar-none">
+          {["all", "user", "moderator", "admin", "subscribers"].map((role) => (
+            <button
+              key={role}
+              onClick={() => setRoleFilter(role)}
+              className={cn(
+                "px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all border",
+                roleFilter === role
+                  ? "bg-primary text-primary-foreground border-primary shadow-md"
+                  : "bg-background border-border/60 text-muted-foreground hover:bg-muted",
+              )}
+            >
+              {role}
+            </button>
+          ))}
         </div>
       </div>
 
       {/* Users Table */}
-      <div className="rounded-[3rem] bg-card border shadow-md border-primary/5 overflow-hidden relative mx-4 md:mx-0">
+      <div className="rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
         <div className="overflow-x-auto">
           {roleFilter === "subscribers" ? (
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b bg-muted/10">
-                  <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 w-24">
-                    #
-                  </th>
-                  <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
-                    Email Address
-                  </th>
-                  <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
-                    Status
-                  </th>
-                  <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-muted/30 text-muted-foreground font-semibold">
+                <tr>
+                  <th className="px-4 py-4 w-12">#</th>
+                  <th className="px-4 py-4">Email Address</th>
+                  <th className="px-4 py-4">Status</th>
+                  <th className="px-4 py-4 hidden sm:table-cell">
                     Subscribed On
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-primary/5">
+              <tbody className="divide-y divide-border/20">
                 {filteredSubscribers.map((sub, idx) => (
                   <tr
                     key={sub._id}
-                    className="group hover:bg-primary/3 transition-all duration-500"
+                    className="hover:bg-muted/10 transition-colors"
                   >
-                    <td className="p-8 text-[10px] font-bold text-muted-foreground">
+                    <td className="px-4 py-4 text-xs font-bold text-muted-foreground">
                       {idx + 1}
                     </td>
-                    <td className="p-8 text-sm font-bold tracking-tight">
+                    <td className="px-4 py-4 text-sm font-bold tracking-tight">
                       {sub.email}
                     </td>
-                    <td className="p-8">
+                    <td className="px-4 py-4">
                       <div className="flex items-center gap-1.5">
                         <div
                           className={`h-1.5 w-1.5 rounded-full ${sub.isActive ? "bg-primary" : "bg-muted-foreground/30"}`}
                         />
                         <span
-                          className={`text-[9px] font-black uppercase tracking-widest ${sub.isActive ? "text-primary" : "text-muted-foreground/50"}`}
+                          className={`text-[10px] font-bold uppercase tracking-wider ${sub.isActive ? "text-primary" : "text-muted-foreground/50"}`}
                         >
                           {sub.isActive ? "Active" : "Unsubscribed"}
                         </span>
                       </div>
                     </td>
-                    <td className="p-8 text-xs font-bold">
+                    <td className="px-4 py-4 text-xs font-bold text-muted-foreground hidden sm:table-cell">
                       {new Date(sub.createdAt).toLocaleDateString()}
                     </td>
                   </tr>
@@ -309,7 +289,7 @@ export default function UsersPage() {
                   <tr>
                     <td
                       colSpan={4}
-                      className="p-8 text-center text-muted-foreground text-sm"
+                      className="px-6 py-12 text-center text-muted-foreground text-sm"
                     >
                       No subscribers found.
                     </td>
@@ -318,39 +298,32 @@ export default function UsersPage() {
               </tbody>
             </table>
           ) : (
-            <table className="w-full text-left">
-              <thead>
-                <tr className="border-b bg-muted/10">
-                  <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 w-24 text-center">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-muted/30 text-muted-foreground font-semibold">
+                <tr>
+                  <th className="px-4 py-4 w-16 text-center hidden xs:table-cell">
                     Avatar
                   </th>
-                  <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
-                    Identity
-                  </th>
-                  <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-center">
-                    Privilege
-                  </th>
-                  <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
+                  <th className="px-4 py-4">Identity</th>
+                  <th className="px-4 py-4 text-center">Privilege</th>
+                  <th className="px-4 py-4 hidden sm:table-cell">
                     Verification
                   </th>
-                  <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60">
+                  <th className="px-4 py-4 hidden md:table-cell">
                     Last Presence
                   </th>
-                  <th className="p-8 text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/60 text-right">
-                    Actions
-                  </th>
+                  <th className="px-4 py-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-primary/5">
+              <tbody className="divide-y divide-border/20">
                 {filteredUsers.map((user) => (
                   <tr
                     key={user._id}
-                    className="group hover:bg-primary/3 transition-all duration-500"
+                    className="group hover:bg-muted/10 transition-colors"
                   >
-                    <td className="p-8">
-                      <div className="relative h-14 w-14 mx-auto">
-                        <div className="absolute inset-0 bg-primary/10 blur-lg rounded-full scale-75 opacity-0 group-hover:opacity-100 transition-opacity" />
-                        <div className="relative h-full w-full rounded-2xl overflow-hidden border border-white/10 shadow-sm bg-muted flex items-center justify-center z-10">
+                    <td className="px-4 py-4 hidden xs:table-cell">
+                      <div className="relative h-11 w-11 mx-auto">
+                        <div className="relative h-full w-full rounded-xl overflow-hidden border border-border/30 shadow-sm bg-muted flex items-center justify-center">
                           {user.avatar ? (
                             <img
                               src={user.avatar}
@@ -368,52 +341,55 @@ export default function UsersPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="p-8">
-                      <div className="max-w-[250px]">
-                        <p className="font-black text-sm uppercase tracking-tight mb-1 leading-none">
+                    <td className="px-4 py-4">
+                      <div className="max-w-[150px] sm:max-w-[250px]">
+                        <Link
+                          href={`/customers/${user._id}`}
+                          className="font-bold text-sm text-foreground mb-0.5 leading-tight truncate hover:text-primary transition-colors block"
+                        >
                           {user.name}
-                        </p>
-                        <p className="text-[10px] font-bold text-muted-foreground lowercase tracking-widest flex items-center gap-1.5 opacity-60 italic">
+                        </Link>
+                        <p className="text-[10px] font-medium text-muted-foreground lowercase tracking-wide opacity-80 truncate">
                           {user.email}
                         </p>
                       </div>
                     </td>
-                    <td className="p-8 text-center">
+                    <td className="px-4 py-4 text-center">
                       <div
                         className={cn(
-                          "inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[9px] font-black uppercase tracking-[0.2em] border shadow-sm",
+                          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
                           user.role === "admin"
-                            ? "bg-primary text-primary-foreground border-primary shadow-primary/20"
+                            ? "bg-primary text-primary-foreground border-primary/20"
                             : user.role === "moderator"
                               ? "bg-purple-500/10 text-purple-600 border-purple-500/20"
-                              : "bg-muted/50 text-muted-foreground border-primary/5",
+                              : "bg-muted/50 text-muted-foreground border-border/20",
                         )}
                       >
                         {user.role}
                       </div>
                     </td>
-                    <td className="p-8">
+                    <td className="px-4 py-4 hidden sm:table-cell">
                       <div className="flex items-center gap-2">
                         {user.isEmailVerified ? (
                           <div className="flex items-center gap-1.5 text-primary">
                             <CheckCircle2 className="h-3.5 w-3.5" />
-                            <span className="text-[9px] font-black uppercase tracking-widest">
+                            <span className="text-[10px] font-bold uppercase tracking-wider">
                               Verified
                             </span>
                           </div>
                         ) : (
-                          <div className="flex items-center gap-1.5 text-muted-foreground/40">
+                          <div className="flex items-center gap-1.5 text-muted-foreground/50">
                             <XCircle className="h-3.5 w-3.5" />
-                            <span className="text-[9px] font-black uppercase tracking-widest">
+                            <span className="text-[10px] font-bold uppercase tracking-wider">
                               Pending
                             </span>
                           </div>
                         )}
                       </div>
                     </td>
-                    <td className="p-8">
+                    <td className="px-4 py-4 hidden md:table-cell">
                       <div className="flex flex-col">
-                        <span className="text-xs font-bold leading-none mb-1.5">
+                        <span className="text-xs font-bold leading-none mb-1">
                           {new Date(user.createdAt).toLocaleDateString()}
                         </span>
                         <div className="flex items-center gap-1.5">
@@ -427,7 +403,7 @@ export default function UsersPage() {
                           />
                           <span
                             className={cn(
-                              "text-[9px] font-black uppercase tracking-widest",
+                              "text-[10px] font-bold uppercase tracking-wider",
                               user.isActive
                                 ? "text-primary"
                                 : "text-muted-foreground/50",
@@ -438,24 +414,24 @@ export default function UsersPage() {
                         </div>
                       </div>
                     </td>
-                    <td className="p-8 text-right">
-                      <div className="flex items-center justify-end gap-2 translate-x-4 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-500">
+                    <td className="px-4 py-4 text-right">
+                      <div className="flex items-center justify-end gap-1 sm:gap-1.5 sm:opacity-0 group-hover:opacity-100 transition-opacity">
                         <Button
                           variant="ghost"
                           size="icon"
                           onClick={() => openEditDialog(user)}
-                          className="h-12 w-12 rounded-2xl hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20 transition-all"
+                          className="h-8 w-8 rounded-xl hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20 transition-all"
                         >
-                          <Edit2 className="h-4 w-4" />
+                          <Edit2 className="h-3.5 w-3.5" />
                         </Button>
                         <Button
                           variant="ghost"
                           size="icon"
                           disabled={isDeleting}
                           onClick={() => handleDelete(user._id)}
-                          className="h-12 w-12 rounded-2xl hover:bg-destructive/10 hover:text-destructive border border-transparent hover:border-destructive/20 transition-all"
+                          className="h-8 w-8 rounded-xl hover:bg-destructive/10 hover:text-destructive border border-transparent hover:border-destructive/20 transition-all"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3.5 w-3.5" />
                         </Button>
                       </div>
                     </td>
@@ -473,13 +449,13 @@ export default function UsersPage() {
         />
 
         {/* Pagination */}
-        <div className="p-6 md:p-8 border-t border-primary/5 bg-primary/1 flex flex-col sm:flex-row items-center justify-between gap-6">
-          <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground text-center sm:text-left">
-            Registry Sync:{" "}
+        <div className="p-4 md:p-6 border-t border-border/40 bg-muted/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-muted-foreground">
+            Showing{" "}
             {roleFilter === "subscribers"
               ? filteredSubscribers.length
               : filteredUsers.length}{" "}
-            active verified identities
+            entries
           </p>
           <Pagination
             currentPage={page}

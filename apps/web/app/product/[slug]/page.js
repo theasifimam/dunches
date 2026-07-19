@@ -35,12 +35,10 @@ export default function ProductDetailPage({ params }) {
     );
   }
 
-  // Simulated multi-image stack using the primary image and siblings
-  const images = [
-    dish.image,
-    "https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?q=80&w=800&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1607344645866-009c320c5ab8?q=80&w=800&auto=format&fit=crop",
-  ];
+  // Dynamic image stack utilizing product images or falling back to primary image
+  const images = dish.images && dish.images.length > 0
+    ? dish.images
+    : [dish.image].filter(Boolean);
 
   const handleAddToCart = () => {
     dispatch(addToCart({ ...dish, quantity }));
@@ -86,8 +84,8 @@ export default function ProductDetailPage({ params }) {
                         rotate: isCenter ? 0 : (offset * 4),
                       }}
                       transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                      className={`absolute inset-0 rounded-[3rem] overflow-hidden modern-shadow border-8 border-background bg-slate-100 dark:bg-slate-900 cursor-pointer ${isCenter ? 'z-50' : 'z-0 pointer-events-none'}`}
-                      onClick={nextImage}
+                      className={`absolute inset-0 rounded-[3rem] overflow-hidden modern-shadow border-8 border-background bg-slate-100 dark:bg-slate-900 ${images.length > 1 ? 'cursor-pointer' : 'cursor-default'} ${isCenter ? 'z-50' : 'z-0 pointer-events-none'}`}
+                      onClick={images.length > 1 ? nextImage : undefined}
                     >
                       <Image
                         src={img}
@@ -103,18 +101,20 @@ export default function ProductDetailPage({ params }) {
             </div>
 
             {/* Interaction Prompt */}
-            <button
-              onClick={nextImage}
-              className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 group"
-            >
-              <div className="flex gap-1">
-                {images.map((_, i) => (
-                  <div key={i} className={`h-1 transition-all duration-500 rounded-full ${i === activeImageIndex ? 'w-8 bg-primary' : 'w-2 bg-foreground/10'}`} />
-                ))}
-              </div>
-              <span className="text-[10px] font-black uppercase tracking-widest opacity-40 group-hover:opacity-100 transition-opacity">Slide to explore</span>
-              <ArrowRight className="w-4 h-4 text-primary animate-bounce-x" />
-            </button>
+            {images.length > 1 && (
+              <button
+                onClick={nextImage}
+                className="absolute -bottom-8 left-1/2 -translate-x-1/2 flex items-center gap-4 group"
+              >
+                <div className="flex gap-1">
+                  {images.map((_, i) => (
+                    <div key={i} className={`h-1 transition-all duration-500 rounded-full ${i === activeImageIndex ? 'w-8 bg-primary' : 'w-2 bg-foreground/10'}`} />
+                  ))}
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest opacity-40 group-hover:opacity-100 transition-opacity">Slide to explore</span>
+                <ArrowRight className="w-4 h-4 text-primary animate-bounce-x" />
+              </button>
+            )}
           </div>
 
           {/* Narrative Details */}
