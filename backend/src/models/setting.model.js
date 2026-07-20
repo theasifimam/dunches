@@ -45,7 +45,15 @@ const settingSchema = new mongoose.Schema(
     whatsappNumber: {
       type: String,
       default: '',
-    }
+    },
+    teamMembers: [
+      {
+        name: { type: String, required: true },
+        role: { type: String, required: true },
+        description: { type: String },
+        image: { type: String }, // URL or path
+      }
+    ]
   },
   { timestamps: true }
 );

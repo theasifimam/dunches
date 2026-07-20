@@ -20,6 +20,7 @@ const NotificationSchema = new Schema(
       customerEmail: { type: String },
       productName: { type: String },
       rating: { type: Number },
+      comment: { type: String },
       orderStatus: { type: String },
       paymentMethod: { type: String },
       itemCount: { type: Number },

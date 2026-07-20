@@ -27,6 +27,31 @@ export const updateSetting = asyncHandler(async (req, res) => {
         data.previewImage = `/uploads/${req.file.filename}`;
     }
 
+    if (data.teamMembers) {
+        try {
+            const parsedTeam = JSON.parse(data.teamMembers);
+            data.teamMembers = parsedTeam.map(member => {
+                // If member.image matches FILE:X, replace it with the uploaded file path
+                if (member.image && member.image.startsWith('FILE:')) {
+                    const fileIndex = parseInt(member.image.split(':')[1], 10);
+                    if (req.files && req.files['teamImages'] && req.files['teamImages'][fileIndex]) {
+                        return {
+                            ...member,
+                            image: `/uploads/${req.files['teamImages'][fileIndex].filename}`
+                        };
+                    } else {
+                        // If file not found, keep it empty or as is
+                        return { ...member, image: '' };
+                    }
+                }
+                return member;
+            });
+        } catch (e) {
+            console.error("Error parsing teamMembers:", e);
+            delete data.teamMembers;
+        }
+    }
+
     let setting = await Setting.findOne();
     if (!setting) {
         setting = await Setting.create({});

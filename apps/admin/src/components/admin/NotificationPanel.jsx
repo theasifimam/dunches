@@ -114,7 +114,13 @@ export function NotificationPanel() {
     ) {
       router.push("/orders");
     } else if (notif.type === "new_complaint") {
-      router.push("/customers");
+      const email = notif.data?.customerEmail || "";
+      const subject = encodeURIComponent(notif.title || "Complaint Received");
+      const descMessage = notif.data?.comment || notif.message || "";
+      const body = encodeURIComponent(
+        `Dear Customer,\n\nWe received your complaint:\n"${descMessage}"\n\n`
+      );
+      window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
     }
   };
 

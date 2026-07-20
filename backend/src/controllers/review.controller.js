@@ -111,6 +111,7 @@ export const createReview = asyncHandler(async (req, res) => {
       customerEmail: userDoc?.email,
       productName: productDoc?.name,
       rating: review.rating,
+      comment: review.comment,
     },
   }).catch((e) => console.error('[Notification] Failed to save:', e.message));
   sendNewComplaintAdminEmail(review, userDoc, productDoc);

@@ -58,7 +58,9 @@ export default function EditProfilePage() {
   const avatarSrc =
     avatarPreview ||
     (user?.avatar
-      ? (user.avatar.startsWith("/uploads") ? user.avatar : `/uploads/${user.avatar}`)
+      ? user.avatar.startsWith("/uploads")
+        ? user.avatar
+        : `/uploads/${user.avatar}`
       : null);
 
   const set = (field) => (e) => {
@@ -199,7 +201,7 @@ export default function EditProfilePage() {
                 value={form.name}
                 onChange={set("name")}
                 placeholder="Your full name"
-                className="rounded-xl border-border/50 bg-foreground/3 focus-visible:ring-primary/30 h-11"
+                className="rounded-3xl border-border/50 bg-foreground/3 focus-visible:ring-primary/30 h-11"
               />
             </div>
 
@@ -222,7 +224,7 @@ export default function EditProfilePage() {
                   }));
                 }}
                 placeholder="+91 XXXXXXXXXX"
-                className="rounded-xl border-border/50 bg-foreground/3 focus-visible:ring-primary/30 h-11"
+                className="rounded-3xl border-border/50 bg-foreground/3 focus-visible:ring-primary/30 h-11"
               />
             </div>
 
@@ -239,7 +241,7 @@ export default function EditProfilePage() {
                 type="date"
                 value={form.dateOfBirth}
                 onChange={set("dateOfBirth")}
-                className="rounded-xl border-border/50 bg-foreground/3 focus-visible:ring-primary/30 h-11"
+                className="rounded-3xl border-border/50 bg-foreground/3 focus-visible:ring-primary/30 h-11"
               />
             </div>
 
@@ -253,7 +255,7 @@ export default function EditProfilePage() {
                   <Input
                     value={realEmail}
                     readOnly
-                    className="rounded-xl border-border/30 bg-foreground/1.5 text-foreground/50 cursor-not-allowed h-11 pr-24"
+                    className="rounded-3xl border-border/30 bg-foreground/1.5 text-foreground/50 cursor-not-allowed h-11 pr-24"
                   />
                   <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[8px] font-black uppercase tracking-widest text-foreground/25 bg-foreground/5 px-2 py-1 rounded-full">
                     Read-only
@@ -280,7 +282,7 @@ export default function EditProfilePage() {
                     setSaved(false);
                     setForm((p) => ({ ...p, gender: g }));
                   }}
-                  className={`flex-1 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-widest transition-all ${
+                  className={`flex-1 py-2.5 rounded-3xl border text-[10px] font-black uppercase tracking-widest transition-all ${
                     form.gender === g
                       ? "border-primary bg-primary/10 text-primary"
                       : "border-border/50 text-foreground/40 hover:border-primary/40 hover:text-foreground/70 bg-foreground/2"
@@ -296,7 +298,7 @@ export default function EditProfilePage() {
                     setSaved(false);
                     setForm((p) => ({ ...p, gender: "" }));
                   }}
-                  className="px-3 py-2.5 rounded-xl border border-border/50 text-foreground/30 hover:text-foreground/60 transition-all"
+                  className="px-3 py-2.5 rounded-3xl border border-border/50 text-foreground/30 hover:text-foreground/60 transition-all"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>

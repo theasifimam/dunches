@@ -473,14 +473,11 @@ export default function Navbar() {
         isOpen={isGuestMenuOpen}
         onClose={() => setIsGuestMenuOpen(false)}
       >
-        <div className="flex flex-col gap-3.5 text-center">
-          <div className="text-center pb-4 mb-2 border-b border-border/10">
-            <div className="text-[10px] font-black uppercase tracking-[0.25em] text-primary/85">
-              dunches experiences
-            </div>
-            <div className="text-[9px] text-foreground/45 uppercase tracking-widest font-bold mt-1">
-              Select a channel to explore
-            </div>
+        <div className="flex flex-col gap-1.5">
+          <div className="pb-3 mb-2 border-b border-border/10">
+            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/35">
+              Menu
+            </h3>
           </div>
 
           {/* Theme Mode */}
@@ -489,26 +486,19 @@ export default function Navbar() {
               toggleTheme();
               setIsGuestMenuOpen(false);
             }}
-            className="w-full flex items-center justify-between text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group"
+            className="w-full flex items-center justify-between py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group text-left"
           >
-            <span className="flex items-center gap-4">
-              <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
-                {theme === "dark" ? (
-                  <Sun className="w-4 h-4" />
-                ) : (
-                  <Moon className="w-4 h-4" />
-                )}
-              </div>
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
-                  Theme Mode
-                </p>
-                <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
-                  Toggle between dark and light themes
-                </p>
-              </div>
-            </span>
-            <span className="text-[9px] uppercase font-black text-primary/75 tracking-widest bg-primary/5 px-2.5 py-1 rounded-md">
+            <div className="flex items-center gap-3.5">
+              {theme === "dark" ? (
+                <Sun className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
+              ) : (
+                <Moon className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
+              )}
+              <span className="text-xs font-bold uppercase tracking-wider">
+                Theme Mode
+              </span>
+            </div>
+            <span className="text-[9px] uppercase font-black tracking-widest bg-primary/10 text-primary px-2.5 py-0.5 rounded-full">
               {theme === "dark" ? "Dark" : "Light"}
             </span>
           </button>
@@ -519,21 +509,12 @@ export default function Navbar() {
             className="w-full"
             onClick={() => setIsGuestMenuOpen(false)}
           >
-            <button className="w-full flex items-center text-left py-4 px-5 rou3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
-              <span className="flex items-center gap-4">
-                <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
-                  <HelpCircle className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
-                    About Us
-                  </p>
-                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
-                    Our story, promise & organic sourcing
-                  </p>
-                </div>
+            <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
+              <HelpCircle className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
+              <span className="text-xs font-bold uppercase tracking-wider">
+                About Us
               </span>
-            </button>
+            </div>
           </Link>
 
           {/* Contact Us */}
@@ -542,21 +523,12 @@ export default function Navbar() {
             className="w-full"
             onClick={() => setIsGuestMenuOpen(false)}
           >
-            <button className="w-full flex items-center text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
-              <span className="flex items-center gap-4">
-                <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
-                  <MessageSquare className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
-                    Contact Support
-                  </p>
-                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
-                    WhatsApp, Email, support box to admin
-                  </p>
-                </div>
+            <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
+              <MessageSquare className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
+              <span className="text-xs font-bold uppercase tracking-wider">
+                Contact Support
               </span>
-            </button>
+            </div>
           </Link>
 
           {/* Privacy Policy */}
@@ -565,21 +537,12 @@ export default function Navbar() {
             className="w-full"
             onClick={() => setIsGuestMenuOpen(false)}
           >
-            <button className="w-full flex items-center text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
-              <span className="flex items-center gap-4">
-                <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
-                  <Lock className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
-                    Privacy Policy
-                  </p>
-                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
-                    How we encrypt and protect cookies
-                  </p>
-                </div>
+            <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
+              <Lock className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
+              <span className="text-xs font-bold uppercase tracking-wider">
+                Privacy Policy
               </span>
-            </button>
+            </div>
           </Link>
 
           {/* Terms & Conditions */}
@@ -588,43 +551,34 @@ export default function Navbar() {
             className="w-full"
             onClick={() => setIsGuestMenuOpen(false)}
           >
-            <button className="w-full flex items-center text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
-              <span className="flex items-center gap-4">
-                <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
-                  <BookOpen className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
-                    Terms of Use
-                  </p>
-                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
-                    COD policies and food allergens warning
-                  </p>
-                </div>
+            <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
+              <BookOpen className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
+              <span className="text-xs font-bold uppercase tracking-wider">
+                Terms of Use
               </span>
-            </button>
+            </div>
           </Link>
 
           {/* Login Actions */}
-          <div className="flex flex-col gap-2.5 border-t border-border/10 pt-5 mt-3">
+          <div className="flex flex-col gap-2 border-t border-border/10 pt-4 mt-2">
             <button
               onClick={() => {
                 setIsGuestMenuOpen(false);
                 openAuth("login");
               }}
-              className="w-full flex items-center justify-center gap-2 py-4.5 rounded-2xl bg-primary text-primary-foreground font-black text-[11px] uppercase tracking-[0.15em] hover:bg-primary/90 transition-all shadow-lg shadow-primary/25 cursor-pointer hover:scale-[1.01] active:scale-[0.99] duration-200"
+              className="w-full h-12 rounded-3xl bg-primary text-primary-foreground font-black text-xs uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.99] duration-150"
             >
               <User className="w-4 h-4" />
-              Login to Account
+              Login
             </button>
             <button
               onClick={() => {
                 setIsGuestMenuOpen(false);
                 openAuth("signup");
               }}
-              className="w-full flex items-center justify-center gap-2 py-4.5 rounded-2xl border-2 border-primary/20 text-primary font-black text-[11px] uppercase tracking-[0.15em] hover:bg-primary/5 transition-all cursor-pointer hover:scale-[1.01] active:scale-[0.99] duration-200"
+              className="w-full h-12 rounded-3xl border border-primary/20 text-primary font-black text-xs uppercase tracking-wider hover:bg-primary/5 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99] duration-150"
             >
-              Join the Crave Club
+              Join Dunches
             </button>
           </div>
         </div>
@@ -636,25 +590,25 @@ export default function Navbar() {
           isOpen={isUserMenuOpen}
           onClose={() => setIsUserMenuOpen(false)}
         >
-          <div className="flex flex-col gap-3.5">
+          <div className="flex flex-col gap-1.5">
             {/* User Profile Info Card */}
-            <div className="flex items-center gap-4 pb-5 mb-2 border-b border-border/10">
-              <div className="w-14 h-14 rounded-2xl border border-primary/45 overflow-hidden shrink-0 flex items-center justify-center bg-foreground/5 shadow-inner">
+            <div className="flex items-center gap-3 pb-4 mb-2 border-b border-border/10">
+              <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 flex items-center justify-center bg-foreground/5 border border-border/20">
                 {avatarSrc ? (
                   <img
                     src={avatarSrc}
                     alt="Avatar"
-                    className="w-full h-full object-cover animate-fade-in"
+                    className="w-full h-full object-cover"
                   />
                 ) : (
-                  <User className="w-6 h-6 text-foreground/45" />
+                  <User className="w-4.5 h-4.5 text-foreground/45" />
                 )}
               </div>
               <div className="flex flex-col min-w-0">
-                <span className="text-[14px] font-black font-heading uppercase tracking-widest text-foreground truncate">
+                <span className="text-xs font-black uppercase tracking-wider text-foreground truncate">
                   {user.name}
                 </span>
-                <span className="text-[10px] font-medium text-foreground/45 mt-0.5 truncate">
+                <span className="text-[10px] font-medium text-foreground/40 mt-0.5 truncate">
                   {user.email || "craver@makhana.wellness"}
                 </span>
               </div>
@@ -666,21 +620,12 @@ export default function Navbar() {
               className="w-full"
               onClick={() => setIsUserMenuOpen(false)}
             >
-              <button className="w-full flex items-center text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
-                <span className="flex items-center gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
-                    <User className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
-                      Profile Dashboard
-                    </p>
-                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
-                      Manage details, orders & saved addresses
-                    </p>
-                  </div>
+              <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
+                <User className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
+                <span className="text-xs font-bold uppercase tracking-wider">
+                  Profile Dashboard
                 </span>
-              </button>
+              </div>
             </Link>
 
             {/* Theme Mode */}
@@ -689,26 +634,19 @@ export default function Navbar() {
                 toggleTheme();
                 setIsUserMenuOpen(false);
               }}
-              className="w-full flex items-center justify-between text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group"
+              className="w-full flex items-center justify-between py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group text-left"
             >
-              <span className="flex items-center gap-4">
-                <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
-                  {theme === "dark" ? (
-                    <Sun className="w-4 h-4" />
-                  ) : (
-                    <Moon className="w-4 h-4" />
-                  )}
-                </div>
-                <div>
-                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
-                    Theme Mode
-                  </p>
-                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
-                    Toggle between dark and light themes
-                  </p>
-                </div>
-              </span>
-              <span className="text-[9px] uppercase font-black text-primary/75 tracking-widest bg-primary/5 px-2.5 py-1 rounded-md">
+              <div className="flex items-center gap-3.5">
+                {theme === "dark" ? (
+                  <Sun className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
+                ) : (
+                  <Moon className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
+                )}
+                <span className="text-xs font-bold uppercase tracking-wider">
+                  Theme Mode
+                </span>
+              </div>
+              <span className="text-[9px] uppercase font-black tracking-widest bg-primary/10 text-primary px-2.5 py-0.5 rounded-full">
                 {theme === "dark" ? "Dark" : "Light"}
               </span>
             </button>
@@ -719,21 +657,12 @@ export default function Navbar() {
               className="w-full"
               onClick={() => setIsUserMenuOpen(false)}
             >
-              <button className="w-full flex items-center text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
-                <span className="flex items-center gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
-                    <HelpCircle className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
-                      About Us
-                    </p>
-                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
-                      Our story, promise & organic sourcing
-                    </p>
-                  </div>
+              <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
+                <HelpCircle className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
+                <span className="text-xs font-bold uppercase tracking-wider">
+                  About Us
                 </span>
-              </button>
+              </div>
             </Link>
 
             {/* Contact Us */}
@@ -742,21 +671,12 @@ export default function Navbar() {
               className="w-full"
               onClick={() => setIsUserMenuOpen(false)}
             >
-              <button className="w-full flex items-center text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
-                <span className="flex items-center gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
-                    <MessageSquare className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
-                      Contact Support
-                    </p>
-                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
-                      WhatsApp, Email, support box to admin
-                    </p>
-                  </div>
+              <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
+                <MessageSquare className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
+                <span className="text-xs font-bold uppercase tracking-wider">
+                  Contact Support
                 </span>
-              </button>
+              </div>
             </Link>
 
             {/* Privacy Policy */}
@@ -765,21 +685,12 @@ export default function Navbar() {
               className="w-full"
               onClick={() => setIsUserMenuOpen(false)}
             >
-              <button className="w-full flex items-center text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
-                <span className="flex items-center gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
-                    <Lock className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
-                      Privacy Policy
-                    </p>
-                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
-                      How we encrypt and protect cookies
-                    </p>
-                  </div>
+              <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
+                <Lock className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
+                <span className="text-xs font-bold uppercase tracking-wider">
+                  Privacy Policy
                 </span>
-              </button>
+              </div>
             </Link>
 
             {/* Terms & Conditions */}
@@ -788,21 +699,12 @@ export default function Navbar() {
               className="w-full"
               onClick={() => setIsUserMenuOpen(false)}
             >
-              <button className="w-full flex items-center text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
-                <span className="flex items-center gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
-                    <BookOpen className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
-                      Terms of Use
-                    </p>
-                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
-                      COD policies and food allergens warning
-                    </p>
-                  </div>
+              <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
+                <BookOpen className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
+                <span className="text-xs font-bold uppercase tracking-wider">
+                  Terms of Use
                 </span>
-              </button>
+              </div>
             </Link>
 
             {/* Logout button */}
@@ -811,10 +713,10 @@ export default function Navbar() {
                 setIsUserMenuOpen(false);
                 handleLogout();
               }}
-              className="w-full flex items-center justify-center gap-2 py-4.5 rounded-2xl bg-red-500/10 hover:bg-red-500/15 text-red-500 hover:text-red-600 border border-red-500/20 hover:border-red-500/35 font-black text-[11px] uppercase tracking-[0.15em] transition-all mt-4 cursor-pointer hover:scale-[1.01] active:scale-[0.99]"
+              className="w-full h-12 rounded-3xl bg-red-500/10 hover:bg-red-500/15 text-red-500 font-black text-xs uppercase tracking-wider transition-all mt-4 cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99] duration-150 border border-red-500/10"
             >
               <LogOut className="w-4 h-4" />
-              Sign Out of Account
+              Log Out
             </button>
           </div>
         </BottomSheet>

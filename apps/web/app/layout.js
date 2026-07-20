@@ -1,4 +1,4 @@
-import { Plus_Jakarta_Sans, Lora, Syne } from "next/font/google";
+import { Plus_Jakarta_Sans, Lora, Outfit } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 import Navbar from "@/components/Navbar";
@@ -14,10 +14,10 @@ const lora = Lora({
   subsets: ["latin"],
 });
 
-const syne = Syne({
+const outfit = Outfit({
   variable: "--font-heading",
   subsets: ["latin"],
-  weight: ["400", "700", "800"],
+  weight: ["400", "700", "800", "900"],
 });
 
 export const metadata = {
@@ -29,7 +29,7 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${jakarta.variable} ${lora.variable} ${syne.variable} h-full antialiased transition-colors duration-500`}
+      className={`${jakarta.variable} ${lora.variable} ${outfit.variable} h-full antialiased transition-colors duration-500`}
     >
       <body suppressHydrationWarning className={`min-h-full flex flex-col font-sans bg-background text-foreground`}>
         <Providers>

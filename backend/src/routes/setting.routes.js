@@ -7,6 +7,6 @@ const router = express.Router();
 
 router.get('/', getSetting);
 router.post('/contact', sendContactMessage);
-router.put('/', protect, adminOnly, uploadFields([{ name: 'previewImage', maxCount: 1 }, { name: 'logo', maxCount: 1 }]), updateSetting);
+router.put('/', protect, adminOnly, uploadFields([{ name: 'previewImage', maxCount: 1 }, { name: 'logo', maxCount: 1 }, { name: 'teamImages', maxCount: 10 }]), updateSetting);
 
 export default router;
