@@ -1,14 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars, @next/next/no-img-element */
 'use client';
 import React, { useState } from 'react';
-import { Search, Edit2, Trash2, ArrowUpDown, XCircle, Layers, Tag, Image as ImageIcon, TrendingUp, Loader2, } from 'lucide-react';
+import { Search, Edit2, Trash2, ArrowUpDown, XCircle, Layers, Tag, Image as ImageIcon, TrendingUp, Loader2, LayoutGrid, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 const CategoryDialog = dynamic(() => import('@/components/admin/CategoryDialog').then(mod => mod.CategoryDialog), { ssr: false });
-import { useGetCategoriesQuery, useDeleteCategoryMutation } from '@/store/categoryApi';
+import { useGetCategoriesQuery, useDeleteCategoryMutation, useUpdateCategoryMutation } from '@/store/categoryApi';
 import { toast } from 'sonner';
 import dynamic from 'next/dynamic';
+import ViewSwitcher from '@/components/admin/ViewSwitcher';
 export default function CategoriesPage() {
     const [categorySearchTerm, setCategorySearchTerm] = useState('');
     const [isCategoryDialogOpen, setIsCategoryDialogOpen] = useState(false);
@@ -16,6 +17,32 @@ export default function CategoriesPage() {
     const { data: categoriesData, isLoading, isError, error } = useGetCategoriesQuery({ all: true });
     const [deleteCategory, { isLoading: isDeleting }] = useDeleteCategoryMutation();
     const categories = categoriesData?.data || [];
+    const [updateCategory, { isLoading: isUpdating }] = useUpdateCategoryMutation();
+
+    const [viewMode, setViewMode] = useState("list");
+    React.useEffect(() => {
+        const stored = localStorage.getItem("dunches_admin_view_categories");
+        if (stored === "card" || stored === "list") {
+            setViewMode(stored);
+        }
+    }, []);
+
+    const handleViewModeChange = (mode) => {
+        setViewMode(mode);
+        localStorage.setItem("dunches_admin_view_categories", mode);
+    };
+
+    const handleToggleStatus = async (category) => {
+        try {
+            await updateCategory({
+                id: category._id,
+                body: { isActive: !category.isActive }
+            }).unwrap();
+            toast.success(`Category ${!category.isActive ? 'activated' : 'hidden'} successfully`);
+        } catch (err) {
+            toast.error(err?.data?.message || 'Failed to update category status');
+        }
+    };
     const openAddCategoryDialog = () => {
         setEditingCategory(null);
         setIsCategoryDialogOpen(true);
@@ -97,20 +124,25 @@ export default function CategoriesPage() {
         </div>
 
         {/* Filters Bar */}
-        <div className="relative group w-full">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors"/>
-          <Input 
-            placeholder="Search by collection name or slug..." 
-            className="h-12 w-full pl-12 pr-4 bg-card border border-border/60 rounded-2xl font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" 
-            value={categorySearchTerm} 
-            onChange={(e) => setCategorySearchTerm(e.target.value)}
-          />
+        {/* Filters Bar */}
+        <div className="flex flex-col sm:flex-row gap-3 items-center w-full">
+          <div className="relative group flex-1 w-full">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors"/>
+            <Input 
+              placeholder="Search by collection name or slug..." 
+              className="h-12 w-full pl-12 pr-4 bg-card border border-border/60 rounded-2xl font-semibold text-sm focus:outline-none focus:ring-2 focus:ring-primary/20" 
+              value={categorySearchTerm} 
+              onChange={(e) => setCategorySearchTerm(e.target.value)}
+            />
+          </div>
+          <ViewSwitcher viewMode={viewMode} onViewModeChange={handleViewModeChange} />
         </div>
 
-        {/* Categories Table */}
+        {/* Categories Table / Cards */}
         <div className="rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm">
+          {viewMode === "list" ? (
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-sm">
               <thead className="bg-muted/30 text-muted-foreground font-semibold">
                 <tr>
                   <th className="px-4 py-4 w-16 text-center hidden xs:table-cell">Visual</th>
@@ -154,9 +186,27 @@ export default function CategoriesPage() {
                       {cat.productsCount || 0}
                     </td>
                     <td className="px-4 py-4">
-                      <div className={cn("inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border", cat.isActive ? "bg-primary/5 text-primary border-primary/20" : "bg-destructive/5 text-destructive border-destructive/20")}>
-                        <div className={cn("h-1.5 w-1.5 rounded-full", cat.isActive ? "bg-primary shadow-[0_0_8px_rgba(245,158,11,1)]" : "bg-destructive shadow-[0_0_8px_rgba(239,68,68,1)]")}/>
-                        {cat.isActive ? 'Active' : 'Hidden'}
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground w-12">
+                          {cat.isActive ? "Active" : "Hidden"}
+                        </span>
+                        <button
+                          onClick={() => handleToggleStatus(cat)}
+                          disabled={isUpdating}
+                          className={cn(
+                            "h-5 w-9 rounded-full relative transition-all duration-300 p-0.5 shrink-0",
+                            cat.isActive
+                              ? "bg-primary shadow-[0_0_8px_rgba(245,158,11,0.3)]"
+                              : "bg-muted"
+                          )}
+                        >
+                          <div
+                            className={cn(
+                              "h-4 w-4 rounded-full bg-white shadow-sm transition-all duration-300 transform",
+                              cat.isActive ? "translate-x-4" : "translate-x-0"
+                            )}
+                          />
+                        </button>
                       </div>
                     </td>
                     <td className="px-4 py-4 text-right">
@@ -174,7 +224,109 @@ export default function CategoriesPage() {
               </tbody>
             </table>
           </div>
-        </div>
+        ) : (
+          /* Cards View */
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 bg-muted/5">
+            {filteredCategories.map((cat) => (
+              <div
+                key={cat._id}
+                className="group rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+              >
+                <div>
+                  {/* Category Image Header */}
+                  <div className="relative aspect-video w-full bg-muted overflow-hidden border-b border-border/20 flex items-center justify-center">
+                    {cat.image ? (
+                      <img
+                        src={cat.image}
+                        alt={cat.name}
+                        className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      />
+                    ) : (
+                      <div className="h-full w-full flex flex-col items-center justify-center gap-2">
+                        <ImageIcon className="h-10 w-10 text-muted-foreground/30" />
+                        <span className="text-[9px] font-bold uppercase tracking-widest text-muted-foreground/40">No Image</span>
+                      </div>
+                    )}
+                    
+                    {/* Active Toggle Status Button */}
+                    <div className="absolute top-4 right-4 flex items-center gap-2 bg-background/80 backdrop-blur-md px-3 py-1.5 rounded-full border border-border/40 shadow-sm">
+                      <span className="text-[9px] font-black uppercase tracking-widest text-muted-foreground">
+                        {cat.isActive ? "Active" : "Hidden"}
+                      </span>
+                      <button
+                        onClick={() => handleToggleStatus(cat)}
+                        disabled={isUpdating}
+                        className={cn(
+                          "h-5 w-9 rounded-full relative transition-all duration-300 p-0.5 shrink-0",
+                          cat.isActive
+                            ? "bg-primary shadow-[0_0_8px_rgba(245,158,11,0.3)]"
+                            : "bg-muted"
+                        )}
+                      >
+                        <div
+                          className={cn(
+                            "h-4 w-4 rounded-full bg-white shadow-sm transition-all duration-300 transform",
+                            cat.isActive ? "translate-x-4" : "translate-x-0"
+                          )}
+                        />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Content details */}
+                  <div className="p-5 space-y-3">
+                    <div>
+                      <h4 className="font-bold text-base text-foreground leading-snug group-hover:text-primary transition-colors line-clamp-1 mb-1" title={cat.name}>
+                        {cat.name}
+                      </h4>
+                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest truncate">
+                        ID: {cat._id}
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-medium">
+                        <span>Registry Slug</span>
+                        <span className="text-foreground bg-muted px-2 py-0.5 rounded">/{cat.slug}</span>
+                      </div>
+                      <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-medium">
+                        <span>Parent Nexus</span>
+                        <span className="text-primary italic">
+                          {cat.parent ? (typeof cat.parent === 'object' ? cat.parent.name : cat.parent) : 'Root level'}
+                        </span>
+                      </div>
+                      <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-medium">
+                        <span>Manifest Count</span>
+                        <span className="font-black text-foreground">{cat.productsCount || 0} products</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Card Actions Footer */}
+                <div className="p-5 border-t border-border/10 flex justify-end gap-2 bg-muted/5">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => openEditCategoryDialog(cat)}
+                    className="h-8 rounded-xl hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20 transition-all font-bold uppercase text-[9px] tracking-wider px-3 flex items-center gap-1"
+                  >
+                    <Edit2 className="h-3.5 w-3.5" /> Edit
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    disabled={isDeleting}
+                    onClick={() => handleDelete(cat._id)}
+                    className="h-8 rounded-xl hover:bg-destructive/10 hover:text-destructive border border-transparent hover:border-destructive/20 transition-all font-bold uppercase text-[9px] tracking-wider px-3 flex items-center gap-1"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" /> Remove
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
 
         <CategoryDialog isOpen={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen} category={editingCategory} categories={categories.map(c => ({ id: c._id, name: c.name }))}/>
       </div>

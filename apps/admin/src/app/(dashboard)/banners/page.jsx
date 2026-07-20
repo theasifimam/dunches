@@ -13,6 +13,8 @@ import {
   Layout,
   ArrowRight,
   Sparkles,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -30,6 +32,7 @@ import {
 import { toast } from "sonner";
 import { Skeleton } from "@/components/ui/skeleton";
 import { DUMMY_BANNERS } from "@/lib/dummyData";
+import ViewSwitcher from "@/components/admin/ViewSwitcher";
 export default function BannersPage() {
   const { data: result, isLoading: apiLoading } = useGetBannersQuery();
   const banners =
@@ -38,6 +41,18 @@ export default function BannersPage() {
   const [deleteBanner] = useDeleteBannerMutation();
   const [updateBanner] = useUpdateBannerMutation();
   const [isDialogOpen, setIsDialogOpen] = React.useState(false);
+  const [viewMode, setViewMode] = React.useState("card");
+  React.useEffect(() => {
+    const stored = localStorage.getItem("dunches_admin_view_banners");
+    if (stored === "card" || stored === "list") {
+      setViewMode(stored);
+    }
+  }, []);
+
+  const handleViewModeChange = (mode) => {
+    setViewMode(mode);
+    localStorage.setItem("dunches_admin_view_banners", mode);
+  };
   const [editingBanner, setEditingBanner] = React.useState(null);
   const handleToggleStatus = async (banner) => {
     const newStatus = banner.status === "Active" ? "Inactive" : "Active";
@@ -178,6 +193,12 @@ export default function BannersPage() {
         ))}
       </div>
 
+      {/* Layout Toggle Actions */}
+      <div className="flex justify-between items-center px-4 md:px-0">
+        <h3 className="text-lg font-black uppercase tracking-tight italic">Campaign Inventory</h3>
+        <ViewSwitcher viewMode={viewMode} onViewModeChange={handleViewModeChange} />
+      </div>
+
       {/* Grid of Banners - Enhanced High-Fidelity Cards */}
       {isLoading ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-4 md:px-0">
@@ -185,7 +206,7 @@ export default function BannersPage() {
             <Skeleton key={i} className="h-[400px] w-full rounded-[3rem]" />
           ))}
         </div>
-      ) : (
+      ) : viewMode === "card" ? (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-4 md:px-0">
           {banners.map((banner) => (
             <div
@@ -318,8 +339,120 @@ export default function BannersPage() {
               variant="ghost"
               className="mt-8 rounded-xl font-black uppercase tracking-widest text-[9px] group-hover:text-primary"
             >
-              Launch Campaign Interface <ArrowRight className="h-3 w-3 ml-2" />
+              Initiate
             </Button>
+          </div>
+        </div>
+      ) : (
+        /* Table View */
+        <div className="rounded-[2.5rem] bg-card border border-border/40 overflow-hidden shadow-sm mx-4 md:mx-0">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
+              <thead className="bg-muted/30 text-muted-foreground font-semibold">
+                <tr>
+                  <th className="px-6 py-4 w-28">Preview</th>
+                  <th className="px-6 py-4">Title & Placement</th>
+                  <th className="px-6 py-4 text-center">Status</th>
+                  <th className="px-6 py-4 hidden sm:table-cell">Expiry</th>
+                  <th className="px-6 py-4 hidden md:table-cell">Interactions</th>
+                  <th className="px-6 py-4 text-center">Visibility</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/20">
+                {banners.map((banner) => (
+                  <tr key={banner.id} className="group hover:bg-muted/10 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="relative h-12 w-20 rounded-xl overflow-hidden border border-border/30 shadow-sm bg-muted shrink-0">
+                        <img
+                          src={
+                            banner.image.startsWith("http")
+                              ? banner.image
+                              : banner.image.startsWith("/")
+                                ? banner.image
+                                : `/${banner.image}`
+                          }
+                          alt={banner.title}
+                          className="h-full w-full object-cover"
+                        />
+                      </div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div>
+                        <p className="font-bold text-sm text-foreground mb-0.5 leading-tight">{banner.title}</p>
+                        <span className="text-[9px] font-black uppercase tracking-wider text-muted-foreground bg-muted px-2 py-0.5 rounded">
+                          {banner.placement}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-center">
+                      <span
+                        className={cn(
+                          "px-2.5 py-0.5 rounded-full text-[9px] font-black uppercase tracking-widest border",
+                          banner.status === "Active"
+                            ? "bg-primary/10 text-primary border-primary/20"
+                            : banner.status === "Scheduled"
+                              ? "bg-blue-500/10 text-blue-500 border-blue-500/20"
+                              : "bg-muted text-muted-foreground border-border/20",
+                        )}
+                      >
+                        {banner.status}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 hidden sm:table-cell text-xs font-bold text-muted-foreground">
+                      {banner.expiry
+                        ? new Date(banner.expiry).toLocaleDateString()
+                        : "N/A"}
+                    </td>
+                    <td className="px-6 py-4 hidden md:table-cell text-xs font-black italic">
+                      {banner.clicks.toLocaleString()} clicks
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex items-center justify-center">
+                        <button
+                          onClick={() => handleToggleStatus(banner)}
+                          className={cn(
+                            "h-5 w-9 rounded-full relative transition-all duration-300 p-0.5 shrink-0",
+                            banner.status === "Active"
+                              ? "bg-primary shadow-[0_0_8px_rgba(245,158,11,0.3)]"
+                              : "bg-muted",
+                          )}
+                        >
+                          <div
+                            className={cn(
+                              "h-4 w-4 rounded-full bg-white shadow-sm transition-all duration-300 transform",
+                              banner.status === "Active"
+                                ? "translate-x-4"
+                                : "translate-x-0",
+                            )}
+                          />
+                        </button>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-xl hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20 transition-all"
+                          onClick={() => handleEdit(banner)}
+                        >
+                          <Edit2 className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-xl hover:bg-destructive/10 hover:text-destructive border border-transparent hover:border-destructive/20 transition-all"
+                          onClick={() => handleDelete(banner.id)}
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}

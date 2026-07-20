@@ -13,6 +13,8 @@ import {
   BellOff,
   Filter,
   RefreshCw,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -25,6 +27,7 @@ import {
   useDeleteNotificationMutation,
   useClearAllNotificationsMutation,
 } from "@/store/notificationApi";
+import ViewSwitcher from "@/components/admin/ViewSwitcher";
 
 const TYPE_CONFIG = {
   new_order: {
@@ -102,6 +105,19 @@ export default function NotificationsPage() {
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
   const [page, setPage] = useState(1);
   const router = useRouter();
+
+  const [viewMode, setViewMode] = useState("list");
+  React.useEffect(() => {
+    const stored = localStorage.getItem("dunches_admin_view_notifications");
+    if (stored === "card" || stored === "list") {
+      setViewMode(stored);
+    }
+  }, []);
+
+  const handleViewModeChange = (mode) => {
+    setViewMode(mode);
+    localStorage.setItem("dunches_admin_view_notifications", mode);
+  };
 
   const queryArgs = {
     page,
@@ -217,28 +233,31 @@ export default function NotificationsPage() {
             </button>
           );
         })}
-        <button
-          onClick={() => {
-            setShowUnreadOnly(!showUnreadOnly);
-            setPage(1);
-          }}
-          className={cn(
-            "flex items-center gap-2 px-4 h-9 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all duration-300 ml-auto",
-            showUnreadOnly
-              ? "bg-amber-500 text-white border-amber-500"
-              : "bg-card text-muted-foreground border-border/40 hover:border-amber-500/40",
-          )}
-        >
-          <Filter className="h-3 w-3" />
-          {showUnreadOnly ? "Showing Unread" : "Unread Only"}
-        </button>
+        <div className="flex items-center gap-3 ml-auto w-full sm:w-auto mt-2 sm:mt-0 justify-between sm:justify-start">
+          <button
+            onClick={() => {
+              setShowUnreadOnly(!showUnreadOnly);
+              setPage(1);
+            }}
+            className={cn(
+              "flex items-center gap-2 px-4 h-9 rounded-xl text-[10px] font-black uppercase tracking-widest border transition-all duration-300",
+              showUnreadOnly
+                ? "bg-amber-500 text-white border-amber-500"
+                : "bg-card text-muted-foreground border-border/40 hover:border-amber-500/40",
+            )}
+          >
+            <Filter className="h-3 w-3" />
+            {showUnreadOnly ? "Showing Unread" : "Unread Only"}
+          </button>
+          <ViewSwitcher viewMode={viewMode} onViewModeChange={handleViewModeChange} />
+        </div>
       </div>
 
-      {/* Notifications List */}
-      <div className="rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
+      {/* Notifications List / Cards */}
+      <div className="rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm animate-in fade-in duration-300">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary animate-pulse" />
           </div>
         ) : notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
@@ -256,8 +275,8 @@ export default function NotificationsPage() {
               </p>
             </div>
           </div>
-        ) : (
-          <div>
+        ) : viewMode === "list" ? (
+          <div className="divide-y divide-border/20">
             {notifications.map((notif, idx) => {
               const config = TYPE_CONFIG[notif.type] || TYPE_CONFIG.new_order;
               const Icon = config.icon;
@@ -355,7 +374,7 @@ export default function NotificationsPage() {
                         deleteNotification(notif._id);
                       }}
                       className="h-8 w-8 rounded-xl hover:bg-destructive/10 hover:text-destructive"
-                      title="Delete"
+                      title="Delete notification"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>

@@ -17,6 +17,8 @@ import {
   TrendingUp,
   Activity,
   Loader2,
+  LayoutGrid,
+  List,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -33,6 +35,7 @@ const OrderDetailsDialog = dynamic(
 import { Pagination } from "@/components/admin/Pagination";
 import { useDebounce } from "@/hooks/useDebounce";
 import { DUMMY_ORDERS } from "@/lib/dummyData";
+import ViewSwitcher from "@/components/admin/ViewSwitcher";
 const statusStyles = {
   delivered: "bg-primary/10 text-primary border-primary/20",
   confirmed: "bg-blue-500/10 text-blue-600 border-blue-500/20",
@@ -54,6 +57,18 @@ export default function OrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [page, setPage] = useState(1);
+  const [viewMode, setViewMode] = useState("list");
+  React.useEffect(() => {
+    const stored = localStorage.getItem("dunches_admin_view_orders");
+    if (stored === "card" || stored === "list") {
+      setViewMode(stored);
+    }
+  }, []);
+
+  const handleViewModeChange = (mode) => {
+    setViewMode(mode);
+    localStorage.setItem("dunches_admin_view_orders", mode);
+  };
   const { data: response, isLoading: apiLoading } = useGetAllOrdersQuery({
     page: page,
     limit: 20,
@@ -193,43 +208,49 @@ export default function OrdersPage() {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="flex flex-wrap gap-2 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 scrollbar-none">
-          {[
-            "All Status",
-            "placed",
-            "confirmed",
-            "shipped",
-            "delivered",
-            "cancelled",
-          ].map((filter) => (
-            <button
-              key={filter}
-              onClick={() => setFilterStatus(filter)}
-              className={cn(
-                "px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all border",
-                filterStatus === filter
-                  ? "bg-primary text-primary-foreground border-primary shadow-md"
-                  : "bg-background border-border/60 text-muted-foreground hover:bg-muted",
-              )}
+        <div className="flex flex-wrap items-center gap-2 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0 scrollbar-none justify-between lg:justify-start">
+          <div className="flex gap-2">
+            {[
+              "All Status",
+              "placed",
+              "confirmed",
+              "shipped",
+              "delivered",
+              "cancelled",
+            ].map((filter) => (
+              <button
+                key={filter}
+                onClick={() => setFilterStatus(filter)}
+                className={cn(
+                  "px-4 py-2.5 rounded-full text-xs font-bold uppercase tracking-wider transition-all border",
+                  filterStatus === filter
+                    ? "bg-primary text-primary-foreground border-primary shadow-md"
+                    : "bg-background border-border/60 text-muted-foreground hover:bg-muted",
+                )}
+              >
+                {filter}
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center gap-2 shrink-0">
+            <div className="h-10 w-[1px] bg-border/40 mx-2 hidden sm:block" />
+            <Button
+              variant="ghost"
+              size="icon"
+              className="h-10 w-10 rounded-xl hover:bg-muted border border-border/60"
             >
-              {filter}
-            </button>
-          ))}
-          <div className="h-10 w-[1px] bg-border/40 mx-2 shrink-0 self-center hidden sm:block" />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-10 w-10 rounded-xl hover:bg-muted border border-border/60 shrink-0"
-          >
-            <Filter className="h-4 w-4 text-muted-foreground" />
-          </Button>
+              <Filter className="h-4 w-4 text-muted-foreground" />
+            </Button>
+            <ViewSwitcher viewMode={viewMode} onViewModeChange={handleViewModeChange} />
+          </div>
         </div>
       </div>
 
-      {/* Orders Table */}
+      {/* Orders Table / Cards */}
       <div className="rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-sm">
+        {viewMode === "list" ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm">
             <thead className="bg-muted/30 text-muted-foreground font-semibold">
               <tr>
                 <th className="px-4 py-4">ID</th>
@@ -330,6 +351,112 @@ export default function OrdersPage() {
             </tbody>
           </table>
         </div>
+      ) : (
+        /* Cards View */
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 bg-muted/5">
+          {orders.map((order) => {
+            const StatusIcon = statusIcons[order.orderStatus] || Clock;
+            return (
+              <div
+                key={order._id}
+                className="group rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+              >
+                <div className="p-5 space-y-4">
+                  {/* Header */}
+                  <div className="flex items-center justify-between">
+                    <span className="font-bold text-xs uppercase tracking-wider text-primary font-serif bg-primary/5 px-2.5 py-1 rounded-lg border border-primary/10">
+                      #{order._id.slice(-8)}
+                    </span>
+                    <span className="text-[10px] font-bold text-muted-foreground/60 flex items-center gap-1">
+                      <Clock className="h-3 w-3" />
+                      {new Date(order.createdAt).toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  {/* Customer Info */}
+                  <div className="flex items-center gap-3">
+                    <div className="h-9 w-9 rounded-xl bg-primary/15 flex items-center justify-center shrink-0 border border-primary/10">
+                      {order.user?.name ? (
+                        <span className="font-bold text-primary capitalize text-sm">
+                          {order.user.name[0]}
+                        </span>
+                      ) : (
+                        <User className="h-4 w-4 text-primary" />
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-bold text-sm text-foreground leading-tight truncate">
+                        {order.user?.name || "Unknown User"}
+                      </p>
+                      <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide opacity-80 truncate animate-fade-in">
+                        {order.user?.email || "N/A"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Details row */}
+                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/10">
+                    <div>
+                      <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5">Quantity</p>
+                      <span className="text-xs font-black text-foreground">
+                        {order.items.reduce((acc, item) => acc + item.qty, 0)} units
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5">Method</p>
+                      <div className="flex items-center gap-1">
+                        <div
+                          className={cn(
+                            "h-1.5 w-1.5 rounded-full",
+                            order.paymentStatus === "paid"
+                              ? "bg-primary shadow-[0_0_8px_rgba(245,158,11,1)]"
+                              : "bg-orange-500",
+                          )}
+                        />
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+                          {order.paymentMethod}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Footer with status and view details button */}
+                <div className="p-5 border-t border-border/10 flex items-center justify-between bg-muted/5 gap-3">
+                  <div className="flex flex-col">
+                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Total</span>
+                    <span className="font-bold text-primary font-serif text-sm">
+                      ₹{order.finalAmount.toFixed(2)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div
+                      className={cn(
+                        "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border",
+                        statusStyles[order.orderStatus],
+                      )}
+                    >
+                      <StatusIcon className="h-3 w-3" />
+                      {order.orderStatus}
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 rounded-xl hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20 transition-all"
+                      onClick={() => {
+                        setSelectedOrder(order);
+                        setIsDialogOpen(true);
+                      }}
+                    >
+                      <Eye className="h-4 w-4" />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
 
         {/* Footer Audit */}
         <div className="p-4 md:p-6 border-t border-border/40 bg-muted/10 flex flex-col sm:flex-row items-center justify-between gap-4">

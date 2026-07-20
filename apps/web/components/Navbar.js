@@ -40,7 +40,9 @@ export default function Navbar() {
   const activeRestaurant = useSelector(selectActiveRestaurant);
   const user = useSelector(selectUser);
   const avatarSrc = user?.avatar
-    ? (user.avatar.startsWith("/uploads") ? user.avatar : `/uploads/${user.avatar}`)
+    ? user.avatar.startsWith("/uploads")
+      ? user.avatar
+      : `/uploads/${user.avatar}`
     : null;
   const dispatch = useDispatch();
   const [isScrolled, setIsScrolled] = useState(false);
@@ -212,9 +214,7 @@ export default function Navbar() {
               <div className="hidden md:block">
                 <Popover>
                   <PopoverTrigger asChild>
-                    <button
-                      className="w-10 h-10 rounded-full flex items-center justify-center text-foreground/45 hover:text-primary bg-foreground/5 hover:bg-foreground/10 active:scale-95 transition-all cursor-pointer shrink-0"
-                    >
+                    <button className="w-10 h-10 rounded-full flex items-center justify-center text-foreground/45 hover:text-primary bg-foreground/5 hover:bg-foreground/10 active:scale-95 transition-all cursor-pointer shrink-0">
                       <Menu className="w-4 h-4" />
                     </button>
                   </PopoverTrigger>
@@ -231,10 +231,16 @@ export default function Navbar() {
                       className="w-full flex items-center justify-between text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer"
                     >
                       <span className="flex items-center gap-2">
-                        {theme === "dark" ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+                        {theme === "dark" ? (
+                          <Sun className="w-3.5 h-3.5" />
+                        ) : (
+                          <Moon className="w-3.5 h-3.5" />
+                        )}
                         Theme Mode
                       </span>
-                      <span className="text-[8px] opacity-40 font-bold">{theme === "dark" ? "Dark" : "Light"}</span>
+                      <span className="text-[8px] opacity-40 font-bold">
+                        {theme === "dark" ? "Dark" : "Light"}
+                      </span>
                     </button>
 
                     <div className="h-px bg-border/10 my-1" />
@@ -352,10 +358,16 @@ export default function Navbar() {
                       className="w-full flex items-center justify-between text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer"
                     >
                       <span className="flex items-center gap-2">
-                        {theme === "dark" ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+                        {theme === "dark" ? (
+                          <Sun className="w-3.5 h-3.5" />
+                        ) : (
+                          <Moon className="w-3.5 h-3.5" />
+                        )}
                         Theme Mode
                       </span>
-                      <span className="text-[8px] opacity-40 font-bold">{theme === "dark" ? "Dark" : "Light"}</span>
+                      <span className="text-[8px] opacity-40 font-bold">
+                        {theme === "dark" ? "Dark" : "Light"}
+                      </span>
                     </button>
 
                     <div className="h-px bg-border/10 my-1" />
@@ -457,7 +469,10 @@ export default function Navbar() {
       )}
 
       {/* Guest Bottom Sheet */}
-      <BottomSheet isOpen={isGuestMenuOpen} onClose={() => setIsGuestMenuOpen(false)}>
+      <BottomSheet
+        isOpen={isGuestMenuOpen}
+        onClose={() => setIsGuestMenuOpen(false)}
+      >
         <div className="flex flex-col gap-3.5 text-center">
           <div className="text-center pb-4 mb-2 border-b border-border/10">
             <div className="text-[10px] font-black uppercase tracking-[0.25em] text-primary/85">
@@ -467,82 +482,124 @@ export default function Navbar() {
               Select a channel to explore
             </div>
           </div>
-          
+
           {/* Theme Mode */}
           <button
             onClick={() => {
               toggleTheme();
               setIsGuestMenuOpen(false);
             }}
-            className="w-full flex items-center justify-between text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group"
+            className="w-full flex items-center justify-between text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group"
           >
             <span className="flex items-center gap-4">
               <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
-                {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                {theme === "dark" ? (
+                  <Sun className="w-4 h-4" />
+                ) : (
+                  <Moon className="w-4 h-4" />
+                )}
               </div>
               <div>
-                <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Theme Mode</p>
-                <p className="text-[9px] text-foreground/40 font-medium mt-0.5">Toggle between dark and light themes</p>
+                <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
+                  Theme Mode
+                </p>
+                <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
+                  Toggle between dark and light themes
+                </p>
               </div>
             </span>
-            <span className="text-[9px] uppercase font-black text-primary/75 tracking-widest bg-primary/5 px-2.5 py-1 rounded-md">{theme === "dark" ? "Dark" : "Light"}</span>
+            <span className="text-[9px] uppercase font-black text-primary/75 tracking-widest bg-primary/5 px-2.5 py-1 rounded-md">
+              {theme === "dark" ? "Dark" : "Light"}
+            </span>
           </button>
 
           {/* About Us */}
-          <Link href="/about" className="w-full" onClick={() => setIsGuestMenuOpen(false)}>
-            <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+          <Link
+            href="/about"
+            className="w-full"
+            onClick={() => setIsGuestMenuOpen(false)}
+          >
+            <button className="w-full flex items-center text-left py-4 px-5 rou3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
               <span className="flex items-center gap-4">
                 <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
                   <HelpCircle className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">About Us</p>
-                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">Our story, promise & organic sourcing</p>
+                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
+                    About Us
+                  </p>
+                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
+                    Our story, promise & organic sourcing
+                  </p>
                 </div>
               </span>
             </button>
           </Link>
 
           {/* Contact Us */}
-          <Link href="/contact" className="w-full" onClick={() => setIsGuestMenuOpen(false)}>
-            <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+          <Link
+            href="/contact"
+            className="w-full"
+            onClick={() => setIsGuestMenuOpen(false)}
+          >
+            <button className="w-full flex items-center text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
               <span className="flex items-center gap-4">
                 <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
                   <MessageSquare className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Contact Support</p>
-                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">WhatsApp, Email, support box to admin</p>
+                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
+                    Contact Support
+                  </p>
+                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
+                    WhatsApp, Email, support box to admin
+                  </p>
                 </div>
               </span>
             </button>
           </Link>
 
           {/* Privacy Policy */}
-          <Link href="/privacy" className="w-full" onClick={() => setIsGuestMenuOpen(false)}>
-            <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+          <Link
+            href="/privacy"
+            className="w-full"
+            onClick={() => setIsGuestMenuOpen(false)}
+          >
+            <button className="w-full flex items-center text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
               <span className="flex items-center gap-4">
                 <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
                   <Lock className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Privacy Policy</p>
-                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">How we encrypt and protect cookies</p>
+                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
+                    Privacy Policy
+                  </p>
+                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
+                    How we encrypt and protect cookies
+                  </p>
                 </div>
               </span>
             </button>
           </Link>
 
           {/* Terms & Conditions */}
-          <Link href="/terms" className="w-full" onClick={() => setIsGuestMenuOpen(false)}>
-            <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+          <Link
+            href="/terms"
+            className="w-full"
+            onClick={() => setIsGuestMenuOpen(false)}
+          >
+            <button className="w-full flex items-center text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
               <span className="flex items-center gap-4">
                 <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
                   <BookOpen className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Terms of Use</p>
-                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">COD policies and food allergens warning</p>
+                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
+                    Terms of Use
+                  </p>
+                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
+                    COD policies and food allergens warning
+                  </p>
                 </div>
               </span>
             </button>
@@ -575,7 +632,10 @@ export default function Navbar() {
 
       {/* User Bottom Sheet */}
       {user && (
-        <BottomSheet isOpen={isUserMenuOpen} onClose={() => setIsUserMenuOpen(false)}>
+        <BottomSheet
+          isOpen={isUserMenuOpen}
+          onClose={() => setIsUserMenuOpen(false)}
+        >
           <div className="flex flex-col gap-3.5">
             {/* User Profile Info Card */}
             <div className="flex items-center gap-4 pb-5 mb-2 border-b border-border/10">
@@ -601,15 +661,23 @@ export default function Navbar() {
             </div>
 
             {/* Profile Dashboard Link */}
-            <Link href="/profile" className="w-full" onClick={() => setIsUserMenuOpen(false)}>
-              <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+            <Link
+              href="/profile"
+              className="w-full"
+              onClick={() => setIsUserMenuOpen(false)}
+            >
+              <button className="w-full flex items-center text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
                 <span className="flex items-center gap-4">
                   <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
                     <User className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Profile Dashboard</p>
-                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">Manage details, orders & saved addresses</p>
+                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
+                      Profile Dashboard
+                    </p>
+                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
+                      Manage details, orders & saved addresses
+                    </p>
                   </div>
                 </span>
               </button>
@@ -621,75 +689,117 @@ export default function Navbar() {
                 toggleTheme();
                 setIsUserMenuOpen(false);
               }}
-              className="w-full flex items-center justify-between text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group"
+              className="w-full flex items-center justify-between text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group"
             >
               <span className="flex items-center gap-4">
                 <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
-                  {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                  {theme === "dark" ? (
+                    <Sun className="w-4 h-4" />
+                  ) : (
+                    <Moon className="w-4 h-4" />
+                  )}
                 </div>
                 <div>
-                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Theme Mode</p>
-                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">Toggle between dark and light themes</p>
+                  <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
+                    Theme Mode
+                  </p>
+                  <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
+                    Toggle between dark and light themes
+                  </p>
                 </div>
               </span>
-              <span className="text-[9px] uppercase font-black text-primary/75 tracking-widest bg-primary/5 px-2.5 py-1 rounded-md">{theme === "dark" ? "Dark" : "Light"}</span>
+              <span className="text-[9px] uppercase font-black text-primary/75 tracking-widest bg-primary/5 px-2.5 py-1 rounded-md">
+                {theme === "dark" ? "Dark" : "Light"}
+              </span>
             </button>
 
             {/* About Us */}
-            <Link href="/about" className="w-full" onClick={() => setIsUserMenuOpen(false)}>
-              <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+            <Link
+              href="/about"
+              className="w-full"
+              onClick={() => setIsUserMenuOpen(false)}
+            >
+              <button className="w-full flex items-center text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
                 <span className="flex items-center gap-4">
                   <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
                     <HelpCircle className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">About Us</p>
-                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">Our story, promise & organic sourcing</p>
+                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
+                      About Us
+                    </p>
+                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
+                      Our story, promise & organic sourcing
+                    </p>
                   </div>
                 </span>
               </button>
             </Link>
 
             {/* Contact Us */}
-            <Link href="/contact" className="w-full" onClick={() => setIsUserMenuOpen(false)}>
-              <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+            <Link
+              href="/contact"
+              className="w-full"
+              onClick={() => setIsUserMenuOpen(false)}
+            >
+              <button className="w-full flex items-center text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
                 <span className="flex items-center gap-4">
                   <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
                     <MessageSquare className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Contact Support</p>
-                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">WhatsApp, Email, support box to admin</p>
+                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
+                      Contact Support
+                    </p>
+                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
+                      WhatsApp, Email, support box to admin
+                    </p>
                   </div>
                 </span>
               </button>
             </Link>
 
             {/* Privacy Policy */}
-            <Link href="/privacy" className="w-full" onClick={() => setIsUserMenuOpen(false)}>
-              <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+            <Link
+              href="/privacy"
+              className="w-full"
+              onClick={() => setIsUserMenuOpen(false)}
+            >
+              <button className="w-full flex items-center text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
                 <span className="flex items-center gap-4">
                   <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
                     <Lock className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Privacy Policy</p>
-                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">How we encrypt and protect cookies</p>
+                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
+                      Privacy Policy
+                    </p>
+                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
+                      How we encrypt and protect cookies
+                    </p>
                   </div>
                 </span>
               </button>
             </Link>
 
             {/* Terms & Conditions */}
-            <Link href="/terms" className="w-full" onClick={() => setIsUserMenuOpen(false)}>
-              <button className="w-full flex items-center text-left py-4 px-5 rounded-[1.5rem] bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
+            <Link
+              href="/terms"
+              className="w-full"
+              onClick={() => setIsUserMenuOpen(false)}
+            >
+              <button className="w-full flex items-center text-left py-4 px-5 rounded-3xl bg-foreground/2 border border-border/30 hover:border-primary/20 hover:bg-foreground/4 transition-all outline-hidden cursor-pointer group">
                 <span className="flex items-center gap-4">
                   <div className="w-9 h-9 rounded-xl bg-primary/5 group-hover:bg-primary/10 flex items-center justify-center text-primary group-hover:scale-105 transition-all duration-300">
                     <BookOpen className="w-4 h-4" />
                   </div>
                   <div>
-                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">Terms of Use</p>
-                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">COD policies and food allergens warning</p>
+                    <p className="text-[11px] font-black uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors">
+                      Terms of Use
+                    </p>
+                    <p className="text-[9px] text-foreground/40 font-medium mt-0.5">
+                      COD policies and food allergens warning
+                    </p>
                   </div>
                 </span>
               </button>

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
   MessageSquare,
@@ -9,6 +9,7 @@ import {
   ArrowRight,
   Loader2,
   Send,
+  MapPin,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -21,6 +22,24 @@ export default function ContactPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState("");
   const [error, setError] = useState("");
+  const [settings, setSettings] = useState(null);
+
+  useEffect(() => {
+    const fetchSettings = async () => {
+      try {
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/v1/settings`
+        );
+        const data = await res.json();
+        if (data?.success && data?.data) {
+          setSettings(data.data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch settings:", err);
+      }
+    };
+    fetchSettings();
+  }, []);
 
   const handleChange = (field, val) => {
     setFormData((prev) => ({ ...prev, [field]: val }));
@@ -87,12 +106,12 @@ export default function ContactPage() {
 
             {/* WhatsApp */}
             <a
-              href="https://wa.me/919876543210?text=Hi%20Dunches!%20I%20have%20a%20query%20about%20your%20snacks."
+              href={`https://wa.me/${settings?.whatsappNumber || "919876543210"}?text=Hi%20Dunches!%20I%20have%20a%20query%20about%20your%20snacks.`}
               target="_blank"
               rel="noopener noreferrer"
               className="block group"
             >
-              <div className="p-6 rounded-[2rem] border border-border/50 bg-foreground/2 hover:border-primary/30 transition-all flex items-center justify-between">
+              <div className="p-6 rounded-4xl border border-border/50 bg-foreground/2 hover:border-primary/30 transition-all flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-green-500/10 flex items-center justify-center text-green-500 group-hover:scale-110 transition-transform">
                     <MessageSquare className="w-5 h-5" />
@@ -102,7 +121,7 @@ export default function ContactPage() {
                       WhatsApp Chat
                     </h3>
                     <p className="text-[10px] text-foreground/45 mt-0.5 font-light">
-                      Instant reply in minutes
+                      {settings?.whatsappNumber ? `+${settings.whatsappNumber}` : "+91 98765 43210"}
                     </p>
                   </div>
                 </div>
@@ -111,8 +130,8 @@ export default function ContactPage() {
             </a>
 
             {/* Email */}
-            <a href="mailto:eatdunches@gmail.com" className="block group">
-              <div className="p-6 rounded-[2rem] border border-border/50 bg-foreground/2 hover:border-primary/30 transition-all flex items-center justify-between">
+            <a href={`mailto:${settings?.contactEmail || "eatdunches@gmail.com"}`} className="block group">
+              <div className="p-6 rounded-4xl border border-border/50 bg-foreground/2 hover:border-primary/30 transition-all flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-primary/10 flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
                     <Mail className="w-5 h-5" />
@@ -122,7 +141,7 @@ export default function ContactPage() {
                       Email Inquiry
                     </h3>
                     <p className="text-[10px] text-foreground/45 mt-0.5 font-light">
-                      eatdunches@gmail.com
+                      {settings?.contactEmail || "eatdunches@gmail.com"}
                     </p>
                   </div>
                 </div>
@@ -131,8 +150,8 @@ export default function ContactPage() {
             </a>
 
             {/* Phone Call */}
-            <a href="tel:+919876543210" className="block group">
-              <div className="p-6 rounded-[2rem] border border-border/50 bg-foreground/2 hover:border-primary/30 transition-all flex items-center justify-between">
+            <a href={`tel:${settings?.contactPhone || "+919876543210"}`} className="block group">
+              <div className="p-6 rounded-4xl border border-border/50 bg-foreground/2 hover:border-primary/30 transition-all flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-blue-500/10 flex items-center justify-center text-blue-500 group-hover:scale-110 transition-transform">
                     <Phone className="w-5 h-5" />
@@ -142,7 +161,7 @@ export default function ContactPage() {
                       Call Hotline
                     </h3>
                     <p className="text-[10px] text-foreground/45 mt-0.5 font-light">
-                      +91 98765 43210
+                      {settings?.contactPhone || "+91 98765 43210"}
                     </p>
                   </div>
                 </div>
@@ -152,18 +171,29 @@ export default function ContactPage() {
 
             {/* Instagram */}
             <a
-              href="https://instagram.com/eatdunches"
+              href={settings?.instagramUrl || "https://instagram.com/eatdunches"}
               target="_blank"
               rel="noopener noreferrer"
               className="block group"
             >
-              <div className="p-6 rounded-[2rem] border border-border/50 bg-foreground/2 hover:border-primary/30 transition-all flex items-center justify-between">
+              <div className="p-6 rounded-4xl border border-border/50 bg-foreground/2 hover:border-primary/30 transition-all flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-rose-500/10 flex items-center justify-center text-rose-500 group-hover:scale-110 transition-transform">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                      <rect width="20" height="20" x="2" y="2" rx="5" ry="5"/>
-                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
-                      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="w-5 h-5"
+                    >
+                      <rect width="20" height="20" x="2" y="2" rx="5" ry="5" />
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                      <line x1="17.5" x2="17.51" y1="6.5" y2="6.5" />
                     </svg>
                   </div>
                   <div>
@@ -171,7 +201,7 @@ export default function ContactPage() {
                       Instagram Feed
                     </h3>
                     <p className="text-[10px] text-foreground/45 mt-0.5 font-light">
-                      @eatdunches
+                      {settings?.instagramUrl ? `@${settings.instagramUrl.split("/").filter(Boolean).pop()}` : "@eatdunches"}
                     </p>
                   </div>
                 </div>
@@ -181,30 +211,58 @@ export default function ContactPage() {
 
             {/* Facebook */}
             <a
-              href="https://fb.com/eatdunches"
+              href={settings?.facebookUrl || "https://fb.com/eatdunches"}
               target="_blank"
               rel="noopener noreferrer"
               className="block group"
             >
-              <div className="p-6 rounded-[2rem] border border-border/50 bg-foreground/2 hover:border-primary/30 transition-all flex items-center justify-between">
+              <div className="p-6 rounded-4xl border border-border/50 bg-foreground/2 hover:border-primary/30 transition-all flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <div className="w-12 h-12 rounded-2xl bg-blue-600/10 flex items-center justify-center text-blue-600 group-hover:scale-110 transition-transform">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5">
-                      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="20"
+                      height="20"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="w-5 h-5"
+                    >
+                      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
                     </svg>
                   </div>
                   <div>
                     <h3 className="text-xs font-bold uppercase tracking-wider">
                       Facebook Page
                     </h3>
-                    <p className="text-[10px] text-foreground/45 mt-0.5 font-light">
-                      fb.com/eatdunches
+                    <p className="text-[10px] text-foreground/45 mt-0.5 font-light font-medium">
+                      {settings?.facebookUrl ? settings.facebookUrl.split("/").filter(Boolean).pop() : "eatdunches"}
                     </p>
                   </div>
                 </div>
                 <ArrowRight className="w-4 h-4 text-foreground/20 group-hover:text-primary group-hover:translate-x-1 transition-all" />
               </div>
             </a>
+
+            {/* Store Address Location */}
+            {settings?.address && (
+              <div className="p-6 rounded-4xl border border-border/50 bg-foreground/2 flex items-start gap-4 shadow-sm hover:border-primary/20 transition-all duration-300">
+                <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-500 shrink-0">
+                  <MapPin className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-xs font-bold uppercase tracking-wider mb-1">
+                    Store Location
+                  </h3>
+                  <p className="text-[10px] text-foreground/60 leading-relaxed font-medium whitespace-pre-line">
+                    {settings.address}
+                  </p>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Form Message Box (Right) */}

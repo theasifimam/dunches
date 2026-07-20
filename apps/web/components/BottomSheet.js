@@ -46,11 +46,11 @@ export default function BottomSheet({ isOpen, onClose, children }) {
             className="fixed bottom-0 left-0 right-0 max-w-lg mx-auto bg-background/85 backdrop-blur-3xl border-t border-x border-border/20 rounded-t-[3rem] p-8 shadow-[0_-20px_60px_rgba(0,0,0,0.35)] z-200 flex flex-col focus:outline-hidden pb-12 overflow-hidden"
           >
             {/* Ambient Top Glow / Glass Shine Line */}
-            <div className="absolute top-0 left-12 right-12 h-[1.5px] bg-gradient-to-r from-transparent via-primary/45 to-transparent blur-[0.5px] pointer-events-none" />
+            <div className="absolute top-0 left-12 right-12 h-[1.5px] bg-linear-to-r from-transparent via-primary/45 to-transparent blur-[0.5px] pointer-events-none" />
 
             {/* Drag Handle Bar */}
             <div className="w-16 h-1.5 bg-foreground/10 rounded-full mx-auto mb-8 shrink-0 cursor-grab active:cursor-grabbing hover:bg-foreground/20 active:bg-foreground/30 transition-colors duration-200" />
-            
+
             {/* Content wrapper */}
             <div className="flex flex-col overflow-y-auto max-h-[70vh] no-scrollbar scroll-smooth">
               {children}
