@@ -327,6 +327,7 @@ export default function CategoriesPage() {
             ))}
           </div>
         )}
+      </div>
 
         <CategoryDialog isOpen={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen} category={editingCategory} categories={categories.map(c => ({ id: c._id, name: c.name }))}/>
       </div>
