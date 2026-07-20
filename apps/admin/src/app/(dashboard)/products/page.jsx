@@ -61,6 +61,7 @@ export default function ProductsPage() {
     page,
     search: debouncedSearch,
     limit: 10,
+    all: true,
   });
 
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();

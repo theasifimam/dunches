@@ -28,7 +28,10 @@ export const productApi = createApi({
                 : [{ type: 'Product', id: 'LIST' }],
         }),
         getProductById: builder.query({
-            query: (idOrSlug) => `/products/${idOrSlug}`,
+            query: (idOrSlug) => ({
+                url: `/products/${idOrSlug}`,
+                params: { all: true },
+            }),
             providesTags: (_result, _error, idOrSlug) => [{ type: 'Product', id: idOrSlug }],
         }),
         createProduct: builder.mutation({

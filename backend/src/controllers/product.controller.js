@@ -11,13 +11,15 @@ export const getProducts = asyncHandler(async (req, res) => {
   const {
     page = '1', limit = '12', search, type, gender, brand,
     minPrice, maxPrice, frameShape, frameMaterial, category, sort = '-createdAt',
+    all,
   } = req.query;
 
   const pageNum = Math.max(1, parseInt(page));
   const limitNum = Math.min(50, parseInt(limit));
   const skip = (pageNum - 1) * limitNum;
 
-  const filter = { isActive: true };
+  const filter = {};
+  if (all !== 'true') filter['isActive'] = true;
   if (search) filter['$text'] = { $search: search };
   if (type) filter['type'] = type;
   if (gender) filter['gender'] = gender;
@@ -52,13 +54,15 @@ export const getProducts = asyncHandler(async (req, res) => {
 // GET /api/v1/products/:slugOrId
 export const getProductBySlug = asyncHandler(async (req, res) => {
   const { slug } = req.params;
+  const { all } = req.query;
 
-  let query = { isActive: true };
+  const baseFilter = all === 'true' ? {} : { isActive: true };
+  let query;
 
   if (mongoose.isValidObjectId(slug)) {
-    query = { $or: [{ _id: slug }, { slug: slug }], isActive: true };
+    query = { $or: [{ _id: slug }, { slug: slug }], ...baseFilter };
   } else {
-    query = { slug: slug, isActive: true };
+    query = { slug: slug, ...baseFilter };
   }
 
   const product = await Product.findOne(query).populate('category', 'name slug');
