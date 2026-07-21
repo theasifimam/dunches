@@ -162,6 +162,7 @@ const userSlice = createSlice({
     deleteRequested: false,
     deletionLoading: false,
     deletionError: null,
+    isLogoutConfirmOpen: false,
   },
   reducers: {
     setProfile: (state, action) => {
@@ -174,6 +175,9 @@ const userSlice = createSlice({
     },
     clearError: (state) => {
       state.error = null;
+    },
+    setLogoutConfirmOpen: (state, action) => {
+      state.isLogoutConfirmOpen = action.payload;
     },
   },
   extraReducers: (builder) => {
@@ -259,7 +263,7 @@ const userSlice = createSlice({
   },
 });
 
-export const { setProfile, clearProfile, clearError } = userSlice.actions;
+export const { setProfile, clearProfile, clearError, setLogoutConfirmOpen } = userSlice.actions;
 
 // ─── Selectors ────────────────────────────────────────────────────────────────
 export const selectUser = (state) => state.user.profile;
@@ -270,5 +274,6 @@ export const selectDeleteRequested = (state) => state.user.deleteRequested;
 export const selectDeletionLoading = (state) => state.user.deletionLoading;
 export const selectDeletionError = (state) => state.user.deletionError;
 export const selectAddresses = (state) => state.user.profile?.addresses ?? [];
+export const selectIsLogoutConfirmOpen = (state) => state.user.isLogoutConfirmOpen;
 
 export default userSlice.reducer;

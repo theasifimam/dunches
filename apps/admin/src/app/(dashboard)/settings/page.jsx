@@ -179,7 +179,7 @@ export default function SettingsPage() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-8 pb-10">
+    <form onSubmit={onSubmit} className="space-y-6 md:space-y-8 pb-10">
       <PageHeader
         badgeIcon={Store}
         badgeText="Website Configuration"
@@ -192,9 +192,9 @@ export default function SettingsPage() {
         showAction={true}
       />
 
-      <div className="space-y-8 px-4 md:px-0">
+      <div className="space-y-6 md:space-y-8 px-0">
         {/* Brand Identity Card */}
-        <div className="p-6 rounded-[2rem] bg-card border border-border/40 shadow-sm space-y-6">
+        <div className="p-4 md:p-6 rounded-2xl md:rounded-[2rem] bg-card border border-border/40 shadow-sm space-y-4 md:space-y-6">
           <div className="flex items-center gap-3 pb-4 border-b border-border/20">
             <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
               <Palette className="h-5 w-5" />
@@ -308,7 +308,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Store Information Card */}
-        <div className="p-6 rounded-[2rem] bg-card border border-border/40 shadow-sm space-y-6">
+        <div className="p-4 md:p-6 rounded-2xl md:rounded-[2rem] bg-card border border-border/40 shadow-sm space-y-4 md:space-y-6">
           <div className="flex items-center gap-3 pb-4 border-b border-border/20">
             <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
               <MapPin className="h-5 w-5" />
@@ -394,7 +394,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Social Links Card */}
-        <div className="p-6 rounded-[2rem] bg-card border border-border/40 shadow-sm space-y-6">
+        <div className="p-4 md:p-6 rounded-2xl md:rounded-[2rem] bg-card border border-border/40 shadow-sm space-y-4 md:space-y-6">
           <div className="flex items-center gap-3 pb-4 border-b border-border/20">
             <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
               <LinkIcon className="h-5 w-5" />
@@ -439,7 +439,7 @@ export default function SettingsPage() {
         </div>
 
         {/* Team Members Card */}
-        <div className="p-6 rounded-[2rem] bg-card border border-border/40 shadow-sm space-y-6">
+        <div className="p-4 md:p-6 rounded-2xl md:rounded-[2rem] bg-card border border-border/40 shadow-sm space-y-4 md:space-y-6">
           <div className="flex items-center justify-between pb-4 border-b border-border/20">
             <div className="flex items-center gap-3">
               <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">

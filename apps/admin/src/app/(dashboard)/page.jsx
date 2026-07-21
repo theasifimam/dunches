@@ -102,7 +102,7 @@ export default function DashboardPage() {
   };
 
   return (
-    <div className="space-y-8 md:space-y-12 pb-10">
+    <div className="space-y-6 md:space-y-12 pb-10">
       <PageHeader
         badgeIcon={Flame}
         badgeText="System Status: Optimal"
@@ -132,14 +132,14 @@ export default function DashboardPage() {
       </PageHeader>
 
       {/* Stats Grid - Reduced Shadows */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 px-4 md:px-0">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 px-0">
         {stats.map((stat, i) => {
           const colors = colorStyles[stat.color] || colorStyles.primary;
           return (
             <div
               key={i}
               className={cn(
-                "group p-6 md:p-8 rounded-[2rem] md:rounded-[2.5rem] bg-card border transition-all duration-500 shadow-sm hover:shadow-md relative overflow-hidden",
+                "group p-4 md:p-8 rounded-2xl md:rounded-[2.5rem] bg-card border transition-all duration-500 shadow-sm hover:shadow-md relative overflow-hidden",
                 colors.border
               )}
             >
@@ -183,9 +183,9 @@ export default function DashboardPage() {
         })}
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 px-4 md:px-0">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 md:gap-8 px-0">
         {/* Activity Chart - Refined Style */}
-        <div className="lg:col-span-8 p-6 md:pt-10 md:px-10 md:pb-8 rounded-[2.5rem] md:rounded-[3.5rem] bg-card border shadow-sm relative overflow-hidden group flex flex-col">
+        <div className="lg:col-span-8 p-4 md:pt-10 md:px-10 md:pb-8 rounded-2xl md:rounded-[3.5rem] bg-card border shadow-sm relative overflow-hidden group flex flex-col">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6 md:mb-8">
             <div>
               <h3 className="text-lg md:text-xl font-black tracking-tight mb-1 uppercase">
@@ -233,7 +233,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Recent Orders - Modern List */}
-        <div className="lg:col-span-4 p-6 md:p-10 rounded-[2.5rem] md:rounded-[3.5rem] bg-card border shadow-sm flex flex-col">
+        <div className="lg:col-span-4 p-4 md:p-10 rounded-2xl md:rounded-[3.5rem] bg-card border shadow-sm flex flex-col">
           <div className="flex items-center justify-between mb-8 md:mb-10">
             <h3 className="text-lg md:text-xl font-black tracking-tight uppercase">
               Quick Feed
@@ -247,7 +247,7 @@ export default function DashboardPage() {
             </Button>
           </div>
 
-          <div className="space-y-6 flex-1">
+          <div className="space-y-4 md:space-y-6 flex-1">
             {recentOrders && recentOrders.length > 0 ? (
               recentOrders.map((order, i) => (
                 <div
@@ -302,7 +302,7 @@ export default function DashboardPage() {
             )}
           </div>
 
-          <Button className="w-full h-12 md:h-14 rounded-3xl mt-8 font-black uppercase tracking-widest text-[9px] md:text-[10px] bg-muted text-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-500">
+          <Button className="w-full h-12 md:h-14 rounded-2xl mt-6 md:mt-8 font-black uppercase tracking-widest text-[9px] md:text-[10px] bg-muted text-foreground hover:bg-primary hover:text-primary-foreground transition-all duration-500">
             Audit Full History
           </Button>
         </div>

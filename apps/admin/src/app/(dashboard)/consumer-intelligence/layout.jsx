@@ -18,7 +18,7 @@ export default function ConsumerIntelligenceLayout({ children }) {
   const pathname = usePathname();
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-7xl mx-auto pb-12">
+    <div className="flex flex-col gap-4 md:gap-6 w-full max-w-7xl mx-auto pb-12">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-serif font-light tracking-tight text-foreground">
           Consumer <span className="text-primary italic font-black font-sans">Intelligence</span>

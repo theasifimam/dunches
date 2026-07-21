@@ -167,7 +167,7 @@ export default function UsersPage() {
     );
   }
   return (
-    <div className="flex flex-col gap-6 w-full max-w-7xl mx-auto pb-12 animate-in fade-in duration-700">
+    <div className="flex flex-col gap-4 md:gap-6 w-full max-w-7xl mx-auto pb-12 animate-in fade-in duration-700">
       {/* Header Actions */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div className="flex flex-col gap-2">
@@ -209,13 +209,13 @@ export default function UsersPage() {
       </div>
 
       {/* Registry Health Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
         {pulseStats.map((stat, i) => {
           const Icon = stat.icon;
           return (
             <div
               key={i}
-              className="bg-card border border-border/40 p-5 rounded-3xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group"
+              className="bg-card border border-border/40 p-4 md:p-5 rounded-2xl md:rounded-3xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group"
             >
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Icon className="h-16 w-16 text-primary" />
@@ -242,7 +242,7 @@ export default function UsersPage() {
       </div>
 
       {/* Filters Bar */}
-      <div className="flex flex-col md:flex-row items-center gap-4 p-4 rounded-2xl bg-card border border-border/40 w-full">
+      <div className="flex flex-col md:flex-row items-center gap-3 md:gap-4 p-3.5 md:p-4 rounded-2xl bg-card border border-border/40 w-full">
         <div className="relative flex-1 w-full group">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
@@ -478,14 +478,14 @@ export default function UsersPage() {
         </div>
       ) : (
         /* Cards View */
-        <div className="p-6 bg-muted/5">
+        <div className="p-4 md:p-6 bg-muted/5">
           {roleFilter === "subscribers" ? (
             /* Subscribers Cards Grid */
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredSubscribers.map((sub, idx) => (
                 <div
                   key={sub._id}
-                  className="group rounded-[2rem] bg-card border border-border/40 p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between gap-4"
+                  className="group rounded-2xl md:rounded-[2rem] bg-card border border-border/40 p-4 md:p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between gap-4"
                 >
                   <div className="space-y-3">
                     <div className="flex items-center justify-between">
@@ -522,13 +522,13 @@ export default function UsersPage() {
             </div>
           ) : (
             /* Users Cards Grid */
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {filteredUsers.map((user) => (
                 <div
                   key={user._id}
-                  className="group rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+                  className="group rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between"
                 >
-                  <div className="p-5 space-y-4">
+                  <div className="p-4 space-y-3 md:p-5 md:space-y-4">
                     {/* Header: User Avatar & Role */}
                     <div className="flex items-start justify-between gap-3">
                       <div className="flex items-center gap-3">
@@ -593,7 +593,7 @@ export default function UsersPage() {
                   </div>
 
                   {/* Footer with status toggle and actions */}
-                  <div className="p-5 border-t border-border/10 flex items-center justify-between bg-muted/5 gap-3">
+                  <div className="p-4 md:p-5 border-t border-border/10 flex items-center justify-between bg-muted/5 gap-3">
                     <div className="flex items-center gap-2">
                       <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                         {user.isActive ? "Active" : "Standby"}

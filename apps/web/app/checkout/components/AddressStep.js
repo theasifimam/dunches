@@ -65,6 +65,16 @@ export default function AddressStep({ user, onConfirm }) {
     savedAddresses.find((a) => a.isDefault) || savedAddresses[0] || null
   );
 
+  const [hasInitialized, setHasInitialized] = useState(false);
+
+  useEffect(() => {
+    if (savedAddresses.length > 0 && !hasInitialized) {
+      setShowForm(false);
+      setSelectedAddress(savedAddresses.find((a) => a.isDefault) || savedAddresses[0] || null);
+      setHasInitialized(true);
+    }
+  }, [savedAddresses, hasInitialized]);
+
   const [form, setForm] = useState({
     ...EMPTY_ADDRESS,
     fullName: user?.name || "",

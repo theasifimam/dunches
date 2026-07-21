@@ -28,7 +28,7 @@ export default function PublicFeedbackPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/v1/products?limit=100`);
+        const res = await fetch('/api/v1/products?limit=100');
         const data = await res.json();
         if (data?.data?.products) {
           setProducts(data.data.products);
@@ -76,7 +76,7 @@ export default function PublicFeedbackPage() {
         overallRating: formData.overallRating * 2, // Map 1-5 to 2-10 for unified analytics
       };
       
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000'}/api/v1/feedbacks`, {
+      const res = await fetch('/api/v1/feedbacks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)

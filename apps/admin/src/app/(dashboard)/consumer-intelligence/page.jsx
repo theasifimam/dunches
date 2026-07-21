@@ -66,15 +66,15 @@ export default function ConsumerIntelligenceDashboard() {
   ];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* KPIs */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
         {kpis.map((kpi, idx) => {
           const Icon = kpi.icon;
           return (
             <div
               key={idx}
-              className="bg-card border border-border/40 p-5 rounded-3xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group"
+              className="bg-card border border-border/40 p-4 md:p-5 rounded-2xl md:rounded-3xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group"
             >
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Icon className={cn("h-16 w-16", kpi.color)} />
@@ -93,8 +93,8 @@ export default function ConsumerIntelligenceDashboard() {
       </div>
 
       {/* Overview Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-card border border-border/40 p-6 rounded-3xl shadow-sm">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+        <div className="bg-card border border-border/40 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm">
            <h3 className="text-lg font-bold mb-4 font-serif">Quick Actions</h3>
            <p className="text-sm text-muted-foreground mb-6">
              Start collecting data or view detailed insights from the intelligence sub-menus.
@@ -106,7 +106,7 @@ export default function ConsumerIntelligenceDashboard() {
            </div>
         </div>
         
-        <div className="bg-card border border-border/40 p-6 rounded-3xl shadow-sm flex flex-col justify-center items-center text-center">
+        <div className="bg-card border border-border/40 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm flex flex-col justify-center items-center text-center">
           <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mb-4">
              <Target className="h-8 w-8 text-primary" />
           </div>

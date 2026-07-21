@@ -1,6 +1,7 @@
 'use client';
 import React from 'react';
-import { LifeBuoy, BookOpen, MessageCircle, ShieldCheck, Zap, ArrowRight, ZapIcon } from 'lucide-react';
+import Link from 'next/link';
+import { LifeBuoy, BookOpen, MessageCircle, ShieldCheck, Zap, ArrowRight, ZapIcon, Flame } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 const supportCategories = [
@@ -38,13 +39,22 @@ const supportCategories = [
     }
 ];
 export default function SupportPage() {
-    return (<div className="p-8 max-w-7xl mx-auto space-y-12">
+    return (<div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6 md:space-y-12">
             {/* Header Section */}
             <div className="relative group">
                 <div className="absolute -inset-4 bg-gradient-to-r from-primary/10 via-transparent to-transparent blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"/>
-                <div className="relative flex items-center gap-6">
-                    <div className="h-20 w-20 rounded-3xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-2xl shadow-primary/5">
-                        <LifeBuoy className="h-10 w-10 text-primary animate-pulse"/>
+                <div className="relative flex flex-col md:flex-row md:items-center gap-6">
+                    <div className="flex items-center gap-3">
+                        <Link 
+                            href="/" 
+                            className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-primary/10 border border-primary/20 hover:scale-105 transition-all duration-300 shadow-sm shrink-0"
+                            title="Go to Dashboard"
+                        >
+                            <Flame className="h-6 w-6 text-primary" />
+                        </Link>
+                        <div className="h-20 w-20 rounded-3xl bg-primary/10 flex items-center justify-center border border-primary/20 shadow-2xl shadow-primary/5">
+                            <LifeBuoy className="h-10 w-10 text-primary animate-pulse"/>
+                        </div>
                     </div>
                     <div>
                         <h1 className="text-4xl font-black tracking-tighter uppercase italic flex items-center gap-4">
@@ -61,7 +71,7 @@ export default function SupportPage() {
 
             {/* Support Hero Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {supportCategories.map((category, index) => (<motion.div key={category.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} className="group relative bg-card/40 backdrop-blur-xl border border-border/50 rounded-[2rem] p-8 hover:border-primary/30 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 flex flex-col">
+                {supportCategories.map((category, index) => (<motion.div key={category.title} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: index * 0.1 }} className="group relative bg-card/40 backdrop-blur-xl border border-border/50 rounded-2xl md:rounded-[2rem] p-5 md:p-8 hover:border-primary/30 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 flex flex-col">
                         <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center mb-6 transition-transform duration-500 group-hover:scale-110 group-hover:rotate-3", category.bg)}>
                             <category.icon className={cn("h-7 w-7", category.color)}/>
                         </div>
@@ -78,7 +88,7 @@ export default function SupportPage() {
 
             {/* Extended Support Section */}
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-12">
-                <div className="lg:col-span-2 bg-gradient-to-br from-primary/5 to-transparent rounded-[2.5rem] border border-primary/10 p-10 relative overflow-hidden group">
+                <div className="lg:col-span-2 bg-gradient-to-br from-primary/5 to-transparent rounded-2xl md:rounded-[2.5rem] border border-primary/10 p-5 md:p-10 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
                         <LifeBuoy className="h-32 w-32 -rotate-12"/>
                     </div>
@@ -98,7 +108,7 @@ export default function SupportPage() {
                     </div>
                 </div>
 
-                <div className="bg-card/40 backdrop-blur-xl border border-border/50 rounded-[2.5rem] p-10 flex flex-col justify-center text-center group">
+                <div className="bg-card/40 backdrop-blur-xl border border-border/50 rounded-2xl md:rounded-[2.5rem] p-5 md:p-10 flex flex-col justify-center text-center group">
                     <div className="h-16 w-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-500">
                         <ShieldCheck className="h-8 w-8 text-primary"/>
                     </div>

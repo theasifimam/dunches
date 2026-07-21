@@ -260,7 +260,7 @@ export default function NotificationsPage() {
       </div>
 
       {/* Notifications List / Cards */}
-      <div className="rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm animate-in fade-in duration-300">
+      <div className="rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm animate-in fade-in duration-300">
         {isLoading ? (
           <div className="flex items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -391,7 +391,7 @@ export default function NotificationsPage() {
           </div>
         ) : (
           /* Cards View */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 bg-muted/5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 md:gap-6 md:p-6 bg-muted/5">
             {notifications.map((notif, idx) => {
               const config = TYPE_CONFIG[notif.type] || TYPE_CONFIG.new_order;
               const Icon = config.icon;
@@ -399,7 +399,7 @@ export default function NotificationsPage() {
                 <div
                   key={notif._id}
                   className={cn(
-                    "group relative rounded-[2rem] bg-card border border-border/40 p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between cursor-pointer",
+                    "group relative rounded-2xl md:rounded-[2rem] bg-card border border-border/40 p-4 md:p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between cursor-pointer",
                     !notif.isRead && "bg-primary/2 border-primary/20"
                   )}
                   onClick={() => handleNotifClick(notif)}

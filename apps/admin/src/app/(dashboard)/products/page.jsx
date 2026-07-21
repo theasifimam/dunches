@@ -183,7 +183,7 @@ export default function ProductsPage() {
 
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-700">
+    <div className="space-y-4 md:space-y-6 animate-in fade-in duration-700">
       {/* Header Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4 bg-card border border-border/40 px-5 py-3 rounded-2xl shadow-sm">
@@ -209,13 +209,13 @@ export default function ProductsPage() {
       </div>
 
       {/* Inventory Health Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-4">
         {stats.map((stat, i) => {
           const Icon = stat.icon;
           return (
             <div
               key={i}
-              className="bg-card border border-border/40 p-5 rounded-3xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group"
+              className="bg-card border border-border/40 p-4 md:p-5 rounded-2xl md:rounded-3xl shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group"
             >
               <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
                 <Icon className="h-16 w-16 text-primary" />
@@ -235,7 +235,7 @@ export default function ProductsPage() {
       </div>
 
       {/* Filters Bar */}
-      <div className="flex flex-col sm:flex-row gap-3 items-center w-full">
+      <div className="flex flex-col sm:flex-row gap-2.5 sm:gap-3 items-center w-full">
         <div className="relative group flex-1 w-full">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
           <Input
@@ -249,7 +249,7 @@ export default function ProductsPage() {
       </div>
 
       {/* Products Table / Cards */}
-      <div className="rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
+      <div className="rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
         {viewMode === "list" ? (
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
@@ -393,11 +393,11 @@ export default function ProductsPage() {
           </div>
         ) : (
           /* Cards View */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 bg-muted/5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 md:gap-6 md:p-6 bg-muted/5">
             {products.map((product) => (
               <div
                 key={product._id}
-                className="group rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col"
+                className="group rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col"
               >
                 {/* Product Image */}
                 <div className="relative aspect-video w-full bg-muted overflow-hidden border-b border-border/20">
@@ -438,7 +438,7 @@ export default function ProductsPage() {
                 </div>
 
                 {/* Content */}
-                <div className="p-5 flex-1 flex flex-col justify-between gap-4">
+                <div className="p-4 md:p-5 flex-1 flex flex-col justify-between gap-4">
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-2">
                       <span className="px-2.5 py-1 rounded-full bg-muted text-[10px] font-black uppercase tracking-wider text-muted-foreground">

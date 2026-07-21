@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrainCircuit, Sparkles, AlertCircle } from 'lucide-react';
+import Link from 'next/link';
+import { BrainCircuit, Sparkles, AlertCircle, Flame } from 'lucide-react';
 
 export default function AIInsights() {
   return (
@@ -10,21 +11,30 @@ export default function AIInsights() {
         Sample
       </div>
 
-      <div className="p-8 lg:p-12">
+      <div className="p-4 md:p-8 lg:p-12">
         <div className="max-w-2xl">
           <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mb-6 border border-primary/20">
             <BrainCircuit className="h-8 w-8 text-primary" />
           </div>
           
-          <h2 className="text-3xl font-serif font-bold mb-4">
-            AI Consumer Insights
-          </h2>
+          <div className="flex items-center gap-3 mb-4">
+            <Link 
+              href="/" 
+              className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 hover:scale-105 transition-all duration-300 shadow-sm shrink-0"
+              title="Go to Dashboard"
+            >
+              <Flame className="h-4 w-4 text-primary" />
+            </Link>
+            <h2 className="text-3xl font-serif font-bold leading-none">
+              AI Consumer Insights
+            </h2>
+          </div>
           <p className="text-muted-foreground mb-8 text-lg">
             Our AI engine continuously analyzes qualitative feedback, exact quotes, and ratings to uncover hidden patterns and suggest actionable business strategies.
           </p>
 
           <div className="space-y-6 opacity-70 pointer-events-none">
-             <div className="bg-background border border-border/50 p-6 rounded-2xl relative overflow-hidden">
+             <div className="bg-background border border-border/50 p-4 md:p-6 rounded-2xl relative overflow-hidden">
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-500" />
                 <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
                   <TrendingIcon className="h-5 w-5 text-green-500" />
@@ -35,7 +45,7 @@ export default function AIInsights() {
                 </p>
              </div>
 
-             <div className="bg-background border border-border/50 p-6 rounded-2xl relative overflow-hidden">
+             <div className="bg-background border border-border/50 p-4 md:p-6 rounded-2xl relative overflow-hidden">
                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-amber-500" />
                 <h3 className="font-bold text-lg mb-2 flex items-center gap-2">
                   <AlertCircle className="h-5 w-5 text-amber-500" />
@@ -47,7 +57,7 @@ export default function AIInsights() {
              </div>
           </div>
           
-          <div className="mt-12 p-6 bg-primary/5 border border-primary/10 rounded-2xl flex items-center gap-4">
+          <div className="mt-8 md:mt-12 p-4 md:p-6 bg-primary/5 border border-primary/10 rounded-2xl flex items-center gap-4">
              <Sparkles className="h-6 w-6 text-primary shrink-0" />
              <p className="text-sm font-medium text-foreground">
                This feature is currently in development. Soon you will be able to generate on-demand AI reports based on your live database.

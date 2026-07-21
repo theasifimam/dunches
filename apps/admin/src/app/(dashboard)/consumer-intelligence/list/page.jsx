@@ -2,7 +2,8 @@
 
 import React, { useState } from 'react';
 import { useGetFeedbacksQuery } from '@/store/feedbackApi';
-import { Loader2, Calendar, Filter, ChevronLeft, ChevronRight, LayoutGrid, List } from 'lucide-react';
+import Link from 'next/link';
+import { Loader2, Calendar, Filter, ChevronLeft, ChevronRight, LayoutGrid, List, Flame } from 'lucide-react';
 import ViewSwitcher from '@/components/admin/ViewSwitcher';
 
 export default function FeedbackList() {
@@ -32,10 +33,19 @@ export default function FeedbackList() {
 
   return (
     <div className="bg-card border border-border/40 rounded-3xl overflow-hidden shadow-sm">
-      <div className="p-6 border-b border-border/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h2 className="text-xl font-bold font-serif">Feedback Database</h2>
-          <p className="text-sm text-muted-foreground">Review all collected consumer data</p>
+      <div className="p-4 md:p-6 border-b border-border/40 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <Link 
+            href="/" 
+            className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 hover:scale-105 transition-all duration-300 shadow-sm shrink-0"
+            title="Go to Dashboard"
+          >
+            <Flame className="h-4 w-4 text-primary" />
+          </Link>
+          <div>
+            <h2 className="text-xl font-bold font-serif">Feedback Database</h2>
+            <p className="text-sm text-muted-foreground">Review all collected consumer data</p>
+          </div>
         </div>
         <div className="flex items-center gap-3">
           <div className="relative">
@@ -116,11 +126,11 @@ export default function FeedbackList() {
         </div>
       ) : (
         /* Cards View */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 bg-muted/5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 md:gap-6 md:p-6 bg-muted/5">
           {feedbacks.map((item) => (
             <div
               key={item._id}
-              className="group rounded-[2rem] bg-card border border-border/40 p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between gap-4"
+              className="group rounded-2xl md:rounded-[2rem] bg-card border border-border/40 p-4 md:p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between gap-4"
             >
               <div className="space-y-4">
                 {/* Top line: rating and source */}

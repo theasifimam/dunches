@@ -6,11 +6,11 @@ import { Input } from '@/components/ui/input';
 import { PageHeader } from '@/components/admin/PageHeader';
 
 export default function ProfilePage() {
-    return (<div className="space-y-8 md:space-y-12 pb-10">
+    return (<div className="space-y-6 md:space-y-12 pb-10">
             <PageHeader badgeIcon={Store} badgeText="Boutique Identity" titleMain="Dunches" titleAccent="Profile" description="Defining the global signature of Dunches. Manage your snack boutique's details and organic footprint." actionIcon={Save} actionLabel="Save Profile" onAction={() => console.log('Saving profile...')}/>
 
-            <div className="mx-auto space-y-8 md:space-y-10 px-4 md:px-0">
-                <div className="p-6 md:p-10 rounded-[2rem] md:rounded-[3.5rem] bg-card border shadow-sm border-primary/5 space-y-8 md:space-y-10 group/section">
+            <div className="mx-auto space-y-6 md:space-y-10 px-0">
+                <div className="p-4 md:p-10 rounded-2xl md:rounded-[3.5rem] bg-card border shadow-sm border-primary/5 space-y-6 md:space-y-10 group/section">
                     <div className="flex items-center gap-4 md:gap-5">
                         <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl md:rounded-2xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20 shadow-inner group-hover/section:scale-110 transition-transform">
                             <Store className="h-6 w-6 md:h-7 md:w-7"/>
@@ -32,7 +32,7 @@ export default function ProfilePage() {
                         </div>
                         <div className="md:col-span-2 space-y-2 md:space-y-3">
                             <label className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground ml-1">Vision Statement</label>
-                            <textarea className="w-full h-32 md:h-40 p-6 md:p-10 rounded-[1.5rem] md:rounded-[2.5rem] bg-muted/20 border-none font-black italic tracking-tight text-sm md:text-base shadow-sm outline-none resize-none leading-relaxed" defaultValue="Premium organic roasted lotus seeds and clean chips heavily dusted with hand-crafted hot spices. Bold, fiery crunch for late-night cravings."/>
+                            <textarea className="w-full h-32 md:h-40 p-4 md:p-10 rounded-xl md:rounded-[2.5rem] bg-muted/20 border-none font-black italic tracking-tight text-sm md:text-base shadow-sm outline-none resize-none leading-relaxed" defaultValue="Premium organic roasted lotus seeds and clean chips heavily dusted with hand-crafted hot spices. Bold, fiery crunch for late-night cravings."/>
                         </div>
                     </div>
                 </div>

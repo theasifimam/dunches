@@ -121,7 +121,7 @@ export default function BannersPage() {
     [activeCampaigns, scheduledCampaigns],
   );
   return (
-    <div className="space-y-8 md:space-y-12 pb-10">
+    <div className="space-y-6 md:space-y-12 pb-10">
       <BannerDialog
         isOpen={isDialogOpen}
         onOpenChange={setIsDialogOpen}
@@ -163,11 +163,11 @@ export default function BannersPage() {
       </PageHeader>
 
       {/* Campaign Health Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 px-4 md:px-0">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 px-0">
         {campaignStats.map((stat, i) => (
           <div
             key={i}
-            className="p-6 md:p-8 rounded-[1.5rem] md:rounded-[2.5rem] bg-card border shadow-sm border-primary/5 hover:border-primary/20 transition-all flex items-center justify-between group"
+            className="p-4 md:p-8 rounded-2xl md:rounded-[2.5rem] bg-card border shadow-sm border-primary/5 hover:border-primary/20 transition-all flex items-center justify-between group"
           >
             <div className="flex items-center gap-4 md:gap-6">
               <div
@@ -194,24 +194,24 @@ export default function BannersPage() {
       </div>
 
       {/* Layout Toggle Actions */}
-      <div className="flex justify-between items-center px-4 md:px-0">
+      <div className="flex justify-between items-center px-0">
         <h3 className="text-lg font-black uppercase tracking-tight italic">Campaign Inventory</h3>
         <ViewSwitcher viewMode={viewMode} onViewModeChange={handleViewModeChange} />
       </div>
 
       {/* Grid of Banners - Enhanced High-Fidelity Cards */}
       {isLoading ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-4 md:px-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 px-0">
           {[1, 2].map((i) => (
             <Skeleton key={i} className="h-[400px] w-full rounded-[3rem]" />
           ))}
         </div>
       ) : viewMode === "card" ? (
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 px-4 md:px-0">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 px-0">
           {banners.map((banner) => (
             <div
               key={banner.id}
-              className="group rounded-[3rem] bg-card border shadow-sm border-primary/5 overflow-hidden flex flex-col hover:shadow-xl transition-all duration-700"
+              className="group rounded-3xl bg-card border shadow-sm border-primary/5 overflow-hidden flex flex-col hover:shadow-xl transition-all duration-700"
             >
               {/* Banner Preview Image */}
               <div className="relative h-72 overflow-hidden bg-muted">
@@ -269,7 +269,7 @@ export default function BannersPage() {
               </div>
 
               {/* Banner Stats Footer */}
-              <div className="p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 bg-card relative z-10">
+              <div className="p-4 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 md:gap-6 bg-card relative z-10">
                 <div className="flex items-center gap-4 md:gap-8">
                   <div>
                     <p className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-1 flex items-center gap-1.5">

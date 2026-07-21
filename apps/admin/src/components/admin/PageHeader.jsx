@@ -1,5 +1,7 @@
 "use client";
 import React from "react";
+import Link from "next/link";
+import { Flame } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export function PageHeader({
@@ -19,8 +21,17 @@ export function PageHeader({
       <div className="absolute top-0 right-0 w-64 h-64 md:w-80 md:h-80 bg-muted/15 rounded-full -mr-24 -mt-24 md:-mr-32 md:-mt-32 blur-[80px] md:blur-[100px]" />
       <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-8">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted/60 text-muted-foreground text-[9px] md:text-[10px] font-bold uppercase tracking-widest mb-4 border border-border/20">
-            <BadgeIcon className="h-3 w-3" /> {badgeText}
+          <div className="flex items-center gap-3 mb-4">
+            <Link 
+              href="/" 
+              className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 hover:scale-105 transition-all duration-300 shadow-sm shrink-0"
+              title="Go to Dashboard"
+            >
+              <Flame className="h-4 w-4 text-primary" />
+            </Link>
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted/60 text-muted-foreground text-[9px] md:text-[10px] font-bold uppercase tracking-widest border border-border/20">
+              <BadgeIcon className="h-3 w-3" /> {badgeText}
+            </div>
           </div>
           <h2 className="text-3xl md:text-5xl font-light tracking-tight mb-4 leading-none font-serif text-foreground">
             {titleMain} <span className="text-muted-foreground italic font-normal">{titleAccent}</span>

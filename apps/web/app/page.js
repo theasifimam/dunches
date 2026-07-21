@@ -23,9 +23,10 @@ import {
   X,
   Plus,
   Flame,
+  Sparkles,
 } from "lucide-react";
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Home() {
   const dispatch = useDispatch();
@@ -37,6 +38,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentUser, setCurrentUser] = useState(null);
   const [theme, setTheme] = useState("dark");
+  const [currentPromoSlide, setCurrentPromoSlide] = useState(0);
 
   useEffect(() => {
     try {
@@ -65,6 +67,55 @@ export default function Home() {
   };
 
   const spotlightSnack = menu?.find((item) => item.id === "2");
+
+  const promoSlides = [
+    {
+      id: "promo-1",
+      type: "product",
+      label: "daily crave",
+      badgeIcon: Flame,
+      product: spotlightSnack,
+      title: spotlightSnack ? spotlightSnack.name : "smoked chili & zesty lime makhāna",
+      description: spotlightSnack ? spotlightSnack.description : "A vibrant kick of fiery Kashmiri red chili flakes tempered by fresh lime.",
+      price: spotlightSnack ? spotlightSnack.price : 135,
+      image: spotlightSnack ? spotlightSnack.image : "/mughlai_dish_icon.png",
+      bgClass: "bg-linear-to-br from-primary/15 via-accent/5 to-transparent border-primary/10",
+      glowClass: "bg-primary/20",
+    },
+    {
+      id: "promo-2",
+      type: "offer",
+      label: "super deal",
+      badgeIcon: Sparkles,
+      title: "classic series buy 2 get 1",
+      description: "Buy 2 get 1 free on all classic series Himalayan salt makhanas! pop, crunch, repeat.",
+      link: "/explore?category=Classic",
+      image: "/makhana_snack.jpg",
+      buttonText: "view deal",
+      bgClass: "bg-linear-to-br from-accent/15 via-foreground/5 to-transparent border-accent/10",
+      glowClass: "bg-accent/20",
+    },
+    {
+      id: "promo-3",
+      type: "offer",
+      label: "spicy launch",
+      badgeIcon: Flame,
+      title: "fiery cravings 15% off",
+      description: "Get flat 15% off our hottest organic snack collection! elevate your evening snacking.",
+      link: "/explore?category=Spicy",
+      image: "/auth_visual.png",
+      buttonText: "view offer",
+      bgClass: "bg-linear-to-br from-primary/20 via-primary/5 to-transparent border-primary/15",
+      glowClass: "bg-primary/25",
+    }
+  ];
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentPromoSlide((prev) => (prev + 1) % promoSlides.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [promoSlides.length]);
 
   const categoryEmojis = {
     All: "🔥 all",
@@ -140,51 +191,113 @@ export default function Home() {
           </Link>
         </div>
 
-        {/* Spotlight Promo Banner */}
-        {spotlightSnack && !searchQuery && (
-          <div className="px-5 pt-2 pb-6 z-10">
-            <div className="relative rounded-[32px] overflow-hidden bg-linear-to-br from-primary/15 via-accent/5 to-transparent border border-primary/10 p-5 flex items-center justify-between shadow-xs">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-primary/20 rounded-full blur-2xl pointer-events-none -z-10" />
+        {/* Spotlight Promo Banner / Multi-purpose Carousel */}
+        {!searchQuery && (
+          <div className="px-5 pt-2 pb-6 z-10 relative select-none">
+            <div className="overflow-hidden relative rounded-[32px] min-h-[170px]">
+              <AnimatePresence mode="wait">
+                {promoSlides.map((slide, idx) => {
+                  if (idx !== currentPromoSlide) return null;
+                  
+                  const BadgeIcon = slide.badgeIcon;
+                  
+                  return (
+                    <motion.div
+                      key={slide.id}
+                      initial={{ opacity: 0, x: 50 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -50 }}
+                      transition={{ duration: 0.35, ease: "easeInOut" }}
+                      drag="x"
+                      dragConstraints={{ left: 0, right: 0 }}
+                      dragElastic={0.2}
+                      onDragEnd={(e, { offset, velocity }) => {
+                        if (offset.x > 80 || velocity.x > 300) {
+                          // Swipe right -> prev
+                          setCurrentPromoSlide((prev) => (prev - 1 + promoSlides.length) % promoSlides.length);
+                        } else if (offset.x < -80 || velocity.x < -300) {
+                          // Swipe left -> next
+                          setCurrentPromoSlide((prev) => (prev + 1) % promoSlides.length);
+                        }
+                      }}
+                      className={`relative w-full rounded-[32px] p-5 flex items-center justify-between shadow-xs border ${slide.bgClass} cursor-grab active:cursor-grabbing`}
+                    >
+                      <div className={`absolute top-0 right-0 w-24 h-24 rounded-full blur-2xl pointer-events-none -z-10 ${slide.glowClass}`} />
 
-              <div className="flex flex-col gap-2 max-w-[58%]">
-                <span className="inline-flex items-center gap-1 bg-primary/20 text-primary px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest w-fit">
-                  <Flame className="w-2.5 h-2.5 fill-primary" /> Daily Crave
-                </span>
-                <h3 className="text-base font-extrabold text-foreground leading-tight tracking-tight lowercase font-sans">
-                  {spotlightSnack.name}
-                </h3>
-                <p className="text-[10px] text-foreground/45 line-clamp-2 leading-relaxed">
-                  {spotlightSnack.description}
-                </p>
-                <div className="flex items-center gap-3 mt-1">
-                  <span className="text-sm font-extrabold text-foreground">
-                    ₹{spotlightSnack.price}
-                  </span>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      dispatch(addToCart(spotlightSnack));
-                    }}
-                    className="h-7 px-3 bg-primary text-primary-foreground hover:bg-primary-hover rounded-full text-[9px] font-black uppercase tracking-widest transition-all cursor-pointer active:scale-95"
-                  >
-                    Add
-                  </button>
-                </div>
-              </div>
+                      <div className="flex flex-col gap-2 max-w-[58%] select-none">
+                        <span className="inline-flex items-center gap-1 bg-primary/20 text-primary px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest w-fit">
+                          {BadgeIcon && <BadgeIcon className="w-2.5 h-2.5 fill-primary" />} {slide.label}
+                        </span>
+                        <h3 className="text-base font-extrabold text-foreground leading-tight tracking-tight lowercase font-sans">
+                          {slide.title}
+                        </h3>
+                        <p className="text-[10px] text-foreground/45 line-clamp-2 leading-relaxed">
+                          {slide.description}
+                        </p>
+                        
+                        <div className="flex items-center gap-3 mt-1">
+                          {slide.type === "product" ? (
+                            <>
+                              <span className="text-sm font-extrabold text-foreground">
+                                ₹{slide.price}
+                              </span>
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  e.stopPropagation();
+                                  if (slide.product) {
+                                    dispatch(addToCart(slide.product));
+                                  }
+                                }}
+                                className="h-7 px-3 bg-primary text-primary-foreground hover:bg-primary-hover rounded-full text-[9px] font-black uppercase tracking-widest transition-all cursor-pointer active:scale-95 pointer-events-auto"
+                              >
+                                Add
+                              </button>
+                            </>
+                          ) : (
+                            <Link href={slide.link || "/explore"} className="pointer-events-auto">
+                              <button
+                                className="h-7 px-3 bg-foreground text-background hover:bg-foreground/90 rounded-full text-[9px] font-black uppercase tracking-widest transition-all cursor-pointer active:scale-95 flex items-center gap-1"
+                              >
+                                {slide.buttonText}
+                                <ChevronRight className="w-3 h-3" />
+                              </button>
+                            </Link>
+                          )}
+                        </div>
+                      </div>
 
-              <div className="relative w-28 h-28 shrink-0 rounded-[24px] overflow-hidden bg-foreground/5 shadow-inner">
-                <motion.img
-                  src={spotlightSnack.image}
-                  alt={spotlightSnack.name}
-                  className="w-full h-full object-cover"
-                  animate={{ scale: [1, 1.05, 1] }}
-                  transition={{
-                    repeat: Infinity,
-                    duration: 6,
-                    ease: "easeInOut",
-                  }}
+                      <div className="relative w-28 h-28 shrink-0 rounded-[24px] overflow-hidden bg-foreground/5 shadow-inner select-none pointer-events-none">
+                        <motion.img
+                          src={slide.image}
+                          alt={slide.title}
+                          className="w-full h-full object-cover"
+                          animate={{ scale: [1, 1.05, 1] }}
+                          transition={{
+                            repeat: Infinity,
+                            duration: 6,
+                            ease: "easeInOut",
+                          }}
+                        />
+                      </div>
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
+            
+            {/* Pagination Indicators / Dots */}
+            <div className="flex justify-center items-center gap-1.5 mt-3 select-none">
+              {promoSlides.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setCurrentPromoSlide(idx)}
+                  className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                    currentPromoSlide === idx ? "w-6 bg-primary" : "w-1.5 bg-foreground/20 hover:bg-foreground/40"
+                  }`}
+                  aria-label={`Go to promo slide ${idx + 1}`}
                 />
-              </div>
+              ))}
             </div>
           </div>
         )}
@@ -361,19 +474,19 @@ export default function Home() {
         <MenuArchive searchQuery={searchQuery} />
       </div>
 
-      {/* 4. Bottom Nav Order Bar (Mobile Only) */}
+      {/* 4. Bottom Nav Order Bar (Mobile & Desktop) */}
       {cartCount > 0 && (
-        <div className="fixed bottom-24 left-4 right-4 z-100 md:hidden">
+        <div className="fixed bottom-24 md:bottom-8 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 md:w-full md:max-w-md z-100">
           <Link href="/cart">
-            <button className="w-full h-14 bg-primary text-primary-foreground rounded-full flex items-center justify-between px-6 shadow-2xl animate-in slide-in-from-bottom-10 active:scale-98 transition-all">
+            <button className="w-full h-14 bg-primary text-primary-foreground rounded-full flex items-center justify-between px-6 shadow-2xl animate-in slide-in-from-bottom-10 active:scale-98 transition-all hover:bg-primary-hover cursor-pointer">
               <div className="flex items-center gap-3">
                 <ShoppingBag className="w-4 h-4" />
-                <span className="text-[10px] font-black uppercase tracking-widest">
-                  {cartCount} Packs Ready to Munch
+                <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest">
+                  {cartCount} {cartCount === 1 ? "Pack" : "Packs"} Ready to Munch
                 </span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-[9px] font-black uppercase tracking-widest opacity-80">
+                <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest opacity-80">
                   View Cart
                 </span>
                 <ChevronRight className="w-4 h-4" />

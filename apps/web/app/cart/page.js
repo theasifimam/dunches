@@ -23,6 +23,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import ClearCartDialog from "@/components/ClearCartDialog";
 
 export default function CartPage() {
   const dispatch = useDispatch();
@@ -31,6 +32,7 @@ export default function CartPage() {
 
   const [isAuthOpen, setIsAuthOpen] = React.useState(false);
   const [user, setUser] = React.useState(null);
+  const [isClearCartOpen, setIsClearCartOpen] = React.useState(false);
 
   React.useEffect(() => {
     try {
@@ -277,7 +279,7 @@ export default function CartPage() {
                   <Button
                     variant="outline"
                     className="h-14 px-6 text-foreground/45 hover:text-red-500 hover:bg-red-500/5 transition-all group font-black uppercase tracking-widest text-[10px] rounded-full border-border/60 justify-center w-full sm:w-auto"
-                    onClick={() => dispatch(clearCart())}
+                    onClick={() => setIsClearCartOpen(true)}
                   >
                     <Trash2 className="w-4 h-4 mr-2 group-hover:rotate-12 transition-transform" />
                     Clear Cart
@@ -370,6 +372,11 @@ export default function CartPage() {
 
 
 
+      <ClearCartDialog
+        isOpen={isClearCartOpen}
+        onClose={() => setIsClearCartOpen(false)}
+        onConfirm={() => dispatch(clearCart())}
+      />
     </div>
   );
 }

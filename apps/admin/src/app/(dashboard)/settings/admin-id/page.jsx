@@ -5,11 +5,11 @@ import { Input } from '@/components/ui/input';
 import { PageHeader } from '@/components/admin/PageHeader';
 
 export default function AdminIdPage() {
-    return (<div className="space-y-8 md:space-y-12 pb-10">
+    return (<div className="space-y-6 md:space-y-12 pb-10">
             <PageHeader badgeIcon={User} badgeText="Administrative Node" titleMain="Administrative" titleAccent="Identity" description="Personalize your administrative access node. Calibration of your digital presence within the Dunches snack system." actionIcon={Save} actionLabel="Commit Identity" onAction={() => console.log('Committing identity...')}/>
 
-            <div className="mx-auto space-y-8 md:space-y-10 px-4 md:px-0">
-                <div className="p-6 md:p-10 rounded-[2rem] md:rounded-[3.5rem] bg-card border shadow-sm border-primary/5 space-y-8 md:space-y-10 group/section">
+            <div className="mx-auto space-y-6 md:space-y-10 px-0">
+                <div className="p-4 md:p-10 rounded-2xl md:rounded-[3.5rem] bg-card border shadow-sm border-primary/5 space-y-6 md:space-y-10 group/section">
                     <div className="flex items-center gap-4 md:gap-5">
                         <div className="h-12 w-12 md:h-14 md:w-14 rounded-xl md:rounded-2xl bg-primary/10 text-primary flex items-center justify-center border border-primary/20 shadow-inner group-hover/section:scale-110 transition-transform">
                             <Fingerprint className="h-6 w-6 md:h-7 md:w-7"/>

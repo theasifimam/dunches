@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { useGetFeedbackAnalyticsQuery } from '@/store/feedbackApi';
+import Link from 'next/link';
 import { 
   Loader2, 
   TrendingUp, 
@@ -10,7 +11,8 @@ import {
   DollarSign, 
   ShoppingBag, 
   Activity, 
-  PieChart 
+  PieChart,
+  Flame
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -41,7 +43,21 @@ export default function IntegratedAnalytics() {
   const totalIntent = analytics?.purchaseIntentData?.reduce((acc, curr) => acc + curr.count, 0) || 1;
 
   return (
-    <div className="space-y-6 animate-in fade-in duration-500">
+    <div className="space-y-4 md:space-y-6 animate-in fade-in duration-500">
+      <div className="flex items-center gap-3 bg-card border border-border/40 p-4 rounded-2xl shadow-sm">
+        <Link 
+          href="/" 
+          className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 hover:scale-105 transition-all duration-300 shadow-sm shrink-0"
+          title="Go to Dashboard"
+        >
+          <Flame className="h-4 w-4 text-primary" />
+        </Link>
+        <div>
+          <h2 className="text-xl font-bold font-serif">Consumer Intelligence</h2>
+          <p className="text-xs text-muted-foreground">Strategic and qualitative customer telemetry</p>
+        </div>
+      </div>
+
       {/* Sub-Tabs Nav */}
       <div className="flex border-b border-border/20 pb-px">
         <button
@@ -70,11 +86,11 @@ export default function IntegratedAnalytics() {
 
       {activeTab === 'sales' ? (
         // RENDER SALES & BRAND PERFORMANCE
-        <div className="space-y-8">
+        <div className="space-y-6 md:space-y-8">
           {/* Strategic KPI Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6">
             {kpiStats.map((stat, i) => (
-              <div key={i} className="p-6 rounded-[2rem] bg-card border border-border/40 hover:border-primary/20 transition-all relative overflow-hidden group shadow-sm">
+              <div key={i} className="p-4 md:p-6 rounded-2xl md:rounded-[2rem] bg-card border border-border/40 hover:border-primary/20 transition-all relative overflow-hidden group shadow-sm">
                 <div className="flex items-start justify-between mb-6">
                   <div className={cn("h-10 w-10 rounded-xl flex items-center justify-center bg-muted text-foreground")}>
                     <stat.icon className="h-4 w-4" />
@@ -93,8 +109,8 @@ export default function IntegratedAnalytics() {
           </div>
 
           {/* Performance Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2 p-6 md:p-8 rounded-[2rem] bg-card border border-border/40 flex flex-col min-h-[400px]">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+            <div className="p-4 md:p-8 rounded-2xl md:rounded-[2rem] bg-card border border-border/40 flex flex-col min-h-[400px]">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-base font-bold uppercase tracking-wide font-serif mb-1">Performance Trajectory</h3>
@@ -116,7 +132,7 @@ export default function IntegratedAnalytics() {
               </div>
             </div>
 
-            <div className="p-6 md:p-8 rounded-[2rem] bg-card border border-border/40 flex flex-col">
+            <div className="p-4 md:p-8 rounded-2xl md:rounded-[2rem] bg-card border border-border/40 flex flex-col">
               <div className="mb-6">
                 <h3 className="text-base font-bold uppercase tracking-wide font-serif mb-1">Catalog Shift</h3>
                 <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-60">Market share by category</p>
@@ -153,8 +169,8 @@ export default function IntegratedAnalytics() {
           </div>
 
           {/* Top Performing Table */}
-          <div className="rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
-            <div className="p-6 border-b border-border/20 bg-muted/5 flex items-center justify-between">
+          <div className="rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
+            <div className="p-4 md:p-6 border-b border-border/20 bg-muted/5 flex items-center justify-between">
               <div>
                 <h3 className="text-base font-bold uppercase tracking-wide font-serif mb-1">Strategic Elite</h3>
                 <p className="text-[9px] font-black text-muted-foreground uppercase tracking-widest opacity-60">Products with highest market momentum</p>
@@ -205,7 +221,7 @@ export default function IntegratedAnalytics() {
         </div>
       ) : (
         // RENDER CUSTOMER FEEDBACK INTEL
-        <div className="space-y-6">
+        <div className="space-y-4 md:space-y-6">
           <div className="flex justify-end">
             <select
               value={source}
@@ -227,9 +243,9 @@ export default function IntegratedAnalytics() {
           ) : !analytics ? (
             <div className="p-6 text-center text-muted-foreground bg-card border border-border/40 rounded-3xl">No data available.</div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
               {/* Rating Distribution */}
-              <div className="bg-card border border-border/40 p-6 rounded-3xl shadow-sm">
+              <div className="bg-card border border-border/40 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm">
                 <div className="flex items-center gap-2 mb-6">
                   <BarChart className="h-5 w-5 text-primary" />
                   <h3 className="text-lg font-bold font-serif">Rating Distribution</h3>
@@ -258,9 +274,9 @@ export default function IntegratedAnalytics() {
                 </div>
               </div>
 
-              <div className="space-y-6">
+              <div className="space-y-4 md:space-y-6">
                 {/* Purchase Intent */}
-                <div className="bg-card border border-border/40 p-6 rounded-3xl shadow-sm">
+                <div className="bg-card border border-border/40 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm">
                   <div className="flex items-center gap-2 mb-6">
                     <TrendingUp className="h-5 w-5 text-primary" />
                     <h3 className="text-lg font-bold font-serif">Purchase Intent</h3>
@@ -288,7 +304,7 @@ export default function IntegratedAnalytics() {
                 </div>
 
                 {/* Top Sources */}
-                <div className="bg-card border border-border/40 p-6 rounded-3xl shadow-sm">
+                <div className="bg-card border border-border/40 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm">
                   <h3 className="text-lg font-bold font-serif mb-4">Traffic Sources</h3>
                   <div className="space-y-4">
                     {analytics.sourceData?.map((src) => (

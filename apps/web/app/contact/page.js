@@ -29,9 +29,7 @@ export default function ContactPage() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4002"}/api/v1/settings`
-        );
+        const res = await fetch("/api/v1/settings");
         const data = await res.json();
         if (data?.success && data?.data) {
           setSettings(data.data);
@@ -55,7 +53,7 @@ export default function ContactPage() {
 
     try {
       const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:4002"}/api/v1/settings/contact`,
+        "/api/v1/settings/contact",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

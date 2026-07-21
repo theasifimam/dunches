@@ -70,7 +70,7 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="flex flex-col gap-6 w-full max-w-2xl mx-auto pb-12 animate-in fade-in duration-500">
+    <div className="flex flex-col gap-4 md:gap-6 w-full max-w-2xl mx-auto pb-12 animate-in fade-in duration-500">
       <div className="flex flex-col gap-2">
         <h1 className="text-3xl font-serif font-light tracking-tight text-foreground">
           My <span className="text-primary italic font-black font-sans">Profile</span>
@@ -80,7 +80,7 @@ export default function ProfilePage() {
         </p>
       </div>
 
-      <div className="bg-card border border-border/40 rounded-3xl p-6 md:p-8 shadow-sm">
+      <div className="bg-card border border-border/40 rounded-2xl md:rounded-3xl p-4 md:p-8 shadow-sm">
         <form onSubmit={handleSave} className="space-y-6">
           <div className="flex items-center gap-4 border-b border-border/20 pb-6">
             <div className="h-16 w-16 rounded-2xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary font-black text-2xl">

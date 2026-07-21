@@ -19,7 +19,7 @@ import {
 import {
   fetchProfile,
   setProfile,
-  logoutUser,
+  setLogoutConfirmOpen,
   selectUser,
   selectUserLoading,
 } from "@/features/user/userSlice";
@@ -74,9 +74,8 @@ export default function ProfileLayout({ children }) {
     } catch {}
   }, [dispatch]);
 
-  const handleLogout = async () => {
-    await dispatch(logoutUser());
-    router.push("/");
+  const handleLogout = () => {
+    dispatch(setLogoutConfirmOpen(true));
   };
 
   const memberSince = user?.createdAt

@@ -13,7 +13,7 @@ export default function DashboardLayout({ children }) {
         {/* Main content — transparent so the outer bg shows through */}
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden relative z-10 pb-20 md:pb-0 h-full">
           <Topbar />
-          <main className="flex-1 px-5 pb-6 md:px-7 md:pb-8 pt-3 overflow-y-auto scrollbar-hide">
+          <main className="flex-1 px-4 pb-4 md:px-7 md:pb-8 pt-2 overflow-y-auto scrollbar-hide">
             <div className="max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-4 duration-500">
               {children}
             </div>

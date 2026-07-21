@@ -30,9 +30,7 @@ export default function AboutPage() {
   useEffect(() => {
     const fetchSettings = async () => {
       try {
-        const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/api/v1/settings`,
-        );
+        const res = await fetch("/api/v1/settings");
         const data = await res.json();
         if (data?.success && data?.data) {
           setSettings(data.data);
@@ -47,7 +45,7 @@ export default function AboutPage() {
   const logoUrl = settings?.logo
     ? settings.logo.startsWith("http")
       ? settings.logo
-      : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}${settings.logo}`
+      : settings.logo
     : null;
 
   const containerVariants = {
@@ -240,7 +238,7 @@ export default function AboutPage() {
                           src={
                             member.image.startsWith("http")
                               ? member.image
-                              : `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}${member.image}`
+                              : member.image
                           }
                           alt={member.name}
                           className="w-full h-full object-cover"

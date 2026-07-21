@@ -1,7 +1,7 @@
 "use client";
 
 import { useSelector, useDispatch } from "react-redux";
-import { selectUser, selectAddresses, logoutUser } from "@/features/user/userSlice";
+import { selectUser, selectAddresses, setLogoutConfirmOpen } from "@/features/user/userSlice";
 import { motion } from "framer-motion";
 import {
   Crown,
@@ -23,9 +23,8 @@ export default function ProfileOverviewPage() {
   const user = useSelector(selectUser);
   const addresses = useSelector(selectAddresses);
 
-  const handleLogout = async () => {
-    await dispatch(logoutUser());
-    router.push("/");
+  const handleLogout = () => {
+    dispatch(setLogoutConfirmOpen(true));
   };
 
   if (!user) return null;

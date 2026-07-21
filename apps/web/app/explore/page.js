@@ -26,10 +26,20 @@ export default function ExplorePage() {
     "Assortments",
   ];
 
-  // Focus search input on mount
+  // Focus search input and parse query params on mount
   useEffect(() => {
     if (searchInputRef.current) {
       searchInputRef.current.focus();
+    }
+    const params = new URLSearchParams(window.location.search);
+    const catParam = params.get("category");
+    const queryParam = params.get("q");
+    if (catParam) {
+      const match = categories.find(c => c.toLowerCase() === catParam.toLowerCase());
+      if (match) setActiveCategory(match);
+    }
+    if (queryParam) {
+      setSearchQuery(queryParam);
     }
   }, []);
 
