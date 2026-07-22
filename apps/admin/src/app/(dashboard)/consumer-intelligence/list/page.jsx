@@ -84,6 +84,7 @@ export default function FeedbackList() {
             <thead className="bg-muted/30 text-muted-foreground font-semibold">
               <tr>
                 <th className="px-4 py-4">Date</th>
+                <th className="px-4 py-4">Customer</th>
                 <th className="px-4 py-4">Source</th>
                 <th className="px-4 py-4">Rating</th>
                 <th className="px-4 py-4 hidden sm:table-cell">Favorite Product</th>
@@ -99,6 +100,9 @@ export default function FeedbackList() {
                       <Calendar className="h-4 w-4 text-muted-foreground" />
                       {new Date(item.createdAt).toLocaleDateString()}
                     </div>
+                  </td>
+                  <td className="px-4 py-4 font-bold text-foreground">
+                    {item.customerName || item.phoneNumber || 'Anonymous'}
                   </td>
                   <td className="px-4 py-4">
                     <span className="px-2.5 py-1 bg-muted rounded-full text-xs font-bold uppercase tracking-wider">
@@ -133,10 +137,15 @@ export default function FeedbackList() {
               className="group rounded-2xl md:rounded-[2rem] bg-card border border-border/40 p-4 md:p-6 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between gap-4"
             >
               <div className="space-y-4">
-                {/* Top line: rating and source */}
+                {/* Top line: rating, customer & source */}
                 <div className="flex items-center justify-between">
-                  <div className="font-black text-primary text-base">
-                    {item.overallRating} <span className="text-muted-foreground font-medium text-xs">/ 10</span>
+                  <div>
+                    <span className="font-bold text-xs text-foreground block">
+                      {item.customerName || item.phoneNumber || 'Anonymous'}
+                    </span>
+                    <div className="font-black text-primary text-base">
+                      {item.overallRating} <span className="text-muted-foreground font-medium text-xs">/ 10</span>
+                    </div>
                   </div>
                   <span className="px-2.5 py-1 bg-muted rounded-full text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
                     {item.source}

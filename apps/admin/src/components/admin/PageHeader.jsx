@@ -17,44 +17,59 @@ export function PageHeader({
   children,
 }) {
   return (
-    <div className="relative p-6 md:p-10 rounded-[2rem] md:rounded-[3rem] bg-gradient-to-br from-muted/30 via-background to-background border border-border/40 overflow-hidden group mx-4 md:mx-0">
-      <div className="absolute top-0 right-0 w-64 h-64 md:w-80 md:h-80 bg-muted/15 rounded-full -mr-24 -mt-24 md:-mr-32 md:-mt-32 blur-[80px] md:blur-[100px]" />
-      <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-8">
-        <div>
-          <div className="flex items-center gap-3 mb-4">
-            <Link 
-              href="/" 
-              className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10 border border-primary/20 hover:scale-105 transition-all duration-300 shadow-sm shrink-0"
+    <div className="relative p-6 md:p-8 rounded-3xl bg-gradient-to-r from-card via-card to-card/90 border border-border/60 shadow-sm overflow-hidden group">
+      {/* Subtle background glow spots */}
+      <div className="absolute top-0 right-1/4 w-72 h-72 bg-primary/8 rounded-full blur-3xl pointer-events-none -translate-y-12" />
+      <div className="absolute bottom-0 left-10 w-48 h-48 bg-amber-500/5 rounded-full blur-2xl pointer-events-none" />
+
+      <div className="relative z-10 flex flex-col xl:flex-row xl:items-center justify-between gap-6">
+        <div className="space-y-3 max-w-2xl">
+          <div className="flex items-center gap-2.5">
+            <Link
+              href="/"
+              className="inline-flex items-center justify-center w-8 h-8 rounded-xl bg-primary/10 text-primary border border-primary/20 hover:scale-105 hover:bg-primary hover:text-white transition-all duration-300 shadow-xs"
               title="Go to Dashboard"
             >
-              <Flame className="h-4 w-4 text-primary" />
+              <Flame className="h-4 w-4" />
             </Link>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-muted/60 text-muted-foreground text-[9px] md:text-[10px] font-bold uppercase tracking-widest border border-border/20">
-              <BadgeIcon className="h-3 w-3" /> {badgeText}
-            </div>
+            {badgeText && (
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-secondary text-secondary-foreground text-[10px] font-bold uppercase tracking-wider border border-border/40">
+                {BadgeIcon && <BadgeIcon className="h-3 w-3 text-primary animate-pulse" />}
+                <span>{badgeText}</span>
+              </div>
+            )}
           </div>
-          <h2 className="text-3xl md:text-5xl font-light tracking-tight mb-4 leading-none font-serif text-foreground">
-            {titleMain} <span className="text-muted-foreground italic font-normal">{titleAccent}</span>
-          </h2>
-          <p className="text-muted-foreground font-medium uppercase tracking-[0.2em] text-[9px] max-w-md leading-relaxed opacity-85">
-            {description}
-          </p>
+
+          <div>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-foreground font-heading">
+              {titleMain}{" "}
+              {titleAccent && (
+                <span className="text-muted-foreground font-normal italic font-serif opacity-80">
+                  {titleAccent}
+                </span>
+              )}
+            </h1>
+          </div>
+
+          {description && (
+            <p className="text-xs sm:text-sm text-muted-foreground font-medium max-w-xl leading-relaxed">
+              {description}
+            </p>
+          )}
         </div>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4">
+
+        {/* Header Right Content & Actions */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
           {children}
           {showAction && ActionIcon && actionLabel && (
             <Button
-              variant="signature"
-              size="xl"
-              className="h-16 md:h-20 w-full sm:w-auto hover:bg-primary/5 hover:text-primary transition-all duration-300"
+              variant="default"
+              size="lg"
+              className="h-12 px-6 rounded-2xl bg-primary text-primary-foreground font-bold text-xs uppercase tracking-wider shadow-md hover:shadow-lg hover:bg-primary/90 transition-all duration-300"
               onClick={onAction}
             >
-              <div className="flex flex-col items-center gap-0.5 md:gap-1">
-                <ActionIcon className="h-4 w-4 md:h-5 md:w-5 group-hover/btn:scale-125 transition-transform duration-500" />
-                <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em]">
-                  {actionLabel}
-                </span>
-              </div>
+              <ActionIcon className="h-4 w-4 mr-2" />
+              <span>{actionLabel}</span>
             </Button>
           )}
         </div>
@@ -62,3 +77,4 @@ export function PageHeader({
     </div>
   );
 }
+

@@ -35,6 +35,7 @@ const FeedbackSchema = new Schema(
     wouldRecommend: { type: Boolean },
     
     // Admin / Detailed Fields
+    customerName: { type: String, trim: true },
     samplingLocation: { type: String, trim: true },
     societyEventName: { type: String, trim: true },
     executiveName: { type: String, trim: true },

@@ -191,30 +191,46 @@ export const DUMMY_BANNERS = [
     id: 'ban_000000000000000000000001',
     image: 'https://images.unsplash.com/photo-1590080875515-8a3a8dc5735e?auto=format&fit=crop&w=800&q=80',
     title: 'Monsoon Mindful Snacking Season',
+    description: 'Celebrate the monsoon with our freshly harvested autumn makhana batch. Sourced directly from the Mithila wetlands.',
+    label: 'Seasonal Special',
+    type: 'announcement',
+    actionText: 'Explore Collection',
+    buttonLink: '/explore',
     status: 'Active',
-    placement: 'Hero Banner',
+    placement: 'Both',
     clicks: 1420,
     expiry: '2026-08-31T23:59:59.000Z'
   },
   {
     id: 'ban_000000000000000000000002',
     image: 'https://images.unsplash.com/photo-1588165171080-c89acfa5ee83?auto=format&fit=crop&w=800&q=80',
-    title: 'Organic Sugarcane Gud Makhana Launch',
+    title: 'Organic Jaggery Makhana — 20% Off',
+    description: 'Slow-glazed with warm sugarcane jaggery. Use code BLOOM20 on bundles of 3 or more.',
+    label: 'Bundle Deal',
+    type: 'offer',
+    actionText: 'Shop Now',
+    buttonLink: '/product/organic-jaggery-fennel-seed-makhana',
     status: 'Active',
-    placement: 'Hero Banner',
+    placement: 'Both',
     clicks: 840,
-    expiry: '2026-07-15T23:59:59.000Z'
+    expiry: '2026-07-31T23:59:59.000Z'
   },
   {
     id: 'ban_000000000000000000000003',
     image: 'https://images.unsplash.com/photo-1607344645866-009c320c5ab8?auto=format&fit=crop&w=800&q=80',
     title: 'Wellness Assortment Gifting Kits',
+    description: 'Our premium eco-friendly curation of 4 signature flavors in airtight glass canisters. Ideal for gifting.',
+    label: 'New Arrival',
+    type: 'announcement',
+    actionText: 'View Gift Sets',
+    buttonLink: '/product/wellness-assortment-makhana-box',
     status: 'Scheduled',
-    placement: 'Sidebar Banner',
+    placement: 'Hero Slider',
     clicks: 0,
     expiry: '2026-09-30T23:59:59.000Z'
   }
 ];
+
 
 export const DUMMY_PRODUCTS = [
   {

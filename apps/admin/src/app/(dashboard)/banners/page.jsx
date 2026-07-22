@@ -4,7 +4,7 @@ import React from "react";
 import dynamic from "next/dynamic";
 import {
   Plus,
-  Image as ImageIcon,
+  Megaphone,
   Trash2,
   Edit2,
   Eye,
@@ -15,6 +15,7 @@ import {
   Sparkles,
   LayoutGrid,
   List,
+  Tag,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -63,18 +64,18 @@ export default function BannersPage() {
     // I will just send the status update!
     try {
       await updateBanner({ id: banner.id, formData }).unwrap();
-      toast.success(`Campaign ${newStatus.toLowerCase()} successfully`);
+      toast.success(`Announcement ${newStatus.toLowerCase()} successfully`);
     } catch (error) {
       toast.error("Failed to update status");
     }
   };
   const handleDelete = async (id) => {
-    if (!confirm("Are you sure you want to delete this campaign?")) return;
+    if (!confirm("Are you sure you want to delete this announcement?")) return;
     try {
       await deleteBanner(id).unwrap();
-      toast.success("Campaign removed successfully");
+      toast.success("Announcement removed successfully");
     } catch (error) {
-      toast.error("Failed to delete campaign");
+      toast.error("Failed to delete announcement");
     }
   };
   const handleEdit = (banner) => {
@@ -100,13 +101,13 @@ export default function BannersPage() {
   const campaignStats = React.useMemo(
     () => [
       {
-        label: "Live Campaigns",
+        label: "Live Announcements",
         value: `${activeCampaigns} Active`,
         icon: Sparkles,
         color: "primary",
       },
       {
-        label: "Scheduled Content",
+        label: "Scheduled Offers",
         value: `${scheduledCampaigns} Banners`,
         icon: Clock,
         color: "blue",
@@ -128,11 +129,11 @@ export default function BannersPage() {
         banner={editingBanner}
       />
       <PageHeader
-        badgeIcon={ImageIcon}
-        badgeText="Creative Command"
-        titleMain="Marketing"
-        titleAccent="Visuals"
-        description="Orchestrating the brand narrative. Curating the visual stories that define the makhāna aesthetic across the digital horizon."
+        badgeIcon={Megaphone}
+        badgeText="Announcements & Offers"
+        titleMain="Promo"
+        titleAccent="Hub"
+        description="Manage announcements, special offers, and featured promotions. Content published here appears live on the Hero Slider and mobile promo carousel."
       >
         <div className="h-16 md:h-20 px-6 md:px-8 rounded-2xl md:rounded-[2rem] bg-card/80 backdrop-blur-md border-2 border-primary/10 shadow-sm flex flex-col justify-center gap-0.5 md:gap-1 min-w-[180px] md:min-w-[200px] hover:border-primary/30 transition-all duration-500">
           <p className="text-[8px] md:text-[9px] font-black uppercase tracking-[0.2em] text-muted-foreground whitespace-nowrap">
@@ -156,7 +157,7 @@ export default function BannersPage() {
           <div className="flex flex-col items-center gap-0.5 md:gap-1">
             <Plus className="h-4 w-4 md:h-5 md:w-5 group-hover/btn:rotate-90 transition-transform duration-500" />
             <span className="text-[9px] md:text-[10px] font-black uppercase tracking-[0.2em] md:tracking-[0.25em]">
-              Deploy Campaign
+              New Announcement
             </span>
           </div>
         </Button>
@@ -195,7 +196,7 @@ export default function BannersPage() {
 
       {/* Layout Toggle Actions */}
       <div className="flex justify-between items-center px-0">
-        <h3 className="text-lg font-black uppercase tracking-tight italic">Campaign Inventory</h3>
+        <h3 className="text-lg font-black uppercase tracking-tight italic">Announcements & Offers</h3>
         <ViewSwitcher viewMode={viewMode} onViewModeChange={handleViewModeChange} />
       </div>
 
@@ -329,17 +330,17 @@ export default function BannersPage() {
             </div>
             <div className="text-center mt-6">
               <h4 className="text-xl font-black uppercase tracking-tight italic">
-                Initiate New Narrative
+                Create New Announcement
               </h4>
               <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mt-2 max-w-[200px] mx-auto opacity-60 leading-relaxed">
-                Deploy a signature campaign to captivate your audience.
+                Publish an offer or announcement to the live storefront.
               </p>
             </div>
             <Button
               variant="ghost"
-              className="mt-8 rounded-xl font-black uppercase tracking-widest text-[9px] group-hover:text-primary"
+              className="mt-8 rounded-full font-black uppercase tracking-widest text-[9px] group-hover:text-primary"
             >
-              Initiate
+              Create
             </Button>
           </div>
         </div>

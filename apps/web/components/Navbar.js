@@ -9,13 +9,7 @@ import {
   Moon,
   ArrowRight,
   User,
-  LogOut,
-  ChevronDown,
   Search,
-  HelpCircle,
-  Lock,
-  BookOpen,
-  MessageSquare,
 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { selectCartCount } from "@/features/cart/cartSlice";
@@ -29,11 +23,15 @@ import {
   selectIsLogoutConfirmOpen,
 } from "@/features/user/userSlice";
 import { Button } from "./ui/button";
-import { Popover, PopoverTrigger, PopoverContent } from "./ui/popover";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import BottomSheet from "./BottomSheet";
+
+import GuestMenuPopover from "./navbar/GuestMenuPopover";
+import UserMenuPopover from "./navbar/UserMenuPopover";
+import GuestMenuSheet from "./navbar/GuestMenuSheet";
+import UserMenuSheet from "./navbar/UserMenuSheet";
+import LogoutConfirmModal from "./navbar/LogoutConfirmModal";
 
 const AuthModal = dynamic(() => import("./AuthModal"), { ssr: false });
 
@@ -70,12 +68,10 @@ export default function Navbar() {
         document.documentElement.classList.add("light");
       }
 
-      // Hydrate Redux from localStorage if not already loaded
       const savedUser = localStorage.getItem("user");
       if (savedUser) {
         try {
           dispatch(setProfile(JSON.parse(savedUser)));
-          // Also re-fetch from server to get fresh data
           dispatch(fetchProfile());
         } catch {}
       }
@@ -212,84 +208,21 @@ export default function Navbar() {
             </Link>
           </div>
 
-          {/* Actions - Cleaned for Mobile */}
+          {/* Actions */}
           <div className="flex items-center gap-1.5 md:gap-2">
-            {/* Mobile-Only Actions */}
+            {/* Mobile Search Link */}
             <Link href="/explore" className="md:hidden">
               <div className="w-8 h-8 rounded-full flex items-center justify-center text-foreground/45 hover:text-primary bg-foreground/5 active:scale-95 transition-all cursor-pointer shrink-0">
                 <Search className="w-4 h-4" />
               </div>
             </Link>
 
-            {/* Guest Actions - Desktop Popover */}
+            {/* Guest Popover */}
             {!user && (
-              <div className="hidden md:block">
-                <Popover>
-                  <PopoverTrigger asChild>
-                    <button className="w-10 h-10 rounded-full flex items-center justify-center text-foreground/45 hover:text-primary bg-foreground/5 hover:bg-foreground/10 active:scale-95 transition-all cursor-pointer shrink-0">
-                      <Menu className="w-4 h-4" />
-                    </button>
-                  </PopoverTrigger>
-                  <PopoverContent
-                    align="end"
-                    className="w-56 p-4 rounded-2xl border border-border/50 bg-background/95 backdrop-blur-xl shadow-2xl flex flex-col gap-2 z-150"
-                  >
-                    <div className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/30 px-1 pb-1 border-b border-border/10">
-                      Menu
-                    </div>
-
-                    <button
-                      onClick={toggleTheme}
-                      className="w-full flex items-center justify-between text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer"
-                    >
-                      <span className="flex items-center gap-2">
-                        {theme === "dark" ? (
-                          <Sun className="w-3.5 h-3.5" />
-                        ) : (
-                          <Moon className="w-3.5 h-3.5" />
-                        )}
-                        Theme Mode
-                      </span>
-                      <span className="text-[8px] opacity-40 font-bold">
-                        {theme === "dark" ? "Dark" : "Light"}
-                      </span>
-                    </button>
-
-                    <div className="h-px bg-border/10 my-1" />
-
-                    <Link href="/about" className="w-full">
-                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
-                        <HelpCircle className="w-3.5 h-3.5" />
-                        About Us
-                      </button>
-                    </Link>
-
-                    <Link href="/privacy" className="w-full">
-                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
-                        <Lock className="w-3.5 h-3.5" />
-                        Privacy Policy
-                      </button>
-                    </Link>
-
-                    <Link href="/terms" className="w-full">
-                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
-                        <BookOpen className="w-3.5 h-3.5" />
-                        Terms & Conditions
-                      </button>
-                    </Link>
-
-                    <Link href="/contact" className="w-full">
-                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
-                        <MessageSquare className="w-3.5 h-3.5" />
-                        Contact Us
-                      </button>
-                    </Link>
-                  </PopoverContent>
-                </Popover>
-              </div>
+              <GuestMenuPopover theme={theme} toggleTheme={toggleTheme} />
             )}
 
-            {/* Guest Actions - Mobile Menu Button */}
+            {/* Mobile Guest Menu Button */}
             {!user && (
               <button
                 onClick={() => setIsGuestMenuOpen(true)}
@@ -314,113 +247,13 @@ export default function Navbar() {
               <div className="w-px h-4 bg-border mx-1" />
 
               {user ? (
-                <Popover>
-                  <PopoverTrigger className="flex items-center gap-2 border border-border/50 hover:border-primary/40 rounded-full p-1 pr-4 transition-all bg-foreground/2 hover:bg-foreground/4 group outline-hidden cursor-pointer">
-                    <div className="w-8 h-8 rounded-full border border-primary/50 overflow-hidden flex items-center justify-center shrink-0 bg-foreground/5">
-                      {avatarSrc ? (
-                        <img
-                          src={avatarSrc}
-                          alt="Avatar"
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <User className="w-4 h-4 text-foreground/45" />
-                      )}
-                    </div>
-                    <span className="text-[9px] font-black uppercase tracking-[0.15em] text-foreground/60 group-hover:text-primary transition-all font-heading">
-                      {user.name}
-                    </span>
-                    <ChevronDown className="w-3.5 h-3.5 text-foreground/30 group-hover:text-primary transition-colors" />
-                  </PopoverTrigger>
-                  <PopoverContent
-                    align="end"
-                    className="w-56 p-4 rounded-2xl border border-border/50 bg-background/95 backdrop-blur-xl shadow-2xl flex flex-col gap-2.5 z-150"
-                  >
-                    <div className="flex items-center gap-3 pb-3 border-b border-border/10">
-                      <div className="w-10 h-10 rounded-full border border-primary/50 overflow-hidden shrink-0 flex items-center justify-center bg-foreground/5">
-                        {avatarSrc ? (
-                          <img
-                            src={avatarSrc}
-                            alt="Avatar"
-                            className="w-full h-full object-cover"
-                          />
-                        ) : (
-                          <User className="w-5 h-5 text-foreground/45" />
-                        )}
-                      </div>
-                      <div className="flex flex-col min-w-0">
-                        <span className="text-[11px] font-black font-heading uppercase tracking-widest text-foreground truncate">
-                          {user.name}
-                        </span>
-                        <span className="text-[9px] font-medium text-foreground/40 truncate">
-                          {user.email || "ayaan.ahmed@makhana.wellness"}
-                        </span>
-                      </div>
-                    </div>
-                    <Link href="/profile" className="w-full">
-                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
-                        <User className="w-3.5 h-3.5" />
-                        View Profile
-                      </button>
-                    </Link>
-
-                    {/* Theme Toggle (especially for mobile) */}
-                    <button
-                      onClick={toggleTheme}
-                      className="w-full flex items-center justify-between text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer"
-                    >
-                      <span className="flex items-center gap-2">
-                        {theme === "dark" ? (
-                          <Sun className="w-3.5 h-3.5" />
-                        ) : (
-                          <Moon className="w-3.5 h-3.5" />
-                        )}
-                        Theme Mode
-                      </span>
-                      <span className="text-[8px] opacity-40 font-bold">
-                        {theme === "dark" ? "Dark" : "Light"}
-                      </span>
-                    </button>
-
-                    <div className="h-px bg-border/10 my-1" />
-
-                    <Link href="/about" className="w-full">
-                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
-                        <HelpCircle className="w-3.5 h-3.5" />
-                        About Us
-                      </button>
-                    </Link>
-
-                    <Link href="/privacy" className="w-full">
-                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
-                        <Lock className="w-3.5 h-3.5" />
-                        Privacy Policy
-                      </button>
-                    </Link>
-
-                    <Link href="/terms" className="w-full">
-                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
-                        <BookOpen className="w-3.5 h-3.5" />
-                        Terms & Conditions
-                      </button>
-                    </Link>
-
-                    <Link href="/contact" className="w-full">
-                      <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
-                        <MessageSquare className="w-3.5 h-3.5" />
-                        Contact Us
-                      </button>
-                    </Link>
-
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-600 py-2 px-1 rounded-lg hover:bg-red-500/5 transition-all font-heading border-t border-border/10 pt-3 cursor-pointer"
-                    >
-                      <LogOut className="w-3.5 h-3.5" />
-                      Logout
-                    </button>
-                  </PopoverContent>
-                </Popover>
+                <UserMenuPopover
+                  user={user}
+                  avatarSrc={avatarSrc}
+                  theme={theme}
+                  toggleTheme={toggleTheme}
+                  handleLogout={handleLogout}
+                />
               ) : (
                 <button
                   onClick={() => openAuth("login")}
@@ -480,292 +313,29 @@ export default function Navbar() {
         />
       )}
 
-      {/* Guest Bottom Sheet */}
-      <BottomSheet
+      <GuestMenuSheet
         isOpen={isGuestMenuOpen}
         onClose={() => setIsGuestMenuOpen(false)}
-      >
-        <div className="flex flex-col gap-1.5">
-          <div className="pb-3 mb-2 border-b border-border/10">
-            <h3 className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground/35">
-              Menu
-            </h3>
-          </div>
+        theme={theme}
+        toggleTheme={toggleTheme}
+        openAuth={openAuth}
+      />
 
-          {/* Theme Mode */}
-          <button
-            onClick={() => {
-              toggleTheme();
-              setIsGuestMenuOpen(false);
-            }}
-            className="w-full flex items-center justify-between py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group text-left"
-          >
-            <div className="flex items-center gap-3.5">
-              {theme === "dark" ? (
-                <Sun className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
-              ) : (
-                <Moon className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
-              )}
-              <span className="text-xs font-bold uppercase tracking-wider">
-                Theme Mode
-              </span>
-            </div>
-            <span className="text-[9px] uppercase font-black tracking-widest bg-primary/10 text-primary px-2.5 py-0.5 rounded-full">
-              {theme === "dark" ? "Dark" : "Light"}
-            </span>
-          </button>
+      <UserMenuSheet
+        isOpen={isUserMenuOpen}
+        onClose={() => setIsUserMenuOpen(false)}
+        user={user}
+        avatarSrc={avatarSrc}
+        theme={theme}
+        toggleTheme={toggleTheme}
+        handleLogout={handleLogout}
+      />
 
-          {/* About Us */}
-          <Link
-            href="/about"
-            className="w-full"
-            onClick={() => setIsGuestMenuOpen(false)}
-          >
-            <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
-              <HelpCircle className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
-              <span className="text-xs font-bold uppercase tracking-wider">
-                About Us
-              </span>
-            </div>
-          </Link>
-
-          {/* Contact Us */}
-          <Link
-            href="/contact"
-            className="w-full"
-            onClick={() => setIsGuestMenuOpen(false)}
-          >
-            <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
-              <MessageSquare className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
-              <span className="text-xs font-bold uppercase tracking-wider">
-                Contact Support
-              </span>
-            </div>
-          </Link>
-
-          {/* Privacy Policy */}
-          <Link
-            href="/privacy"
-            className="w-full"
-            onClick={() => setIsGuestMenuOpen(false)}
-          >
-            <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
-              <Lock className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
-              <span className="text-xs font-bold uppercase tracking-wider">
-                Privacy Policy
-              </span>
-            </div>
-          </Link>
-
-          {/* Terms & Conditions */}
-          <Link
-            href="/terms"
-            className="w-full"
-            onClick={() => setIsGuestMenuOpen(false)}
-          >
-            <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
-              <BookOpen className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
-              <span className="text-xs font-bold uppercase tracking-wider">
-                Terms of Use
-              </span>
-            </div>
-          </Link>
-
-          {/* Login Actions */}
-          <div className="flex flex-col gap-2 border-t border-border/10 pt-4 mt-2">
-            <button
-              onClick={() => {
-                setIsGuestMenuOpen(false);
-                openAuth("login");
-              }}
-              className="w-full h-12 rounded-3xl bg-primary text-primary-foreground font-black text-xs uppercase tracking-wider hover:bg-primary/90 transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs active:scale-[0.99] duration-150"
-            >
-              <User className="w-4 h-4" />
-              Login
-            </button>
-            <button
-              onClick={() => {
-                setIsGuestMenuOpen(false);
-                openAuth("signup");
-              }}
-              className="w-full h-12 rounded-3xl border border-primary/20 text-primary font-black text-xs uppercase tracking-wider hover:bg-primary/5 transition-all flex items-center justify-center gap-2 cursor-pointer active:scale-[0.99] duration-150"
-            >
-              Join Dunches
-            </button>
-          </div>
-        </div>
-      </BottomSheet>
-
-      {/* User Bottom Sheet */}
-      {user && (
-        <BottomSheet
-          isOpen={isUserMenuOpen}
-          onClose={() => setIsUserMenuOpen(false)}
-        >
-          <div className="flex flex-col gap-1.5">
-            {/* User Profile Info Card */}
-            <div className="flex items-center gap-3 pb-4 mb-2 border-b border-border/10">
-              <div className="w-10 h-10 rounded-xl overflow-hidden shrink-0 flex items-center justify-center bg-foreground/5 border border-border/20">
-                {avatarSrc ? (
-                  <img
-                    src={avatarSrc}
-                    alt="Avatar"
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <User className="w-4.5 h-4.5 text-foreground/45" />
-                )}
-              </div>
-              <div className="flex flex-col min-w-0">
-                <span className="text-xs font-black uppercase tracking-wider text-foreground truncate">
-                  {user.name}
-                </span>
-                <span className="text-[10px] font-medium text-foreground/40 mt-0.5 truncate">
-                  {user.email || "craver@makhana.wellness"}
-                </span>
-              </div>
-            </div>
-
-            {/* Profile Dashboard Link */}
-            <Link
-              href="/profile"
-              className="w-full"
-              onClick={() => setIsUserMenuOpen(false)}
-            >
-              <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
-                <User className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
-                <span className="text-xs font-bold uppercase tracking-wider">
-                  Profile Dashboard
-                </span>
-              </div>
-            </Link>
-
-            {/* Theme Mode */}
-            <button
-              onClick={() => {
-                toggleTheme();
-                setIsUserMenuOpen(false);
-              }}
-              className="w-full flex items-center justify-between py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group text-left"
-            >
-              <div className="flex items-center gap-3.5">
-                {theme === "dark" ? (
-                  <Sun className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
-                ) : (
-                  <Moon className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
-                )}
-                <span className="text-xs font-bold uppercase tracking-wider">
-                  Theme Mode
-                </span>
-              </div>
-              <span className="text-[9px] uppercase font-black tracking-widest bg-primary/10 text-primary px-2.5 py-0.5 rounded-full">
-                {theme === "dark" ? "Dark" : "Light"}
-              </span>
-            </button>
-
-            {/* About Us */}
-            <Link
-              href="/about"
-              className="w-full"
-              onClick={() => setIsUserMenuOpen(false)}
-            >
-              <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
-                <HelpCircle className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
-                <span className="text-xs font-bold uppercase tracking-wider">
-                  About Us
-                </span>
-              </div>
-            </Link>
-
-            {/* Contact Us */}
-            <Link
-              href="/contact"
-              className="w-full"
-              onClick={() => setIsUserMenuOpen(false)}
-            >
-              <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
-                <MessageSquare className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
-                <span className="text-xs font-bold uppercase tracking-wider">
-                  Contact Support
-                </span>
-              </div>
-            </Link>
-
-            {/* Privacy Policy */}
-            <Link
-              href="/privacy"
-              className="w-full"
-              onClick={() => setIsUserMenuOpen(false)}
-            >
-              <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
-                <Lock className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
-                <span className="text-xs font-bold uppercase tracking-wider">
-                  Privacy Policy
-                </span>
-              </div>
-            </Link>
-
-            {/* Terms & Conditions */}
-            <Link
-              href="/terms"
-              className="w-full"
-              onClick={() => setIsUserMenuOpen(false)}
-            >
-              <div className="w-full flex items-center gap-3.5 py-3 px-3 rounded-2xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all duration-200 cursor-pointer group">
-                <BookOpen className="w-4 h-4 text-foreground/45 group-hover:text-primary transition-colors shrink-0" />
-                <span className="text-xs font-bold uppercase tracking-wider">
-                  Terms of Use
-                </span>
-              </div>
-            </Link>
-
-            {/* Logout button */}
-            <button
-              onClick={() => {
-                setIsUserMenuOpen(false);
-                handleLogout();
-              }}
-              className="w-full h-12 rounded-3xl bg-red-500/10 hover:bg-red-500/15 text-red-500 font-black text-xs uppercase tracking-wider transition-all mt-4 cursor-pointer flex items-center justify-center gap-2 active:scale-[0.99] duration-150 border border-red-500/10"
-            >
-              <LogOut className="w-4 h-4" />
-              Log Out
-            </button>
-          </div>
-        </BottomSheet>
-      )}
-
-      {/* Logout Confirmation Bottom Sheet */}
-      <BottomSheet
+      <LogoutConfirmModal
         isOpen={isLogoutConfirmOpen}
         onClose={() => dispatch(setLogoutConfirmOpen(false))}
-      >
-        <div className="flex flex-col items-center text-center p-4">
-          <div className="w-12 h-12 bg-red-500/10 border border-red-500/20 rounded-2xl flex items-center justify-center mb-4">
-            <LogOut className="w-6 h-6 text-red-500 animate-pulse" />
-          </div>
-          <h3 className="text-lg font-black font-heading uppercase tracking-tight text-foreground mb-2">
-            Pause the Munch?
-          </h3>
-          <p className="text-xs text-foreground/45 max-w-sm leading-relaxed mb-6 font-medium">
-            Are you sure you want to log out? Your delicious cart items will remain safe, but we'll miss your spicy presence!
-          </p>
-          <div className="flex flex-col gap-3 w-full">
-            <button
-              onClick={handleConfirmLogout}
-              className="w-full h-12 rounded-3xl bg-primary text-primary-foreground font-black text-xs uppercase tracking-widest hover:bg-primary-hover transition-all cursor-pointer active:scale-99 shadow-md flex items-center justify-center gap-2"
-            >
-              <LogOut className="w-4 h-4" />
-              Yes, Log Out
-            </button>
-            <button
-              onClick={() => dispatch(setLogoutConfirmOpen(false))}
-              className="w-full h-12 rounded-3xl border border-border bg-foreground/2 hover:bg-foreground/5 hover:border-foreground/20 text-foreground/60 hover:text-foreground font-black text-xs uppercase tracking-widest transition-all cursor-pointer active:scale-99"
-            >
-              No, Keep Munching
-            </button>
-          </div>
-        </div>
-      </BottomSheet>
+        onConfirmLogout={handleConfirmLogout}
+      />
     </>
   );
 }

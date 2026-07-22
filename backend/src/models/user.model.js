@@ -32,6 +32,7 @@ const UserSchema = new Schema(
     addresses: { type: [AddressSchema], default: [] },
     wishlist: [{ type: Schema.Types.ObjectId, ref: 'Product' }],
     isDeleted: { type: Boolean, default: false },
+    isActive: { type: Boolean, default: true },
     deletedAt: { type: Date },
     refreshToken: { type: String, select: false },
   },

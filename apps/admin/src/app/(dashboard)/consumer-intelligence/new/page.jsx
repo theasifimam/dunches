@@ -1,13 +1,15 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useGetProductsQuery } from '@/store/productApi';
 import { useCreateFeedbackMutation } from '@/store/feedbackApi';
 import { toast } from 'sonner';
 import { cn } from '@/lib/utils';
-import { Loader2, Check, RefreshCw, Database, MapPin, User, Smile, MessageSquare, PlusCircle, Settings, Flame } from 'lucide-react';
+import { Loader2, Check, Database, User, Smile, PlusCircle, Flame } from 'lucide-react';
+
+import SessionSetupBanner from './components/SessionSetupBanner';
+import QualitativeIntelSection from './components/QualitativeIntelSection';
 
 const sources = ['Sampling', 'Retail Store', 'Website', 'QR', 'Amazon', 'Blinkit', 'WhatsApp', 'Instagram', 'Other'];
 const ageGroups = ['< 18', '18-24', '25-34', '35-44', '45-54', '55+'];
@@ -15,28 +17,20 @@ const genders = ['Male', 'Female', 'Other', 'Prefer not to say'];
 const intentOptions = ['Yes', 'Maybe', 'No'];
 const booleanOptions = [{ label: 'Yes', value: true }, { label: 'No', value: false }];
 
-const QUICK_BEST = ["Fiery Spice", "Super Crunchy", "Premium Quality", "Unique Flavor", "Healthy Snacking", "Fresh Pack"];
-const QUICK_WORST = ["A bit too salty", "Some hard seeds", "Price is high", "Too spicy", "Less flavor", "Not sweet enough"];
-const QUICK_FLAVORS = ["Cheese Jalapeño", "Tangy Tomato", "Sour Cream & Onion", "Caramel", "Butter Garlic", "Peri Peri"];
-
 export default function NewFeedbackForm() {
-  const router = useRouter();
   const { data: productsData, isLoading: isLoadingProducts } = useGetProductsQuery({ limit: 100 });
   const [createFeedback, { isLoading: isSubmitting }] = useCreateFeedbackMutation();
 
   const products = productsData?.data?.products || [];
   const [showSessionDetails, setShowSessionDetails] = useState(false);
 
-  // Unified State with lazy loading from localStorage (Form Draft + Context)
   const [formData, setFormData] = useState(() => {
     if (typeof window !== 'undefined') {
       const savedDraft = localStorage.getItem("dunches_feedback_draft");
       if (savedDraft) {
         try {
           return JSON.parse(savedDraft);
-        } catch (e) {
-          // ignore
-        }
+        } catch (e) {}
       }
       
       const savedSource = localStorage.getItem("dunches_feedback_source") || 'Sampling';
@@ -49,6 +43,7 @@ export default function NewFeedbackForm() {
         samplingLocation: savedLocation,
         societyEventName: savedEvent,
         executiveName: savedExecutive,
+        customerName: '',
         customerAgeGroup: '25-34',
         gender: '',
         firstTimeMakhana: null,
@@ -73,6 +68,7 @@ export default function NewFeedbackForm() {
       samplingLocation: '',
       societyEventName: '',
       executiveName: '',
+      customerName: '',
       customerAgeGroup: '25-34',
       gender: '',
       firstTimeMakhana: null,
@@ -93,13 +89,16 @@ export default function NewFeedbackForm() {
     };
   });
 
-  // Save changes to localStorage draft and persist context values
+  // Debounced localStorage saving to prevent main thread keystroke lag
   React.useEffect(() => {
-    localStorage.setItem("dunches_feedback_draft", JSON.stringify(formData));
-    localStorage.setItem("dunches_feedback_source", formData.source);
-    localStorage.setItem("dunches_feedback_location", formData.samplingLocation);
-    localStorage.setItem("dunches_feedback_event", formData.societyEventName);
-    localStorage.setItem("dunches_feedback_executive", formData.executiveName);
+    const timer = setTimeout(() => {
+      localStorage.setItem("dunches_feedback_draft", JSON.stringify(formData));
+      localStorage.setItem("dunches_feedback_source", formData.source);
+      localStorage.setItem("dunches_feedback_location", formData.samplingLocation || '');
+      localStorage.setItem("dunches_feedback_event", formData.societyEventName || '');
+      localStorage.setItem("dunches_feedback_executive", formData.executiveName || '');
+    }, 500);
+    return () => clearTimeout(timer);
   }, [formData]);
 
   const handleChange = (field, value) => {
@@ -142,10 +141,10 @@ export default function NewFeedbackForm() {
       await createFeedback({ ...formData, type: 'admin' }).unwrap();
       toast.success('Feedback saved successfully!');
       
-      // Reset only user specific draft details, keep Session Setup intact
       setFormData(prev => {
         const nextState = {
           ...prev,
+          customerName: '',
           customerAgeGroup: '25-34',
           gender: '',
           firstTimeMakhana: null,
@@ -198,29 +197,6 @@ export default function NewFeedbackForm() {
     </div>
   );
 
-  const QuickSuggestions = ({ options, onSelect, currentValue }) => (
-    <div className="flex flex-wrap gap-1 mt-1.5">
-      {options.map((opt) => {
-        const isSelected = currentValue === opt;
-        return (
-          <button
-            key={opt}
-            type="button"
-            onClick={() => onSelect(opt)}
-            className={cn(
-              "text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md border transition-all",
-              isSelected
-                ? "bg-primary/20 text-primary border-primary"
-                : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted"
-            )}
-          >
-            {opt}
-          </button>
-        );
-      })}
-    </div>
-  );
-
   return (
     <div className="max-w-2xl mx-auto bg-card border border-border/40 rounded-2xl md:rounded-[2.5rem] p-4 md:p-8 shadow-sm">
       <div className="flex items-center justify-between mb-5">
@@ -245,85 +221,16 @@ export default function NewFeedbackForm() {
         </Link>
       </div>
 
-      {/* Persistent Session Setup Banner */}
-      <div className="bg-primary/5 border border-primary/10 rounded-2xl p-3 flex flex-col gap-2 mb-6">
-        <div className="flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2 font-bold text-primary">
-            <MapPin className="h-4 w-4 shrink-0" />
-            <span>
-              {formData.samplingLocation || formData.societyEventName
-                ? `${formData.source} @ ${formData.samplingLocation || ''} ${formData.societyEventName ? `(${formData.societyEventName})` : ''}`
-                : `${formData.source} Session Setup`}
-              {formData.executiveName ? ` • By ${formData.executiveName}` : ''}
-            </span>
-          </div>
-          <button
-            type="button"
-            onClick={() => setShowSessionDetails(!showSessionDetails)}
-            className="text-[10px] font-black uppercase tracking-widest text-primary flex items-center gap-1 hover:underline"
-          >
-            <Settings className="h-3 w-3" />
-            {showSessionDetails ? 'Hide Setup' : 'Edit Setup'}
-          </button>
-        </div>
-
-        {showSessionDetails && (
-          <div className="pt-3 border-t border-primary/10 grid grid-cols-1 sm:grid-cols-4 gap-3 animate-in fade-in duration-350">
-            <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-wider text-muted-foreground">Source</label>
-              <select
-                value={formData.source}
-                onChange={(e) => handleChange('source', e.target.value)}
-                className="w-full bg-background border border-border/50 rounded-xl px-3 py-2 text-xs font-bold focus:ring-2 focus:ring-primary/20 outline-none"
-              >
-                {sources.map(s => <option key={s} value={s}>{s}</option>)}
-              </select>
-            </div>
-            <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-wider text-muted-foreground">Location</label>
-              <input
-                type="text"
-                value={formData.samplingLocation}
-                onChange={(e) => handleChange('samplingLocation', e.target.value)}
-                className="w-full bg-background border border-border/50 rounded-xl px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-primary/20 outline-none"
-                placeholder="Select Citywalk"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-wider text-muted-foreground">Event Name</label>
-              <input
-                type="text"
-                value={formData.societyEventName}
-                onChange={(e) => handleChange('societyEventName', e.target.value)}
-                className="w-full bg-background border border-border/50 rounded-xl px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-primary/20 outline-none"
-                placeholder="DLF Phase 1"
-              />
-            </div>
-            <div className="space-y-1">
-              <label className="text-[9px] font-black uppercase tracking-wider text-muted-foreground">Executive</label>
-              <input
-                type="text"
-                value={formData.executiveName}
-                onChange={(e) => handleChange('executiveName', e.target.value)}
-                className="w-full bg-background border border-border/50 rounded-xl px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-primary/20 outline-none"
-                placeholder="Your Name"
-              />
-            </div>
-            <div className="sm:col-span-4 flex justify-end gap-2 pt-1">
-              <button
-                type="button"
-                onClick={handleResetSession}
-                className="text-[9px] font-black uppercase tracking-widest text-destructive hover:opacity-85 flex items-center gap-1"
-              >
-                <RefreshCw className="h-2.5 w-2.5" /> Reset Session Setup
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
+      <SessionSetupBanner
+        formData={formData}
+        handleChange={handleChange}
+        showSessionDetails={showSessionDetails}
+        setShowSessionDetails={setShowSessionDetails}
+        handleResetSession={handleResetSession}
+        sources={sources}
+      />
       
       <form onSubmit={handleSubmit} className="space-y-5">
-        
         {/* Section 1: Customer Profile */}
         <div className="space-y-3">
           <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
@@ -342,7 +249,18 @@ export default function NewFeedbackForm() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+            <div className="space-y-1">
+              <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Customer Name</label>
+              <input 
+                type="text" 
+                value={formData.customerName} 
+                onChange={(e) => handleChange('customerName', e.target.value)}
+                className="w-full bg-background border border-border/50 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-primary/20 outline-none font-medium"
+                placeholder="e.g. Rahul Sharma"
+              />
+            </div>
+
             <div className="space-y-1">
               <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">First Time eating makhana?</label>
               <ChipGroup options={booleanOptions} value={formData.firstTimeMakhana} onChange={(v) => handleChange('firstTimeMakhana', v)} />
@@ -425,7 +343,6 @@ export default function NewFeedbackForm() {
                <span className="text-xl font-black text-primary italic leading-none">{formData.overallRating} / 10</span>
              </div>
              
-             {/* Circular Tap Bar (1 to 10) */}
              <div className="grid grid-cols-10 gap-1 pt-0.5">
                {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((num) => (
                  <button
@@ -464,71 +381,7 @@ export default function NewFeedbackForm() {
         </div>
 
         {/* Section 3: Qualitative Feedback */}
-        <div className="space-y-3 pt-2">
-          <h3 className="text-xs font-black text-muted-foreground uppercase tracking-widest flex items-center gap-1.5">
-            <MessageSquare className="h-3.5 w-3.5 text-primary" /> Qualitative Intel
-          </h3>
-           
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Best Feature</label>
-                <input 
-                  type="text" 
-                  value={formData.bestThing} 
-                  onChange={(e) => handleChange('bestThing', e.target.value)}
-                  className="w-full bg-background border border-border/50 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-primary/20 outline-none font-medium"
-                  placeholder="e.g. crunchy, packaging"
-                />
-                <QuickSuggestions options={QUICK_BEST} onSelect={(val) => handleChange('bestThing', val)} currentValue={formData.bestThing} />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Worst Feature</label>
-                <input 
-                  type="text" 
-                  value={formData.worstThing} 
-                  onChange={(e) => handleChange('worstThing', e.target.value)}
-                  className="w-full bg-background border border-border/50 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-primary/20 outline-none font-medium"
-                  placeholder="e.g. price, spicy"
-                />
-                <QuickSuggestions options={QUICK_WORST} onSelect={(val) => handleChange('worstThing', val)} currentValue={formData.worstThing} />
-              </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Suggested Flavor</label>
-                <input 
-                  type="text" 
-                  value={formData.suggestedNewFlavor} 
-                  onChange={(e) => handleChange('suggestedNewFlavor', e.target.value)}
-                  className="w-full bg-background border border-border/50 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-primary/20 outline-none font-medium"
-                  placeholder="e.g. cheese, peri peri"
-                />
-                <QuickSuggestions options={QUICK_FLAVORS} onSelect={(val) => handleChange('suggestedNewFlavor', val)} currentValue={formData.suggestedNewFlavor} />
-              </div>
-              <div className="space-y-1">
-                <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Expected Price (₹)</label>
-                <input 
-                  type="number" 
-                  inputMode="numeric"
-                  value={formData.expectedPrice} 
-                  onChange={(e) => handleChange('expectedPrice', e.target.value)}
-                  className="w-full bg-background border border-border/50 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-primary/20 outline-none font-medium"
-                  placeholder="e.g. 99"
-                />
-              </div>
-          </div>
-
-          <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Exact Customer Quote</label>
-              <textarea 
-                value={formData.exactQuote} 
-                onChange={(e) => handleChange('exactQuote', e.target.value)}
-                className="w-full bg-background border border-border/50 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-primary/20 outline-none min-h-[50px] resize-y font-medium"
-                placeholder='"Highly spiced, loved the texture!"'
-              />
-          </div>
-        </div>
+        <QualitativeIntelSection formData={formData} handleChange={handleChange} />
 
         {/* Submit Button */}
         <div className="pt-2">

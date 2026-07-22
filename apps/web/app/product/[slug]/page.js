@@ -3,11 +3,12 @@
 import { use, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useSelector, useDispatch } from "react-redux";
 import { selectDishBySlug, selectMenu } from "@/features/menu/menuSlice";
 import { addToCart } from "@/features/cart/cartSlice";
 import { Button } from "@/components/ui/button";
-import { Minus, Plus, ArrowLeft, CheckCircle2, ShoppingBag, Sparkles, Flame, ArrowRight } from "lucide-react";
+import { Minus, Plus, ArrowLeft, CheckCircle2, ShoppingBag, Sparkles, Flame, ArrowRight, Zap } from "lucide-react";
 import FoodCard from "@/components/FoodCard";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -15,6 +16,7 @@ export default function ProductDetailPage({ params }) {
   const unwrappedParams = use(params);
   const slug = unwrappedParams.slug;
   const dispatch = useDispatch();
+  const router = useRouter();
   const dish = useSelector((state) => selectDishBySlug(state, slug));
   const menu = useSelector(selectMenu);
 
@@ -46,6 +48,19 @@ export default function ProductDetailPage({ params }) {
     setTimeout(() => setAdded(false), 2000);
   };
 
+  const handleBuyNow = () => {
+    dispatch(addToCart({ ...dish, quantity }));
+    router.push("/checkout");
+  };
+
+  const handleGoBack = () => {
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+    } else {
+      router.push("/menu");
+    }
+  };
+
   const nextImage = () => {
     setActiveImageIndex((prev) => (prev + 1) % images.length);
   };
@@ -53,13 +68,24 @@ export default function ProductDetailPage({ params }) {
   const relatedItems = menu.filter(item => item.category === dish.category && item.id !== dish.id).slice(0, 4);
 
   return (
-    <div className="min-h-screen bg-background pt-32 pb-48 sm:pb-40 relative overflow-hidden">
+    <div className="min-h-screen bg-background pt-28 sm:pt-32 pb-48 sm:pb-40 relative overflow-hidden">
       <div className="absolute inset-0 bg-grain pointer-events-none opacity-[0.03]" />
 
       {/* Dynamic Background Blur */}
       <div className="absolute top-[20%] right-[-10%] w-[60vw] h-[60vw] bg-primary/5 rounded-full blur-[140px] -z-10 animate-pulse" />
 
-      <div className="container mx-auto px-6 max-w-7xl relative z-10">
+      <div className="container mx-auto px-4 sm:px-6 max-w-7xl relative z-10">
+
+        {/* Go Backward Navigation Button */}
+        <div className="mb-8">
+          <button
+            onClick={handleGoBack}
+            className="inline-flex items-center gap-2.5 px-4 py-2.5 rounded-full glass border border-border/80 text-xs font-bold uppercase tracking-widest text-foreground/70 hover:text-primary hover:border-primary/40 hover:bg-primary/5 transition-all cursor-pointer group shadow-xs active:scale-95"
+          >
+            <ArrowLeft className="w-4 h-4 text-primary group-hover:-translate-x-1 transition-transform" />
+            <span>Go Backward</span>
+          </button>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-32 items-start">
 
@@ -230,39 +256,55 @@ export default function ProductDetailPage({ params }) {
               </div>
             </div>
 
-            {/* Desktop Action Zone */}
-            <div className="pt-10 hidden sm:flex flex-row items-center gap-6">
-              <div className="flex items-center glass border border-border/50 rounded-4xl h-20 p-2 w-full sm:w-auto">
-                <button
-                  onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                  className="w-16 h-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all disabled:opacity-10"
-                  disabled={quantity <= 1}
-                >
-                  <Minus className="w-6 h-6" />
-                </button>
-                <span className="min-w-12 text-center font-bold text-2xl font-serif">{quantity}</span>
-                <button
-                  onClick={() => setQuantity(q => q + 1)}
-                  className="w-16 h-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all"
-                >
-                  <Plus className="w-6 h-6" />
-                </button>
-              </div>
-
-              <Button
-                size="lg"
-                className={`h-20 flex-1 w-full text-xs font-bold tracking-[0.3em] uppercase rounded-4xl transition-all duration-700 shadow-2xl relative overflow-hidden ${added ? 'bg-green-600 scale-95 opacity-80' : 'bg-primary'}`}
-                onClick={handleAddToCart}
-              >
-                <div className="relative z-10 flex items-center gap-4">
-                  {added ? (
-                    <>Added to Cart <CheckCircle2 className="w-6 h-6" /></>
-                  ) : (
-                    <>Add to Cart <ShoppingBag className="w-6 h-6" /></>
-                  )}
+            {/* Desktop Action Zone - Both Add to Cart & Buy Now */}
+            <div className="pt-8 hidden sm:flex flex-col gap-4">
+              <div className="flex flex-row items-center gap-4">
+                {/* Quantity selector */}
+                <div className="flex items-center glass border border-border/60 rounded-full h-16 p-1.5 shrink-0">
+                  <button
+                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                    className="w-12 h-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all disabled:opacity-10 cursor-pointer"
+                    disabled={quantity <= 1}
+                  >
+                    <Minus className="w-5 h-5" />
+                  </button>
+                  <span className="min-w-10 text-center font-bold text-xl font-serif">{quantity}</span>
+                  <button
+                    onClick={() => setQuantity(q => q + 1)}
+                    className="w-12 h-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all cursor-pointer"
+                  >
+                    <Plus className="w-5 h-5" />
+                  </button>
                 </div>
-                {!added && <div className="absolute inset-0 bg-white/10 -translate-x-full group-hover:translate-x-0 transition-transform duration-500" />}
-              </Button>
+
+                {/* Add to Cart Button */}
+                <Button
+                  size="lg"
+                  className={`h-16 flex-1 text-xs font-bold tracking-[0.2em] uppercase rounded-full transition-all duration-300 shadow-md relative overflow-hidden cursor-pointer ${
+                    added ? 'bg-green-600 border-green-600 text-white' : 'bg-foreground/5 border border-border text-foreground hover:border-primary/40 hover:bg-primary/10 hover:text-primary'
+                  }`}
+                  onClick={handleAddToCart}
+                >
+                  <div className="relative z-10 flex items-center justify-center gap-3">
+                    {added ? (
+                      <>Added to Cart <CheckCircle2 className="w-5 h-5" /></>
+                    ) : (
+                      <>Add to Cart <ShoppingBag className="w-5 h-5" /></>
+                    )}
+                  </div>
+                </Button>
+
+                {/* Buy Now Button */}
+                <Button
+                  size="lg"
+                  className="h-16 flex-1 text-xs font-bold tracking-[0.2em] uppercase rounded-full transition-all duration-300 shadow-xl bg-primary hover:bg-primary-hover text-primary-foreground cursor-pointer"
+                  onClick={handleBuyNow}
+                >
+                  <div className="relative z-10 flex items-center justify-center gap-3">
+                    Buy Now <Zap className="w-5 h-5 fill-current" />
+                  </div>
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -289,38 +331,57 @@ export default function ProductDetailPage({ params }) {
         )}
       </div>
 
-      {/* Mobile Sticky Action Bar */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t border-border/45 px-6 py-4 pb-8 flex items-center justify-between gap-4 shadow-xl">
-        <div className="flex items-center glass border border-border/50 rounded-full h-12 p-1">
-          <button
-            onClick={() => setQuantity(q => Math.max(1, q - 1))}
-            className="w-10 h-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all disabled:opacity-10"
-            disabled={quantity <= 1}
-          >
-            <Minus className="w-4 h-4" />
-          </button>
-          <span className="min-w-8 text-center font-bold text-lg font-serif">{quantity}</span>
-          <button
-            onClick={() => setQuantity(q => q + 1)}
-            className="w-10 h-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all"
-          >
-            <Plus className="w-4 h-4" />
-          </button>
-        </div>
-
-        <Button
-          size="lg"
-          className={`h-12 flex-1 text-[10px] font-bold tracking-[0.2em] uppercase rounded-full transition-all duration-700 shadow-lg relative overflow-hidden ${added ? 'bg-green-600 scale-95 opacity-80' : 'bg-primary'}`}
-          onClick={handleAddToCart}
-        >
-          <div className="relative z-10 flex items-center gap-2">
-            {added ? (
-              <>Added <CheckCircle2 className="w-4 h-4" /></>
-            ) : (
-              <>Add to Cart <ShoppingBag className="w-4 h-4" /></>
-            )}
+      {/* Mobile Sticky Action Bar - Both Add to Cart & Buy Now */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t border-border/45 px-4 py-3 pb-7 flex flex-col gap-3 shadow-2xl">
+        <div className="flex items-center justify-between gap-3">
+          {/* Mobile Quantity selector */}
+          <div className="flex items-center glass border border-border/50 rounded-full h-11 p-1 shrink-0">
+            <button
+              onClick={() => setQuantity(q => Math.max(1, q - 1))}
+              className="w-8 h-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all disabled:opacity-10"
+              disabled={quantity <= 1}
+            >
+              <Minus className="w-3.5 h-3.5" />
+            </button>
+            <span className="min-w-6 text-center font-bold text-base font-serif">{quantity}</span>
+            <button
+              onClick={() => setQuantity(q => q + 1)}
+              className="w-8 h-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all"
+            >
+              <Plus className="w-3.5 h-3.5" />
+            </button>
           </div>
-        </Button>
+
+          <div className="flex items-center gap-2 flex-1">
+            {/* Mobile Add to Cart */}
+            <Button
+              size="lg"
+              className={`h-11 flex-1 text-[9px] font-bold tracking-[0.15em] uppercase rounded-full transition-all border ${
+                added ? 'bg-green-600 border-green-600 text-white' : 'bg-foreground/5 border-border text-foreground'
+              }`}
+              onClick={handleAddToCart}
+            >
+              <div className="flex items-center justify-center gap-1.5">
+                {added ? (
+                  <>Added <CheckCircle2 className="w-3.5 h-3.5" /></>
+                ) : (
+                  <>Cart <ShoppingBag className="w-3.5 h-3.5" /></>
+                )}
+              </div>
+            </Button>
+
+            {/* Mobile Buy Now */}
+            <Button
+              size="lg"
+              className="h-11 flex-1 text-[9px] font-bold tracking-[0.15em] uppercase rounded-full bg-primary hover:bg-primary-hover text-primary-foreground shadow-md"
+              onClick={handleBuyNow}
+            >
+              <div className="flex items-center justify-center gap-1.5">
+                Buy Now <Zap className="w-3.5 h-3.5 fill-current" />
+              </div>
+            </Button>
+          </div>
+        </div>
       </div>
 
     </div>

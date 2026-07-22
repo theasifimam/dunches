@@ -66,56 +66,107 @@ export const getAnalytics = asyncHandler(async (req, res) => {
     if (startDate) matchStage.createdAt.$gte = new Date(startDate);
     if (endDate) matchStage.createdAt.$lte = new Date(endDate);
   }
-  if (source) matchStage.source = source;
+  if (source && source !== 'All') matchStage.source = source;
 
-  // 1. Total KPI
-  const totalFeedback = await Feedback.countDocuments(matchStage);
-
-  // 2. Average Rating & Purchase Intent Distribution
-  const metricsAgg = await Feedback.aggregate([
-    { $match: matchStage },
-    {
-      $group: {
-        _id: null,
-        avgRating: { $avg: '$overallRating' },
-        totalFeedbacks: { $sum: 1 },
+  // Execute all aggregations concurrently via Promise.all
+  const [
+    totalFeedback,
+    metricsAgg,
+    intentAgg,
+    sourceAgg,
+    ratingAgg,
+    flavorAgg,
+    monthlyAgg
+  ] = await Promise.all([
+    Feedback.countDocuments(matchStage),
+    Feedback.aggregate([
+      { $match: matchStage },
+      {
+        $group: {
+          _id: null,
+          avgRating: { $avg: '$overallRating' },
+          totalFeedbacks: { $sum: 1 },
+        },
       },
-    },
-  ]);
-
-  const intentAgg = await Feedback.aggregate([
-    { $match: matchStage },
-    { $match: { purchaseIntent: { $exists: true, $ne: null } } },
-    {
-      $group: {
-        _id: '$purchaseIntent',
-        count: { $sum: 1 },
+    ]),
+    Feedback.aggregate([
+      { $match: matchStage },
+      { $match: { purchaseIntent: { $exists: true, $ne: null } } },
+      {
+        $group: {
+          _id: '$purchaseIntent',
+          count: { $sum: 1 },
+        },
       },
-    },
-  ]);
-
-  // 3. Source Breakdown
-  const sourceAgg = await Feedback.aggregate([
-    { $match: matchStage },
-    {
-      $group: {
-        _id: '$source',
-        count: { $sum: 1 },
+    ]),
+    Feedback.aggregate([
+      { $match: matchStage },
+      {
+        $group: {
+          _id: '$source',
+          count: { $sum: 1 },
+        },
       },
-    },
-    { $sort: { count: -1 } }
-  ]);
-  
-  // 4. Rating Distribution (1-10)
-  const ratingAgg = await Feedback.aggregate([
-    { $match: matchStage },
-    {
-      $group: {
-        _id: '$overallRating',
-        count: { $sum: 1 },
+      { $sort: { count: -1 } },
+    ]),
+    Feedback.aggregate([
+      { $match: matchStage },
+      {
+        $group: {
+          _id: '$overallRating',
+          count: { $sum: 1 },
+        },
       },
-    },
-    { $sort: { _id: 1 } }
+      { $sort: { _id: 1 } },
+    ]),
+    // 5. Flavor / Product Performance
+    Feedback.aggregate([
+      { $match: { ...matchStage, favoriteProduct: { $exists: true, $ne: null } } },
+      {
+        $group: {
+          _id: '$favoriteProduct',
+          count: { $sum: 1 },
+          avgRating: { $avg: '$overallRating' },
+        },
+      },
+      {
+        $lookup: {
+          from: 'products',
+          localField: '_id',
+          foreignField: '_id',
+          as: 'productDoc',
+        },
+      },
+      { $unwind: { path: '$productDoc', preserveNullAndEmptyArrays: true } },
+      {
+        $project: {
+          _id: 1,
+          count: 1,
+          avgRating: { $round: ['$avgRating', 1] },
+          name: { $ifNull: ['$productDoc.name', 'Unknown Product'] },
+          sku: '$productDoc.sku',
+        },
+      },
+      { $sort: { count: -1 } },
+    ]),
+    // 6. Monthly / Seasonal Telemetry
+    Feedback.aggregate([
+      { $match: matchStage },
+      {
+        $group: {
+          _id: {
+            year: { $year: '$createdAt' },
+            month: { $month: '$createdAt' },
+          },
+          count: { $sum: 1 },
+          avgRating: { $avg: '$overallRating' },
+          positiveIntentCount: {
+            $sum: { $cond: [{ $eq: ['$purchaseIntent', 'Yes'] }, 1, 0] },
+          },
+        },
+      },
+      { $sort: { '_id.year': 1, '_id.month': 1 } },
+    ]),
   ]);
 
   res.status(200).json(
@@ -124,7 +175,9 @@ export const getAnalytics = asyncHandler(async (req, res) => {
       avgRating: metricsAgg.length > 0 ? Number(metricsAgg[0].avgRating.toFixed(1)) : 0,
       purchaseIntentData: intentAgg,
       sourceData: sourceAgg,
-      ratingDistribution: ratingAgg
+      ratingDistribution: ratingAgg,
+      flavorPerformance: flavorAgg,
+      monthlyTrends: monthlyAgg,
     })
   );
 });

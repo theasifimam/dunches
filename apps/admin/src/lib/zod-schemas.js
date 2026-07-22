@@ -61,8 +61,11 @@ export const BannerFormSchema = z.object({
     description: z.string().min(1, "Description is required"),
     label: z.string().optional(),
     buttonLink: z.string().optional(),
+    actionText: z.string().optional(),
     image: z.any().optional(), // Can be string URL or File
+    type: z.enum(['offer', 'announcement']).default('offer'),
     status: z.enum(['Active', 'Inactive', 'Scheduled']).default('Active'),
-    placement: z.string().default('Hero Slider'),
+    placement: z.enum(['Both', 'Hero Slider', 'Mobile Promo']).default('Both'),
     expiry: z.string().optional(),
 });
+

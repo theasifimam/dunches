@@ -15,6 +15,8 @@ import {
   Flame
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import CustomizableIntelChart from '../components/CustomizableIntelChart';
+import AutomatedIntelReader from '../components/AutomatedIntelReader';
 
 // Static Data from strategic analytics
 const kpiStats = [
@@ -243,76 +245,84 @@ export default function IntegratedAnalytics() {
           ) : !analytics ? (
             <div className="p-6 text-center text-muted-foreground bg-card border border-border/40 rounded-3xl">No data available.</div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-              {/* Rating Distribution */}
-              <div className="bg-card border border-border/40 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm">
-                <div className="flex items-center gap-2 mb-6">
-                  <BarChart className="h-5 w-5 text-primary" />
-                  <h3 className="text-lg font-bold font-serif">Rating Distribution</h3>
-                </div>
-                
-                <div className="space-y-3">
-                  {[10, 9, 8, 7, 6, 5, 4, 3, 2, 1].map((rating) => {
-                    const stat = analytics.ratingDistribution?.find(r => r._id === rating);
-                    const count = stat ? stat.count : 0;
-                    const maxCount = Math.max(...(analytics.ratingDistribution?.map(r => r.count) || [1]));
-                    const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
-                    
-                    return (
-                      <div key={rating} className="flex items-center gap-4">
-                        <div className="w-8 text-right font-bold text-sm">{rating}</div>
-                        <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden flex">
-                          <div 
-                            className="h-full bg-primary rounded-full transition-all duration-1000 ease-out"
-                            style={{ width: `${percentage}%` }}
-                          />
-                        </div>
-                        <div className="w-8 text-sm text-muted-foreground">{count}</div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
+            <div className="space-y-6">
+              {/* Automated AI Narrative Reader */}
+              <AutomatedIntelReader analyticsData={analytics} />
 
-              <div className="space-y-4 md:space-y-6">
-                {/* Purchase Intent */}
+              {/* Interactive & Customizable Intelligence Graph */}
+              <CustomizableIntelChart analyticsData={analytics} />
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
+                {/* Rating Distribution */}
                 <div className="bg-card border border-border/40 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm">
                   <div className="flex items-center gap-2 mb-6">
-                    <TrendingUp className="h-5 w-5 text-primary" />
-                    <h3 className="text-lg font-bold font-serif">Purchase Intent</h3>
+                    <BarChart className="h-5 w-5 text-primary" />
+                    <h3 className="text-lg font-bold font-serif">Rating Distribution</h3>
                   </div>
-                  <div className="flex gap-4 h-32">
-                    {['Yes', 'Maybe', 'No'].map((intent) => {
-                      const stat = analytics.purchaseIntentData?.find(i => i._id === intent);
+                  
+                  <div className="space-y-3">
+                    {[10, 9, 8, 7, 6, 5, 4, 3, 2, 1].map((rating) => {
+                      const stat = analytics.ratingDistribution?.find(r => r._id === rating);
                       const count = stat ? stat.count : 0;
-                      const percentage = (count / totalIntent) * 100;
+                      const maxCount = Math.max(...(analytics.ratingDistribution?.map(r => r.count) || [1]));
+                      const percentage = maxCount > 0 ? (count / maxCount) * 100 : 0;
                       
                       return (
-                        <div key={intent} className="flex-1 flex flex-col justify-end items-center gap-2 group">
-                          <div className="text-xs font-bold text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
-                            {count}
+                        <div key={rating} className="flex items-center gap-4">
+                          <div className="w-8 text-right font-bold text-sm">{rating}</div>
+                          <div className="flex-1 h-3 bg-muted rounded-full overflow-hidden flex">
+                            <div 
+                              className="h-full bg-primary rounded-full transition-all duration-1000 ease-out"
+                              style={{ width: `${percentage}%` }}
+                            />
                           </div>
-                          <div 
-                            className={`w-full rounded-t-xl transition-all duration-1000 ease-out ${intent === 'Yes' ? 'bg-green-500' : intent === 'No' ? 'bg-red-500' : 'bg-amber-500'}`}
-                            style={{ height: `${Math.max(percentage, 5)}%` }}
-                          />
-                          <div className="text-sm font-semibold">{intent}</div>
+                          <div className="w-8 text-sm text-muted-foreground">{count}</div>
                         </div>
                       )
                     })}
                   </div>
                 </div>
 
-                {/* Top Sources */}
-                <div className="bg-card border border-border/40 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm">
-                  <h3 className="text-lg font-bold font-serif mb-4">Traffic Sources</h3>
-                  <div className="space-y-4">
-                    {analytics.sourceData?.map((src) => (
-                      <div key={src._id} className="flex items-center justify-between">
-                        <span className="text-sm font-medium">{src._id}</span>
-                        <span className="text-sm font-bold bg-muted px-3 py-1 rounded-full">{src.count}</span>
-                      </div>
-                    ))}
+                <div className="space-y-4 md:space-y-6">
+                  {/* Purchase Intent */}
+                  <div className="bg-card border border-border/40 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm">
+                    <div className="flex items-center gap-2 mb-6">
+                      <TrendingUp className="h-5 w-5 text-primary" />
+                      <h3 className="text-lg font-bold font-serif">Purchase Intent</h3>
+                    </div>
+                    <div className="flex gap-4 h-32">
+                      {['Yes', 'Maybe', 'No'].map((intent) => {
+                        const stat = analytics.purchaseIntentData?.find(i => i._id === intent);
+                        const count = stat ? stat.count : 0;
+                        const percentage = (count / totalIntent) * 100;
+                        
+                        return (
+                          <div key={intent} className="flex-1 flex flex-col justify-end items-center gap-2 group">
+                            <div className="text-xs font-bold text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+                              {count}
+                            </div>
+                            <div 
+                              className={`w-full rounded-t-xl transition-all duration-1000 ease-out ${intent === 'Yes' ? 'bg-green-500' : intent === 'No' ? 'bg-red-500' : 'bg-amber-500'}`}
+                              style={{ height: `${Math.max(percentage, 5)}%` }}
+                            />
+                            <div className="text-sm font-semibold">{intent}</div>
+                          </div>
+                        )
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Top Sources */}
+                  <div className="bg-card border border-border/40 p-4 md:p-6 rounded-2xl md:rounded-3xl shadow-sm">
+                    <h3 className="text-lg font-bold font-serif mb-4">Traffic Sources</h3>
+                    <div className="space-y-4">
+                      {analytics.sourceData?.map((src) => (
+                        <div key={src._id} className="flex items-center justify-between">
+                          <span className="text-sm font-medium">{src._id}</span>
+                          <span className="text-sm font-bold bg-muted px-3 py-1 rounded-full">{src.count}</span>
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 </div>
               </div>

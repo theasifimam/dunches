@@ -23,6 +23,14 @@ const outfit = Outfit({
 export const metadata = {
   title: "Dunches | Fiery Crunch & Spicy Cravings",
   description: "Premium organic roasted lotus seeds and spicy snacks. Fiery flavor for late-night cravings with Dunches.",
+  icons: {
+    icon: [
+      { url: "/logo.png" },
+      { url: "/icon.png" },
+    ],
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 export default function RootLayout({ children }) {

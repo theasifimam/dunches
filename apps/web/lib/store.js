@@ -3,6 +3,7 @@ import cartReducer from '@/features/cart/cartSlice';
 import menuReducer from '@/features/menu/menuSlice';
 import restaurantReducer from '@/features/restaurant/restaurantSlice';
 import userReducer from '@/features/user/userSlice';
+import bannerReducer from '@/features/banner/bannerSlice';
 
 export const store = configureStore({
   reducer: {
@@ -10,5 +11,7 @@ export const store = configureStore({
     menu: menuReducer,
     restaurant: restaurantReducer,
     user: userReducer,
+    banner: bannerReducer,
   },
 });
+

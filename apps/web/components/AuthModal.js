@@ -1,24 +1,16 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import {
-  X,
-  Flame,
-  ArrowRight,
-  ShieldCheck,
-  Phone,
-  ArrowLeft,
-  RefreshCw,
-  Lock,
-  Eye,
-  EyeOff,
-  User,
-  CheckCircle2,
-} from "lucide-react";
+import { X, Flame } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Button } from "./ui/button";
 import { useDispatch } from "react-redux";
 import { fetchProfile, setProfile } from "@/features/user/userSlice";
+
+import LoginForm from "./auth/LoginForm";
+import PhoneRequestForm from "./auth/PhoneRequestForm";
+import OtpVerificationStep from "./auth/OtpVerificationStep";
+import SignupDetailsForm from "./auth/SignupDetailsForm";
+import ForgotResetForm from "./auth/ForgotResetForm";
 
 export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const dispatch = useDispatch();
@@ -209,7 +201,6 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
       setPassword("");
       setNewPassword("");
       setError("");
-      // Using error state just to show success message briefly
       setTimeout(
         () => setError("Password reset successfully. You can now login."),
         10,
@@ -274,7 +265,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="absolute inset-0 bg-background/60 backdrop-blur-3xl"
+            className="absolute inset-0 backdrop-blur-md bg-gray-800/30"
           />
 
           <motion.div
@@ -329,327 +320,105 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
             <div className="px-8 pb-10 pt-2">
               {error && (
                 <div
-                  className={`mb-4 text-[9px] font-black p-3 rounded-xl tracking-widest uppercase text-center ${error.includes("successful") ? "text-green-500 bg-green-500/5 border border-green-500/10" : "text-red-500 bg-red-500/5 border border-red-500/10"}`}
+                  className={`mb-4 text-[9px] font-black p-3 rounded-xl tracking-widest uppercase text-center ${
+                    error.includes("successful")
+                      ? "text-green-500 bg-green-500/5 border border-green-500/10"
+                      : "text-red-500 bg-red-500/5 border border-red-500/10"
+                  }`}
                 >
                   {error}
                 </div>
               )}
 
-              {/* LOGIN */}
               {step === "login" && (
-                <motion.form
-                  key="login"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  onSubmit={handleLogin}
-                  className="space-y-4"
-                >
-                  <div className="flex items-center gap-2 bg-foreground/3 border border-transparent focus-within:border-primary/40 focus-within:bg-background rounded-2xl h-14 pl-4 pr-4 transition-all">
-                    <Phone className="w-4 h-4 text-foreground/20 shrink-0" />
-                    <span className="text-[10px] font-black tracking-widest text-foreground/60 shrink-0">
-                      +91
-                    </span>
-                    <div className="w-px h-5 bg-border shrink-0" />
-                    <input
-                      type="tel"
-                      maxLength={10}
-                      placeholder="MOBILE NUMBER"
-                      value={phone}
-                      onChange={(e) =>
-                        setPhone(e.target.value.replace(/[^0-9]/g, ""))
-                      }
-                      className="flex-1 bg-transparent outline-none text-[10px] font-black tracking-[0.2em] placeholder:text-foreground/20"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2 bg-foreground/3 border border-transparent focus-within:border-primary/40 focus-within:bg-background rounded-2xl h-14 pl-4 pr-3 transition-all">
-                    <Lock className="w-4 h-4 text-foreground/20 shrink-0" />
-                    <input
-                      type={showPwd ? "text" : "password"}
-                      placeholder="YOUR PASSWORD"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="flex-1 bg-transparent outline-none text-[10px] font-black tracking-[0.2em] placeholder:text-foreground/20"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPwd((p) => !p)}
-                      className="text-foreground/30 hover:text-primary transition-colors"
-                    >
-                      {showPwd ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </button>
-                  </div>
-                  <Button
-                    type="submit"
-                    disabled={phone.length !== 10 || !password || loading}
-                    className="w-full h-13 rounded-2xl text-[11px] font-black tracking-[0.2em] uppercase shadow-xl flex items-center justify-center gap-2"
-                  >
-                    {loading ? (
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <>
-                        <ShieldCheck className="w-4 h-4" /> Sign In
-                      </>
-                    )}
-                  </Button>
-                  <div className="flex justify-between items-center pt-2">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setStep("forgot-password");
-                        setError("");
-                      }}
-                      className="text-[9px] font-black text-primary/80 hover:text-primary uppercase tracking-widest transition-colors"
-                    >
-                      Forgot Password?
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setStep("signup");
-                        setError("");
-                      }}
-                      className="text-[9px] font-black text-foreground/60 hover:text-foreground uppercase tracking-widest transition-colors"
-                    >
-                      Sign Up
-                    </button>
-                  </div>
-                </motion.form>
+                <LoginForm
+                  phone={phone}
+                  setPhone={setPhone}
+                  password={password}
+                  setPassword={setPassword}
+                  showPwd={showPwd}
+                  setShowPwd={setShowPwd}
+                  loading={loading}
+                  onLogin={handleLogin}
+                  onForgotPassword={() => {
+                    setStep("forgot-password");
+                    setError("");
+                  }}
+                  onSignUp={() => {
+                    setStep("signup");
+                    setError("");
+                  }}
+                />
               )}
 
-              {/* SIGNUP / FORGOT PASSWORD - PHONE */}
               {(step === "signup" || step === "forgot-password") && (
-                <motion.form
-                  key={step}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                <PhoneRequestForm
+                  step={step}
+                  phone={phone}
+                  setPhone={setPhone}
+                  loading={loading}
                   onSubmit={
                     step === "signup"
                       ? handleSignupRequest
                       : handleForgotRequest
                   }
-                  className="space-y-4"
-                >
-                  <p className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest mb-5">
-                    {step === "signup"
-                      ? "Enter your mobile to get started"
-                      : "Enter mobile to reset password"}
-                  </p>
-                  <div className="flex items-center gap-2 bg-foreground/3 border border-transparent focus-within:border-primary/40 focus-within:bg-background rounded-2xl h-14 pl-4 pr-4 transition-all">
-                    <Phone className="w-4 h-4 text-foreground/20 shrink-0" />
-                    <span className="text-[10px] font-black tracking-widest text-foreground/60 shrink-0">
-                      +91
-                    </span>
-                    <div className="w-px h-5 bg-border shrink-0" />
-                    <input
-                      type="tel"
-                      maxLength={10}
-                      placeholder="MOBILE NUMBER"
-                      value={phone}
-                      onChange={(e) =>
-                        setPhone(e.target.value.replace(/[^0-9]/g, ""))
-                      }
-                      className="flex-1 bg-transparent outline-none text-[10px] font-black tracking-[0.2em] placeholder:text-foreground/20"
-                    />
-                  </div>
-                  <Button
-                    type="submit"
-                    disabled={phone.length !== 10 || loading}
-                    className="w-full h-13 rounded-2xl text-[11px] font-black tracking-[0.2em] uppercase shadow-xl flex items-center justify-center gap-2"
-                  >
-                    {loading ? (
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <>
-                        Send OTP <ArrowRight className="w-4 h-4" />
-                      </>
-                    )}
-                  </Button>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setStep("login");
-                      setError("");
-                    }}
-                    className="w-full text-center text-[9px] font-black text-primary/60 hover:text-primary uppercase tracking-widest transition-colors flex items-center justify-center gap-1"
-                  >
-                    <ArrowLeft className="w-3 h-3" /> Back to Login
-                  </button>
-                </motion.form>
+                  onBackToLogin={() => {
+                    setStep("login");
+                    setError("");
+                  }}
+                />
               )}
 
-              {/* OTP (SIGNUP & FORGOT) */}
               {(step === "signup-otp" || step === "forgot-otp") && (
-                <motion.div
-                  key="otp"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  className="space-y-5"
-                >
-                  <p className="text-[10px] text-foreground/40 font-bold uppercase tracking-widest">
-                    OTP sent to{" "}
-                    <span className="text-foreground/70">{fullMobile}</span>
-                  </p>
-                  <div className="flex justify-between gap-3">
-                    {otp.map((digit, idx) => (
-                      <input
-                        key={idx}
-                        ref={otpRefs[idx]}
-                        type="text"
-                        maxLength={1}
-                        value={digit}
-                        onKeyDown={(e) => handleOtpKey(e, idx)}
-                        onChange={(e) => handleOtpChange(e.target.value, idx)}
-                        className={`w-14 h-16 text-center text-xl font-bold bg-foreground/3 border-2 rounded-2xl outline-none focus:bg-background transition-all ${digit ? "border-primary text-foreground" : "border-transparent text-foreground/40"}`}
-                      />
-                    ))}
-                  </div>
-                  <div className="text-center">
-                    {timer > 0 ? (
-                      <p className="text-[9px] font-black uppercase tracking-widest text-foreground/20">
-                        Resend in <span className="text-primary">{timer}s</span>
-                      </p>
-                    ) : (
-                      <button
-                        onClick={async () => {
-                          setError("");
-                          setOtp(["", "", "", ""]);
-                          try {
-                            step === "signup-otp"
-                              ? await handleSignupRequest()
-                              : await handleForgotRequest();
-                          } catch (e) {}
-                        }}
-                        className="text-[10px] font-black text-primary hover:text-amber-500 transition-colors uppercase tracking-widest"
-                      >
-                        Resend OTP
-                      </button>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => {
-                      setStep(
-                        step === "signup-otp" ? "signup" : "forgot-password",
-                      );
-                      setOtp(["", "", "", ""]);
-                      setError("");
-                    }}
-                    className="w-full text-center text-[9px] font-black text-primary/60 hover:text-primary uppercase tracking-widest transition-colors flex items-center justify-center gap-1"
-                  >
-                    <ArrowLeft className="w-3 h-3" /> Change number
-                  </button>
-                </motion.div>
+                <OtpVerificationStep
+                  step={step}
+                  fullMobile={fullMobile}
+                  otp={otp}
+                  otpRefs={otpRefs}
+                  timer={timer}
+                  handleOtpKey={handleOtpKey}
+                  handleOtpChange={handleOtpChange}
+                  onResend={async () => {
+                    setError("");
+                    setOtp(["", "", "", ""]);
+                    try {
+                      step === "signup-otp"
+                        ? await handleSignupRequest()
+                        : await handleForgotRequest();
+                    } catch (e) {}
+                  }}
+                  onChangeNumber={() => {
+                    setStep(
+                      step === "signup-otp" ? "signup" : "forgot-password",
+                    );
+                    setOtp(["", "", "", ""]);
+                    setError("");
+                  }}
+                />
               )}
 
-              {/* SIGNUP DETAILS */}
               {step === "signup-details" && (
-                <motion.form
-                  key="signup-details"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                <SignupDetailsForm
+                  name={name}
+                  setName={setName}
+                  newPassword={newPassword}
+                  setNewPassword={setNewPassword}
+                  showNewPwd={showNewPwd}
+                  setShowNewPwd={setShowNewPwd}
+                  loading={loading}
                   onSubmit={handleSignupVerify}
-                  className="space-y-4"
-                >
-                  <div className="flex items-center gap-2 bg-foreground/3 border border-transparent focus-within:border-primary/40 focus-within:bg-background rounded-2xl h-14 pl-4 pr-4 transition-all">
-                    <User className="w-4 h-4 text-foreground/20 shrink-0" />
-                    <input
-                      type="text"
-                      placeholder="YOUR NAME"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="flex-1 bg-transparent outline-none text-[10px] font-black tracking-[0.2em] placeholder:text-foreground/20"
-                    />
-                  </div>
-                  <div className="flex items-center gap-2 bg-foreground/3 border border-transparent focus-within:border-primary/40 focus-within:bg-background rounded-2xl h-14 pl-4 pr-3 transition-all">
-                    <Lock className="w-4 h-4 text-foreground/20 shrink-0" />
-                    <input
-                      type={showNewPwd ? "text" : "password"}
-                      placeholder="CREATE A PASSWORD"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className="flex-1 bg-transparent outline-none text-[10px] font-black tracking-[0.2em] placeholder:text-foreground/20"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowNewPwd((p) => !p)}
-                      className="text-foreground/30 hover:text-primary transition-colors"
-                    >
-                      {showNewPwd ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </button>
-                  </div>
-                  <p className="text-[9px] text-foreground/30 font-medium px-1">
-                    Minimum 6 characters.
-                  </p>
-                  <Button
-                    type="submit"
-                    disabled={!name || newPassword.length < 6 || loading}
-                    className="w-full h-13 rounded-2xl text-[11px] font-black tracking-[0.2em] uppercase shadow-xl flex items-center justify-center gap-2"
-                  >
-                    {loading ? (
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <>
-                        <CheckCircle2 className="w-4 h-4" /> Create Account
-                      </>
-                    )}
-                  </Button>
-                </motion.form>
+                />
               )}
 
-              {/* FORGOT RESET */}
               {step === "forgot-reset" && (
-                <motion.form
-                  key="forgot-reset"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                <ForgotResetForm
+                  newPassword={newPassword}
+                  setNewPassword={setNewPassword}
+                  showNewPwd={showNewPwd}
+                  setShowNewPwd={setShowNewPwd}
+                  loading={loading}
                   onSubmit={handleForgotVerify}
-                  className="space-y-4"
-                >
-                  <div className="flex items-center gap-2 bg-foreground/3 border border-transparent focus-within:border-primary/40 focus-within:bg-background rounded-2xl h-14 pl-4 pr-3 transition-all">
-                    <Lock className="w-4 h-4 text-foreground/20 shrink-0" />
-                    <input
-                      type={showNewPwd ? "text" : "password"}
-                      placeholder="NEW PASSWORD"
-                      value={newPassword}
-                      onChange={(e) => setNewPassword(e.target.value)}
-                      className="flex-1 bg-transparent outline-none text-[10px] font-black tracking-[0.2em] placeholder:text-foreground/20"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowNewPwd((p) => !p)}
-                      className="text-foreground/30 hover:text-primary transition-colors"
-                    >
-                      {showNewPwd ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </button>
-                  </div>
-                  <p className="text-[9px] text-foreground/30 font-medium px-1">
-                    Minimum 6 characters.
-                  </p>
-                  <Button
-                    type="submit"
-                    disabled={newPassword.length < 6 || loading}
-                    className="w-full h-13 rounded-2xl text-[11px] font-black tracking-[0.2em] uppercase shadow-xl flex items-center justify-center gap-2"
-                  >
-                    {loading ? (
-                      <RefreshCw className="w-4 h-4 animate-spin" />
-                    ) : (
-                      <>
-                        <CheckCircle2 className="w-4 h-4" /> Reset Password
-                      </>
-                    )}
-                  </Button>
-                </motion.form>
+                />
               )}
             </div>
           </motion.div>

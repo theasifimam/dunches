@@ -1,4 +1,5 @@
-import { StyleSheet, Platform } from "react-native";
+import { StyleSheet } from "react-native";
+import { ticketStyles } from "./bookingTicket.styles";
 
 export const pb = StyleSheet.create({
   row: { flexDirection: "row", alignItems: "flex-start", paddingHorizontal: 4 },
@@ -155,7 +156,6 @@ export const s = StyleSheet.create({
     width: 34,
     height: 34,
     borderRadius: 12,
-    // backgroundColor: "rgba(255,255,255,0.06)",
     justifyContent: "center",
     alignItems: "center",
   },
@@ -274,12 +274,12 @@ export const s = StyleSheet.create({
     borderWidth: 0,
     marginBottom: 10,
   },
-  menuImage: { 
-    width: 64, 
-    height: 64, 
-    borderRadius: 14, 
-    marginRight: 14, 
-    backgroundColor: 'rgba(0,0,0,0.05)' 
+  menuImage: {
+    width: 64,
+    height: 64,
+    borderRadius: 14,
+    marginRight: 14,
+    backgroundColor: "rgba(0,0,0,0.05)",
   },
   menuName: { fontSize: 16, fontWeight: "700", marginBottom: 4 },
   menuPrice: { fontSize: 13, fontWeight: "500" },
@@ -316,70 +316,6 @@ export const s = StyleSheet.create({
   mealSubNote: { fontSize: 11 },
   mealSubVal: { fontSize: 22, fontWeight: "900" },
 
-  // Payment summary
-  sumCard: { borderRadius: 26, borderWidth: 0, padding: 18, marginBottom: 22 },
-  sumTitle: {
-    fontSize: 10,
-    fontWeight: "900",
-    letterSpacing: 1.5,
-    marginBottom: 14,
-  },
-  sumRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 10,
-    marginBottom: 10,
-  },
-  sumLbl: { fontSize: 13, fontWeight: "600", flex: 1 },
-  sumVal: { fontSize: 13, fontWeight: "800" },
-  dash: {
-    borderWidth: 1,
-    borderStyle: "dashed",
-    marginVertical: 14,
-    marginHorizontal: -18,
-  },
-  sumMealsTitle: {
-    fontSize: 10,
-    fontWeight: "900",
-    letterSpacing: 1.5,
-    marginBottom: 10,
-  },
-  sumMealRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 6,
-  },
-  sumMealName: { fontSize: 13, fontWeight: "600" },
-  sumMealPx: { fontSize: 13, fontWeight: "700" },
-  sumTotals: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "flex-end",
-  },
-  sumFeeNote: { fontSize: 12, fontWeight: "600", marginBottom: 2 },
-  sumFeeAmt: { fontSize: 12, fontWeight: "600", marginBottom: 2 },
-  sumGrandLbl: { fontSize: 15, fontWeight: "600" },
-  sumGrandAmt: { fontSize: 22, fontWeight: "800" },
-
-  payRow: { flexDirection: "row", gap: 10, marginBottom: 20 },
-  payBtn: {
-    flex: 1,
-    borderWidth: 1,
-    borderRadius: 22,
-    padding: 12,
-    alignItems: "center",
-    gap: 6,
-  },
-  payBtnLbl: { fontSize: 11, fontWeight: "800", textAlign: "center" },
-
-  secureBadge: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 6,
-    marginTop: 8,
-  },
-  secureTxt: { fontSize: 11, flex: 1 },
-
   // Bottom bar
   bottomBar: { borderTopWidth: StyleSheet.hairlineWidth },
   navRow: {
@@ -412,172 +348,5 @@ export const s = StyleSheet.create({
   nextBtnDisabled: { opacity: 0.38 },
   nextBtnTxt: { fontSize: 16, fontWeight: "700", color: "#000" },
 
-  // Success
-  successTop: { alignItems: "center", marginBottom: 28 },
-  checkCircle: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    borderWidth: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 18,
-  },
-  successTitle: {
-    fontSize: 28,
-    fontWeight: "900",
-    textAlign: "center",
-    marginBottom: 10,
-  },
-  successSub: {
-    fontSize: 14,
-    lineHeight: 20,
-    textAlign: "center",
-    paddingHorizontal: 24,
-  },
-
-  // Ticket
-  ticket: {
-    borderRadius: 32,
-    overflow: "hidden",
-    marginBottom: 24,
-    ...Platform.select({
-      ios: {
-        shadowColor: "#E6B325",
-        shadowOffset: { width: 0, height: 6 },
-        shadowOpacity: 0.25,
-        shadowRadius: 16,
-      },
-      android: { elevation: 10 },
-      default: {},
-    }),
-  },
-  tickBand: { height: 7 },
-  cutL: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    position: "absolute",
-    left: -14,
-    top: "36%",
-    zIndex: 10,
-  },
-  cutR: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
-    position: "absolute",
-    right: -14,
-    top: "36%",
-    zIndex: 10,
-  },
-  tickHead: {
-    alignItems: "center",
-    paddingTop: 24,
-    paddingHorizontal: 24,
-    paddingBottom: 20,
-  },
-  tickRest: {
-    fontSize: 10,
-    fontWeight: "900",
-    letterSpacing: 2.5,
-    color: "#E6B325",
-    marginBottom: 6,
-  },
-  tickTable: {
-    fontSize: 48,
-    fontWeight: "900",
-    letterSpacing: -2,
-    lineHeight: 52,
-  },
-  tickRef: { fontSize: 10, color: "#888", marginTop: 5, letterSpacing: 1 },
-  tickDash: {
-    borderWidth: 1,
-    borderStyle: "dashed",
-    marginHorizontal: 24,
-    marginVertical: 16,
-  },
-  tickGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    paddingHorizontal: 24,
-    rowGap: 16,
-  },
-  tickCell: { width: "50%" },
-  tickCellLbl: {
-    fontSize: 9,
-    fontWeight: "800",
-    color: "#888",
-    letterSpacing: 1.2,
-    marginBottom: 4,
-  },
-  tickCellVal: { fontSize: 16, fontWeight: "900" },
-  tickMealHdr: {
-    fontSize: 9,
-    fontWeight: "800",
-    color: "#888",
-    letterSpacing: 1.2,
-    marginBottom: 10,
-    paddingHorizontal: 24,
-  },
-  tickMealRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 24,
-    marginBottom: 5,
-  },
-  tickMealName: { fontSize: 12, fontWeight: "600" },
-  tickMealPx: { fontSize: 12, fontWeight: "700" },
-  tickTotal: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 24,
-    paddingVertical: 6,
-  },
-  tickTotalLbl: { fontSize: 10, fontWeight: "800", letterSpacing: 1.5 },
-  tickTotalAmt: { fontSize: 28, fontWeight: "900" },
-  tickBarArea: { alignItems: "center", paddingVertical: 20, borderTopWidth: 1 },
-  tickBarRef: { fontSize: 9, letterSpacing: 1, marginTop: 5 },
-
-  primaryBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    height: 52,
-    borderRadius: 24,
-    backgroundColor: "#E6B325",
-    marginBottom: 12,
-  },
-  primaryBtnTxt: { fontSize: 16, fontWeight: "700", color: "#000" },
-  secondBtn: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: 8,
-    height: 52,
-    borderRadius: 24,
-    borderWidth: 1,
-    marginBottom: 12,
-  },
-  secondBtnTxt: { fontSize: 15, fontWeight: "600" },
-  sectionInner: {
-    borderRadius: 24,
-    overflow: "hidden",
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: "rgba(255,255,255,0.05)",
-  },
-  menuItemRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 14,
-  },
-  menuDivider: {
-    height: StyleSheet.hairlineWidth,
-    marginLeft: 16,
-    marginRight: 16,
-  },
+  ...ticketStyles,
 });

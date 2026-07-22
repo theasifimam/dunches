@@ -25,6 +25,7 @@ export const feedbackApi = createApi({
         return url;
       },
       providesTags: ['Feedback'],
+      keepUnusedDataFor: 300,
     }),
     getFeedbackAnalytics: builder.query({
       query: ({ startDate, endDate, source } = {}) => {
@@ -35,6 +36,7 @@ export const feedbackApi = createApi({
         return url;
       },
       providesTags: ['Feedback'],
+      keepUnusedDataFor: 300,
     }),
     createFeedback: builder.mutation({
       query: (data) => ({

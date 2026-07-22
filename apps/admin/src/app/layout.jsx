@@ -23,6 +23,14 @@ const syne = Syne({
 export const metadata = {
     title: "Dunches | Admin Panel",
     description: "Dunches Premium Snacking Brand Administrative Console",
+    icons: {
+        icon: [
+            { url: "/logo.png" },
+            { url: "/icon.png" },
+        ],
+        shortcut: "/logo.png",
+        apple: "/logo.png",
+    },
 };
 
 export default function RootLayout({ children }) {
