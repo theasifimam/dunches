@@ -14,7 +14,7 @@ export default function NotificationCardsGrid({
   deleteNotification,
 }) {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 md:gap-6 md:p-6 bg-muted/5">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       {notifications.map((notif) => {
         const config = TYPE_CONFIG[notif.type] || TYPE_CONFIG.new_order;
         const Icon = config.icon;

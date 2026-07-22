@@ -254,8 +254,8 @@ export default function UsersPage() {
       </div>
 
       {/* Users Table / Cards */}
-      <div className="rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
-        {viewMode === "list" ? (
+      {viewMode === "list" ? (
+        <div className="rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <CustomerTable
               roleFilter={roleFilter}
@@ -268,7 +268,24 @@ export default function UsersPage() {
               handleDelete={handleDelete}
             />
           </div>
-        ) : (
+          {/* Pagination */}
+          <div className="p-4 md:p-6 border-t border-border/40 bg-muted/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-muted-foreground">
+              Showing{" "}
+              {roleFilter === "subscribers"
+                ? filteredSubscribers.length
+                : filteredUsers.length}{" "}
+              entries
+            </p>
+            <Pagination
+              currentPage={page}
+              totalPages={1}
+              onPageChange={setPage}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-6">
           <CustomerCardsGrid
             roleFilter={roleFilter}
             filteredSubscribers={filteredSubscribers}
@@ -279,30 +296,29 @@ export default function UsersPage() {
             openEditDialog={openEditDialog}
             handleDelete={handleDelete}
           />
-        )}
-
-        <UserDialog
-          isOpen={isDialogOpen}
-          onOpenChange={setIsDialogOpen}
-          user={editingUser}
-        />
-
-        {/* Pagination */}
-        <div className="p-4 md:p-6 border-t border-border/40 bg-muted/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground">
-            Showing{" "}
-            {roleFilter === "subscribers"
-              ? filteredSubscribers.length
-              : filteredUsers.length}{" "}
-            entries
-          </p>
-          <Pagination
-            currentPage={page}
-            totalPages={1}
-            onPageChange={setPage}
-          />
+          {/* Pagination */}
+          <div className="p-4 md:p-6 rounded-[2rem] bg-card border border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+            <p className="text-xs text-muted-foreground">
+              Showing{" "}
+              {roleFilter === "subscribers"
+                ? filteredSubscribers.length
+                : filteredUsers.length}{" "}
+              entries
+            </p>
+            <Pagination
+              currentPage={page}
+              totalPages={1}
+              onPageChange={setPage}
+            />
+          </div>
         </div>
-      </div>
+      )}
+
+      <UserDialog
+        isOpen={isDialogOpen}
+        onOpenChange={setIsDialogOpen}
+        user={editingUser}
+      />
 
       <BroadcastDialog
         isOpen={isBroadcastDialogOpen}

@@ -345,16 +345,32 @@ export default function Home() {
                           ₹{item.price}
                         </span>
                       </div>
+                    <div className="flex items-center gap-1.5 shrink-0">
                       <button
+                        type="button"
                         onClick={(e) => {
                           e.preventDefault();
                           e.stopPropagation();
                           dispatch(addToCart(item));
                         }}
-                        className="w-7 h-7 rounded-full bg-primary hover:bg-primary-hover flex items-center justify-center text-primary-foreground shadow-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                        title="Add to Cart"
+                        className="w-7 h-7 rounded-full border border-primary/40 text-primary hover:bg-primary/10 hover:border-primary flex items-center justify-center transition-all cursor-pointer"
                       >
                         <Plus className="w-3.5 h-3.5" />
                       </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          dispatch(addToCart(item));
+                          router.push("/checkout");
+                        }}
+                        className="px-2.5 py-1 rounded-full bg-primary text-primary-foreground font-extrabold text-[9px] uppercase tracking-wider shadow-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                      >
+                        Buy
+                      </button>
+                    </div>
                     </div>
                   </div>
                 </Link>

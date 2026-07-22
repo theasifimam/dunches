@@ -156,7 +156,24 @@ export default function ProductDetailPage({ params }) {
               <div className="flex items-center gap-6">
                 <p className="text-4xl font-light text-primary tracking-tighter">₹{dish.price}</p>
                 <div className="h-px w-12 bg-border" />
-                <span className="text-xs uppercase font-bold opacity-30 tracking-widest">Eco-Friendly Pack</span>
+                
+                {/* Quantity selector inline */}
+                <div className="flex items-center glass border border-border/60 rounded-full h-11 px-2 shrink-0">
+                  <button
+                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
+                    className="w-8 h-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all disabled:opacity-10 cursor-pointer"
+                    disabled={quantity <= 1}
+                  >
+                    <Minus className="w-4 h-4" />
+                  </button>
+                  <span className="min-w-8 text-center font-bold text-base font-serif">{quantity}</span>
+                  <button
+                    onClick={() => setQuantity(q => q + 1)}
+                    className="w-8 h-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all cursor-pointer"
+                  >
+                    <Plus className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -259,24 +276,6 @@ export default function ProductDetailPage({ params }) {
             {/* Desktop Action Zone - Both Add to Cart & Buy Now */}
             <div className="pt-8 hidden sm:flex flex-col gap-4">
               <div className="flex flex-row items-center gap-4">
-                {/* Quantity selector */}
-                <div className="flex items-center glass border border-border/60 rounded-full h-16 p-1.5 shrink-0">
-                  <button
-                    onClick={() => setQuantity(q => Math.max(1, q - 1))}
-                    className="w-12 h-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all disabled:opacity-10 cursor-pointer"
-                    disabled={quantity <= 1}
-                  >
-                    <Minus className="w-5 h-5" />
-                  </button>
-                  <span className="min-w-10 text-center font-bold text-xl font-serif">{quantity}</span>
-                  <button
-                    onClick={() => setQuantity(q => q + 1)}
-                    className="w-12 h-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all cursor-pointer"
-                  >
-                    <Plus className="w-5 h-5" />
-                  </button>
-                </div>
-
                 {/* Add to Cart Button */}
                 <Button
                   size="lg"
@@ -331,56 +330,32 @@ export default function ProductDetailPage({ params }) {
         )}
       </div>
 
-      {/* Mobile Sticky Action Bar - Both Add to Cart & Buy Now */}
-      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t border-border/45 px-4 py-3 pb-7 flex flex-col gap-3 shadow-2xl">
-        <div className="flex items-center justify-between gap-3">
-          {/* Mobile Quantity selector */}
-          <div className="flex items-center glass border border-border/50 rounded-full h-11 p-1 shrink-0">
-            <button
-              onClick={() => setQuantity(q => Math.max(1, q - 1))}
-              className="w-8 h-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all disabled:opacity-10"
-              disabled={quantity <= 1}
-            >
-              <Minus className="w-3.5 h-3.5" />
-            </button>
-            <span className="min-w-6 text-center font-bold text-base font-serif">{quantity}</span>
-            <button
-              onClick={() => setQuantity(q => q + 1)}
-              className="w-8 h-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all"
-            >
-              <Plus className="w-3.5 h-3.5" />
-            </button>
-          </div>
+      {/* Mobile Sticky Action Bar - Outline + Icon Button & Primary Buy Now */}
+      <div className="sm:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t border-border/45 px-4 py-3 pb-7 shadow-2xl">
+        <div className="flex items-center gap-3 w-full">
+          {/* Mobile Add to Cart (Outline + icon only) */}
+          <button
+            type="button"
+            onClick={handleAddToCart}
+            title={added ? "Added to Cart" : "Add to Cart"}
+            className={`w-12 h-12 rounded-full border flex items-center justify-center shrink-0 transition-all ${
+              added
+                ? "bg-green-600 border-green-600 text-white"
+                : "border-primary/50 text-primary hover:bg-primary/10 active:scale-95"
+            }`}
+          >
+            {added ? <CheckCircle2 className="w-5 h-5" /> : <Plus className="w-5 h-5" />}
+          </button>
 
-          <div className="flex items-center gap-2 flex-1">
-            {/* Mobile Add to Cart */}
-            <Button
-              size="lg"
-              className={`h-11 flex-1 text-[9px] font-bold tracking-[0.15em] uppercase rounded-full transition-all border ${
-                added ? 'bg-green-600 border-green-600 text-white' : 'bg-foreground/5 border-border text-foreground'
-              }`}
-              onClick={handleAddToCart}
-            >
-              <div className="flex items-center justify-center gap-1.5">
-                {added ? (
-                  <>Added <CheckCircle2 className="w-3.5 h-3.5" /></>
-                ) : (
-                  <>Cart <ShoppingBag className="w-3.5 h-3.5" /></>
-                )}
-              </div>
-            </Button>
-
-            {/* Mobile Buy Now */}
-            <Button
-              size="lg"
-              className="h-11 flex-1 text-[9px] font-bold tracking-[0.15em] uppercase rounded-full bg-primary hover:bg-primary-hover text-primary-foreground shadow-md"
-              onClick={handleBuyNow}
-            >
-              <div className="flex items-center justify-center gap-1.5">
-                Buy Now <Zap className="w-3.5 h-3.5 fill-current" />
-              </div>
-            </Button>
-          </div>
+          {/* Mobile Primary Buy Now Button */}
+          <Button
+            size="lg"
+            className="h-12 flex-1 text-xs font-bold tracking-[0.15em] uppercase rounded-full bg-primary hover:bg-primary-hover text-primary-foreground shadow-lg flex items-center justify-center gap-2"
+            onClick={handleBuyNow}
+          >
+            <span>Buy Now</span>
+            <Zap className="w-4 h-4 fill-current" />
+          </Button>
         </div>
       </div>
 

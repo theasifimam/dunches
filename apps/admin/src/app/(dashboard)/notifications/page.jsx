@@ -264,28 +264,28 @@ export default function NotificationsPage() {
       </div>
 
       {/* Notifications List / Cards */}
-      <div className="rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm animate-in fade-in duration-300">
-        {isLoading ? (
-          <div className="flex items-center justify-center py-20">
-            <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      {isLoading ? (
+        <div className="rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      ) : notifications.length === 0 ? (
+        <div className="rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm flex flex-col items-center justify-center py-20 gap-4 text-center">
+          <div className="h-20 w-20 rounded-3xl bg-muted/40 flex items-center justify-center">
+            <BellOff className="h-10 w-10 text-muted-foreground/30" />
           </div>
-        ) : notifications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-20 gap-4 text-center">
-            <div className="h-20 w-20 rounded-3xl bg-muted/40 flex items-center justify-center">
-              <BellOff className="h-10 w-10 text-muted-foreground/30" />
-            </div>
-            <div>
-              <p className="text-sm font-black uppercase tracking-widest text-muted-foreground">
-                No notifications
-              </p>
-              <p className="text-xs text-muted-foreground/60 mt-1">
-                {showUnreadOnly
-                  ? "No unread notifications in this category."
-                  : "Nothing to show here yet."}
-              </p>
-            </div>
+          <div>
+            <p className="text-sm font-black uppercase tracking-widest text-muted-foreground">
+              No notifications
+            </p>
+            <p className="text-xs text-muted-foreground/60 mt-1">
+              {showUnreadOnly
+                ? "No unread notifications in this category."
+                : "Nothing to show here yet."}
+            </p>
           </div>
-        ) : viewMode === "list" ? (
+        </div>
+      ) : viewMode === "list" ? (
+        <div className="rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm animate-in fade-in duration-300">
           <NotificationList
             notifications={notifications}
             TYPE_CONFIG={TYPE_CONFIG}
@@ -294,7 +294,37 @@ export default function NotificationsPage() {
             markAsRead={markAsRead}
             deleteNotification={deleteNotification}
           />
-        ) : (
+          {pagination.pages > 1 && (
+            <div className="flex items-center justify-between px-6 py-4 border-t border-border/20 bg-muted/10">
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                Page {pagination.page} of {pagination.pages} • {pagination.total}{" "}
+                total
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page <= 1}
+                  className="h-8 px-4 text-[10px] font-black uppercase tracking-widest rounded-xl"
+                >
+                  Prev
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
+                  disabled={page >= pagination.pages}
+                  className="h-8 px-4 text-[10px] font-black uppercase tracking-widest rounded-xl"
+                >
+                  Next
+                </Button>
+              </div>
+            </div>
+          )}
+        </div>
+      ) : (
+        <div className="space-y-6 animate-in fade-in duration-300">
           <NotificationCardsGrid
             notifications={notifications}
             TYPE_CONFIG={TYPE_CONFIG}
@@ -303,40 +333,36 @@ export default function NotificationsPage() {
             markAsRead={markAsRead}
             deleteNotification={deleteNotification}
           />
-        )}
-
-        {/* Pagination */}
-        {pagination.pages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-border/20 bg-muted/10">
-            <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-              Page {pagination.page} of {pagination.pages} • {pagination.total}{" "}
-              total
-            </p>
-            <div className="flex gap-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPage((p) => Math.max(1, p - 1))}
-                disabled={page <= 1}
-                className="h-8 px-4 text-[10px] font-black uppercase tracking-widest rounded-xl"
-              >
-                Prev
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() =>
-                  setPage((p) => Math.min(pagination.pages, p + 1))
-                }
-                disabled={page >= pagination.pages}
-                className="h-8 px-4 text-[10px] font-black uppercase tracking-widest rounded-xl"
-              >
-                Next
-              </Button>
+          {pagination.pages > 1 && (
+            <div className="flex items-center justify-between px-6 py-4 rounded-2xl md:rounded-[2rem] bg-card border border-border/40 shadow-sm">
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                Page {pagination.page} of {pagination.pages} • {pagination.total}{" "}
+                total
+              </p>
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page <= 1}
+                  className="h-8 px-4 text-[10px] font-black uppercase tracking-widest rounded-xl"
+                >
+                  Prev
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
+                  disabled={page >= pagination.pages}
+                  className="h-8 px-4 text-[10px] font-black uppercase tracking-widest rounded-xl"
+                >
+                  Next
+                </Button>
+              </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

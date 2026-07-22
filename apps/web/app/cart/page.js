@@ -150,15 +150,18 @@ export default function CartPage() {
                   transition={{ duration: 0.5 }}
                   className="group relative flex flex-row gap-4 md:gap-10 p-4 md:p-8 rounded-3xl md:rounded-[2.5rem] glass border-border/50 hover:bg-foreground/2 transition-all duration-700 modern-shadow items-center md:items-stretch"
                 >
-                  {/* Item Image */}
-                  <div className="relative w-20 h-20 md:w-56 md:h-56 rounded-2xl md:rounded-4xl overflow-hidden shadow-lg md:shadow-2xl shrink-0">
+                  {/* Item Image (Clickable Link) */}
+                  <Link
+                    href={`/product/${item.slug || item.id}`}
+                    className="relative w-20 h-20 md:w-56 md:h-56 rounded-2xl md:rounded-4xl overflow-hidden shadow-lg md:shadow-2xl shrink-0 cursor-pointer block"
+                  >
                     <Image
                       src={item.image}
                       alt={item.name}
                       fill
                       className="object-cover group-hover:scale-110 transition-transform duration-1000"
                     />
-                  </div>
+                  </Link>
 
                   {/* Item Details */}
                   <div className="flex-1 flex flex-col justify-between py-1 md:py-2 min-w-0">
@@ -167,9 +170,11 @@ export default function CartPage() {
                         <span className="hidden md:inline-block text-[10px] font-black uppercase tracking-widest text-primary opacity-60">
                           Culinary Piece
                         </span>
-                        <h3 className="text-sm md:text-4xl font-black tracking-tight text-foreground font-heading truncate md:normal-case">
-                          {item.name}
-                        </h3>
+                        <Link href={`/product/${item.slug || item.id}`} className="block">
+                          <h3 className="text-sm md:text-4xl font-black tracking-tight text-foreground font-heading truncate md:normal-case hover:text-primary transition-colors cursor-pointer">
+                            {item.name}
+                          </h3>
+                        </Link>
                         
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-xs md:text-sm font-bold text-primary">₹{item.price}</span>

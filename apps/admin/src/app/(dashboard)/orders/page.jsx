@@ -36,6 +36,7 @@ import { Pagination } from "@/components/admin/Pagination";
 import { useDebounce } from "@/hooks/useDebounce";
 import { DUMMY_ORDERS } from "@/lib/dummyData";
 import ViewSwitcher from "@/components/admin/ViewSwitcher";
+import OrderCardsGrid from "./components/OrderCardsGrid";
 const statusStyles = {
   delivered: "bg-primary/10 text-primary border-primary/20",
   confirmed: "bg-blue-500/10 text-blue-600 border-blue-500/20",
@@ -247,241 +248,169 @@ export default function OrdersPage() {
       </div>
 
       {/* Orders Table / Cards */}
-      <div className="rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
-        {viewMode === "list" ? (
+      {viewMode === "list" ? (
+        <div className="rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm">
-            <thead className="bg-muted/30 text-muted-foreground font-semibold">
-              <tr>
-                <th className="px-4 py-4">ID</th>
-                <th className="px-4 py-4 text-center hidden sm:table-cell">Date</th>
-                <th className="px-4 py-4">Customer</th>
-                <th className="px-4 py-4 text-center w-12 hidden md:table-cell">Units</th>
-                <th className="px-4 py-4">Total</th>
-                <th className="px-4 py-4 hidden lg:table-cell">Delivery</th>
-                <th className="px-4 py-4">Status</th>
-                <th className="px-4 py-4 text-right">View</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border/20">
-              {orders.map((order) => {
-                const StatusIcon = statusIcons[order.orderStatus] || Clock;
-                return (
-                  <tr
-                    key={order._id}
-                    className="group hover:bg-muted/10 transition-colors"
-                  >
-                    <td className="px-4 py-4 font-bold text-xs uppercase tracking-wider text-primary font-serif">
-                      #{order._id.slice(-8)}
-                    </td>
-                    <td className="px-4 py-4 text-center text-xs font-medium text-muted-foreground whitespace-nowrap hidden sm:table-cell">
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="h-9 w-9 rounded-xl bg-primary/15 flex items-center justify-center shrink-0 border border-primary/10">
-                          {order.user?.name ? (
-                            <span className="font-bold text-primary capitalize text-sm">
-                              {order.user.name[0]}
-                            </span>
-                          ) : (
-                            <User className="h-4 w-4 text-primary" />
-                          )}
+              <thead className="bg-muted/30 text-muted-foreground font-semibold">
+                <tr>
+                  <th className="px-4 py-4">ID</th>
+                  <th className="px-4 py-4 text-center hidden sm:table-cell">Date</th>
+                  <th className="px-4 py-4">Customer</th>
+                  <th className="px-4 py-4 text-center w-12 hidden md:table-cell">Units</th>
+                  <th className="px-4 py-4">Total</th>
+                  <th className="px-4 py-4 hidden lg:table-cell">Delivery</th>
+                  <th className="px-4 py-4">Status</th>
+                  <th className="px-4 py-4 text-right">View</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/20">
+                {orders.map((order) => {
+                  const StatusIcon = statusIcons[order.orderStatus] || Clock;
+                  return (
+                    <tr
+                      key={order._id}
+                      className="group hover:bg-muted/10 transition-colors"
+                    >
+                      <td className="px-4 py-4 font-bold text-xs uppercase tracking-wider text-primary font-serif">
+                        #{order._id.slice(-8)}
+                      </td>
+                      <td className="px-4 py-4 text-center text-xs font-medium text-muted-foreground whitespace-nowrap hidden sm:table-cell">
+                        {new Date(order.createdAt).toLocaleDateString()}
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-3">
+                          <div className="h-9 w-9 rounded-xl bg-primary/15 flex items-center justify-center shrink-0 border border-primary/10">
+                            {order.user?.name ? (
+                              <span className="font-bold text-primary capitalize text-sm">
+                                {order.user.name[0]}
+                              </span>
+                            ) : (
+                              <User className="h-4 w-4 text-primary" />
+                            )}
+                          </div>
+                          <div>
+                            <p className="font-bold text-sm text-foreground mb-0.5 leading-tight max-w-[100px] truncate">
+                              {order.user?.name || "Unknown User"}
+                            </p>
+                            <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide opacity-80 max-w-[100px] truncate hidden sm:block">
+                              {order.user?.email || "N/A"}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <p className="font-bold text-sm text-foreground mb-0.5 leading-tight max-w-[100px] truncate">
-                            {order.user?.name || "Unknown User"}
-                          </p>
-                          <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide opacity-80 max-w-[100px] truncate hidden sm:block">
-                            {order.user?.email || "N/A"}
-                          </p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 text-center font-bold text-xs hidden md:table-cell">
-                      {order.items.reduce((acc, item) => acc + item.qty, 0)}
-                    </td>
-                    <td className="px-4 py-4">
-                      <span className="font-bold text-primary font-serif">
-                        ₹{order.finalAmount.toFixed(2)}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 hidden lg:table-cell">
-                      <div
-                        className={cn(
-                          "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
-                          statusStyles[order.orderStatus],
-                        )}
-                      >
-                        <StatusIcon className="h-3 w-3" />
-                        {order.orderStatus}
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="flex items-center gap-2">
+                      </td>
+                      <td className="px-4 py-4 text-center font-bold text-xs hidden md:table-cell">
+                        {order.items.reduce((acc, item) => acc + item.qty, 0)}
+                      </td>
+                      <td className="px-4 py-4">
+                        <span className="font-bold text-primary font-serif">
+                          ₹{order.finalAmount.toFixed(2)}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 hidden lg:table-cell">
                         <div
                           className={cn(
-                            "h-2 w-2 rounded-full",
-                            order.paymentStatus === "paid"
-                              ? "bg-primary shadow-[0_0_8px_rgba(245,158,11,1)]"
-                              : "bg-orange-500",
+                            "inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border",
+                            statusStyles[order.orderStatus],
                           )}
-                        />
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground opacity-80">
-                          {order.paymentMethod}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 text-right">
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8 rounded-xl hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20 transition-all"
-                        onClick={() => {
-                          setSelectedOrder(order);
-                          setIsDialogOpen(true);
-                        }}
-                      >
-                        <Eye className="h-4 w-4" />
-                      </Button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+                        >
+                          <StatusIcon className="h-3 w-3" />
+                          {order.orderStatus}
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-2">
+                          <div
+                            className={cn(
+                              "h-2 w-2 rounded-full",
+                              order.paymentStatus === "paid"
+                                ? "bg-primary shadow-[0_0_8px_rgba(245,158,11,1)]"
+                                : "bg-orange-500",
+                            )}
+                          />
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground opacity-80">
+                            {order.paymentMethod}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-right">
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 rounded-xl hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20 transition-all"
+                          onClick={() => {
+                            setSelectedOrder(order);
+                            setIsDialogOpen(true);
+                          }}
+                        >
+                          <Eye className="h-4 w-4" />
+                        </Button>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+          {/* Footer Audit */}
+          <div className="p-4 md:p-6 border-t border-border/40 bg-muted/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
+                <Activity className="h-5 w-5" />
+              </div>
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                  Average Basket Value
+                </p>
+                <h4 className="text-base font-bold text-foreground font-serif">
+                  ₹
+                  {orders.length > 0 ? (orders.reduce((acc, order) => acc + order.finalAmount, 0) /
+                    orders.length).toFixed(2) : '0.00'}
+                </h4>
+              </div>
+            </div>
+            <Pagination
+              currentPage={page}
+              totalPages={response?.data?.pagination?.pages || 1}
+              onPageChange={setPage}
+            />
+          </div>
         </div>
       ) : (
-        /* Cards View */
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4 md:gap-6 md:p-6 bg-muted/5">
-          {orders.map((order) => {
-            const StatusIcon = statusIcons[order.orderStatus] || Clock;
-            return (
-              <div
-                key={order._id}
-                className="group rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between"
-              >
-                <div className="p-4 space-y-3 md:p-5 md:space-y-4">
-                  {/* Header */}
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-xs uppercase tracking-wider text-primary font-serif bg-primary/5 px-2.5 py-1 rounded-lg border border-primary/10">
-                      #{order._id.slice(-8)}
-                    </span>
-                    <span className="text-[10px] font-bold text-muted-foreground/60 flex items-center gap-1">
-                      <Clock className="h-3 w-3" />
-                      {new Date(order.createdAt).toLocaleDateString()}
-                    </span>
-                  </div>
+        <div className="space-y-6">
+          <OrderCardsGrid
+            orders={orders}
+            statusIcons={statusIcons}
+            statusStyles={statusStyles}
+            setSelectedOrder={setSelectedOrder}
+            setIsDialogOpen={setIsDialogOpen}
+          />
 
-                  {/* Customer Info */}
-                  <div className="flex items-center gap-3">
-                    <div className="h-9 w-9 rounded-xl bg-primary/15 flex items-center justify-center shrink-0 border border-primary/10">
-                      {order.user?.name ? (
-                        <span className="font-bold text-primary capitalize text-sm">
-                          {order.user.name[0]}
-                        </span>
-                      ) : (
-                        <User className="h-4 w-4 text-primary" />
-                      )}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-bold text-sm text-foreground leading-tight truncate">
-                        {order.user?.name || "Unknown User"}
-                      </p>
-                      <p className="text-[10px] font-medium text-muted-foreground uppercase tracking-wide opacity-80 truncate animate-fade-in">
-                        {order.user?.email || "N/A"}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Details row */}
-                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-border/10">
-                    <div>
-                      <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5">Quantity</p>
-                      <span className="text-xs font-black text-foreground">
-                        {order.items.reduce((acc, item) => acc + item.qty, 0)} units
-                      </span>
-                    </div>
-                    <div>
-                      <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground mb-0.5">Method</p>
-                      <div className="flex items-center gap-1">
-                        <div
-                          className={cn(
-                            "h-1.5 w-1.5 rounded-full",
-                            order.paymentStatus === "paid"
-                              ? "bg-primary shadow-[0_0_8px_rgba(245,158,11,1)]"
-                              : "bg-orange-500",
-                          )}
-                        />
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
-                          {order.paymentMethod}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Footer with status and view details button */}
-                <div className="p-4 md:p-5 border-t border-border/10 flex items-center justify-between bg-muted/5 gap-3">
-                  <div className="flex flex-col">
-                    <span className="text-[8px] font-black uppercase tracking-widest text-muted-foreground mb-0.5">Total</span>
-                    <span className="font-bold text-primary font-serif text-sm">
-                      ₹{order.finalAmount.toFixed(2)}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <div
-                      className={cn(
-                        "inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider border",
-                        statusStyles[order.orderStatus],
-                      )}
-                    >
-                      <StatusIcon className="h-3 w-3" />
-                      {order.orderStatus}
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 rounded-xl hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20 transition-all"
-                      onClick={() => {
-                        setSelectedOrder(order);
-                        setIsDialogOpen(true);
-                      }}
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
+          {/* Footer Audit */}
+          <div className="p-4 md:p-6 rounded-2xl md:rounded-[2rem] bg-card border border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
+                <Activity className="h-5 w-5" />
               </div>
-            );
-          })}
+              <div>
+                <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
+                  Average Basket Value
+                </p>
+                <h4 className="text-base font-bold text-foreground font-serif">
+                  ₹
+                  {orders.length > 0 ? (orders.reduce((acc, order) => acc + order.finalAmount, 0) /
+                    orders.length).toFixed(2) : '0.00'}
+                </h4>
+              </div>
+            </div>
+            <Pagination
+              currentPage={page}
+              totalPages={response?.data?.pagination?.pages || 1}
+              onPageChange={setPage}
+            />
+          </div>
         </div>
       )}
-
-        {/* Footer Audit */}
-        <div className="p-4 md:p-6 border-t border-border/40 bg-muted/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-primary/15 text-primary flex items-center justify-center shrink-0">
-              <Activity className="h-5 w-5" />
-            </div>
-            <div>
-              <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">
-                Average Basket Value
-              </p>
-              <h4 className="text-base font-bold text-foreground font-serif">
-                ₹
-                {orders.length > 0 ? (orders.reduce((acc, order) => acc + order.finalAmount, 0) /
-                  orders.length).toFixed(2) : '0.00'}
-              </h4>
-            </div>
-          </div>
-          <Pagination
-            currentPage={page}
-            totalPages={response?.data?.pagination?.pages || 1}
-            onPageChange={setPage}
-          />
-        </div>
-      </div>
 
       <OrderDetailsDialog
         order={selectedOrder}

@@ -17,7 +17,7 @@ export default function CustomerCardsGrid({
   handleDelete,
 }) {
   return (
-    <div className="p-4 md:p-6 bg-muted/5">
+    <>
       {roleFilter === "subscribers" ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredSubscribers.map((sub, idx) => (
@@ -215,6 +215,6 @@ export default function CustomerCardsGrid({
           )}
         </div>
       )}
-    </div>
+    </>
   );
 }

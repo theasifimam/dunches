@@ -257,8 +257,8 @@ export default function ProductsPage() {
       </div>
 
       {/* Products Table / Cards */}
-      <div className="rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
-        {viewMode === "list" ? (
+      {viewMode === "list" ? (
+        <div className="rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <ProductTable
               products={products}
@@ -269,7 +269,20 @@ export default function ProductsPage() {
               handleDelete={handleDelete}
             />
           </div>
-        ) : (
+          {/* Pagination */}
+          <div className="p-4 md:p-6 border-t border-border/40 bg-muted/10 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-muted-foreground">
+              Showing {products.length} of {pagination?.total || 0} items
+            </p>
+            <Pagination
+              currentPage={page}
+              totalPages={pagination?.pages || 1}
+              onPageChange={setPage}
+            />
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-6">
           <ProductCardsGrid
             products={products}
             isUpdating={isUpdating}
@@ -278,20 +291,19 @@ export default function ProductsPage() {
             openEditProductDialog={openEditProductDialog}
             handleDelete={handleDelete}
           />
-        )}
-
-        {/* Pagination */}
-        <div className="p-4 md:p-6 border-t border-border/40 bg-muted/10 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-muted-foreground">
-            Showing {products.length} of {pagination?.total || 0} items
-          </p>
-          <Pagination
-            currentPage={page}
-            totalPages={pagination?.pages || 1}
-            onPageChange={setPage}
-          />
+          {/* Pagination */}
+          <div className="p-4 md:p-6 rounded-2xl md:rounded-[2rem] bg-card border border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+            <p className="text-xs text-muted-foreground">
+              Showing {products.length} of {pagination?.total || 0} items
+            </p>
+            <Pagination
+              currentPage={page}
+              totalPages={pagination?.pages || 1}
+              onPageChange={setPage}
+            />
+          </div>
         </div>
-      </div>
+      )}
 
       <ProductDialog
         isOpen={isProductDialogOpen}

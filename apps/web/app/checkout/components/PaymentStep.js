@@ -5,6 +5,7 @@ import { useDispatch } from "react-redux";
 import { clearCart } from "@/features/cart/cartSlice";
 import { Button } from "@/components/ui/button";
 import { motion } from "framer-motion";
+import Link from "next/link";
 import {
   MapPin,
   CreditCard,
@@ -193,9 +194,12 @@ export default function PaymentStep({ user, address, cartItems, cartTotal, onSuc
         <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
           {cartItems.map((item) => (
             <div key={item.id} className="flex justify-between text-[11px]">
-              <span className="font-medium text-foreground/70 truncate flex-1 pr-4">
+              <Link
+                href={`/product/${item.slug || item.id}`}
+                className="font-medium text-foreground/70 hover:text-primary transition-colors truncate flex-1 pr-4"
+              >
                 {item.name} × {item.quantity}
-              </span>
+              </Link>
               <span className="font-bold shrink-0">
                 ₹{(item.price * item.quantity).toLocaleString()}
               </span>

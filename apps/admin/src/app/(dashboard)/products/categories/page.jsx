@@ -139,94 +139,95 @@ export default function CategoriesPage() {
         </div>
 
         {/* Categories Table / Cards */}
-        <div className="rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
-          {viewMode === "list" ? (
+        {viewMode === "list" ? (
+          <div className="rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-              <thead className="bg-muted/30 text-muted-foreground font-semibold">
-                <tr>
-                  <th className="px-4 py-4 w-16 text-center hidden xs:table-cell">Visual</th>
-                  <th className="px-4 py-4">Collection Identity</th>
-                  <th className="px-4 py-4 hidden sm:table-cell">Registry Slug</th>
-                  <th className="px-4 py-4 hidden md:table-cell">Parent Nexus</th>
-                  <th className="px-4 py-4 text-center">Manifest Count</th>
-                  <th className="px-4 py-4">Status</th>
-                  <th className="px-4 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-border/20">
-                {filteredCategories.map((cat) => (
-                  <tr key={cat._id} className="group hover:bg-muted/10 transition-colors">
-                    <td className="px-4 py-4 hidden xs:table-cell">
-                      <div className="relative h-11 w-11 mx-auto">
-                        <div className="relative h-full w-full rounded-xl overflow-hidden border border-border/30 shadow-sm bg-muted shrink-0 z-10 flex items-center justify-center">
-                          {cat.image ? (
-                            <img src={cat.image} alt={cat.name} className="h-full w-full object-cover"/>
-                          ) : (
-                            <ImageIcon className="h-5 w-5 text-muted-foreground/40"/>
-                          )}
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4">
-                      <p className="font-bold text-sm text-foreground mb-0.5 leading-tight truncate">{cat.name}</p>
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate max-w-[120px] opacity-70">{cat._id}</p>
-                    </td>
-                    <td className="px-4 py-4 hidden sm:table-cell">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted px-2.5 py-1 rounded-lg">
-                        /{cat.slug}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 hidden md:table-cell">
-                      <span className="text-[10px] font-bold uppercase tracking-wider text-primary italic">
-                        {cat.parent ? (typeof cat.parent === 'object' ? cat.parent.name : cat.parent) : 'Root level'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-4 text-center font-bold text-sm">
-                      {cat.productsCount || 0}
-                    </td>
-                    <td className="px-4 py-4">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground w-12">
-                          {cat.isActive ? "Active" : "Hidden"}
-                        </span>
-                        <button
-                          onClick={() => handleToggleStatus(cat)}
-                          disabled={isUpdating}
-                          className={cn(
-                            "h-5 w-9 rounded-full relative transition-all duration-300 p-0.5 shrink-0",
-                            cat.isActive
-                              ? "bg-primary shadow-[0_0_8px_rgba(245,158,11,0.3)]"
-                              : "bg-muted"
-                          )}
-                        >
-                          <div
-                            className={cn(
-                              "h-4 w-4 rounded-full bg-white shadow-sm transition-all duration-300 transform",
-                              cat.isActive ? "translate-x-4" : "translate-x-0"
-                            )}
-                          />
-                        </button>
-                      </div>
-                    </td>
-                    <td className="px-4 py-4 text-right">
-                      <div className="flex items-center justify-end gap-1 sm:gap-1.5 sm:opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Button variant="ghost" size="icon" onClick={() => openEditCategoryDialog(cat)} className="h-8 w-8 rounded-xl hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20 transition-all">
-                          <Edit2 className="h-4 w-4"/>
-                        </Button>
-                        <Button variant="ghost" size="icon" disabled={isDeleting} onClick={() => handleDelete(cat._id)} className="h-8 w-8 rounded-xl hover:bg-destructive/10 hover:text-destructive border border-transparent hover:border-destructive/20 transition-all">
-                          <Trash2 className="h-4 w-4"/>
-                        </Button>
-                      </div>
-                    </td>
+                <thead className="bg-muted/30 text-muted-foreground font-semibold">
+                  <tr>
+                    <th className="px-4 py-4 w-16 text-center hidden xs:table-cell">Visual</th>
+                    <th className="px-4 py-4">Collection Identity</th>
+                    <th className="px-4 py-4 hidden sm:table-cell">Registry Slug</th>
+                    <th className="px-4 py-4 hidden md:table-cell">Parent Nexus</th>
+                    <th className="px-4 py-4 text-center">Manifest Count</th>
+                    <th className="px-4 py-4">Status</th>
+                    <th className="px-4 py-4 text-right">Actions</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-border/20">
+                  {filteredCategories.map((cat) => (
+                    <tr key={cat._id} className="group hover:bg-muted/10 transition-colors">
+                      <td className="px-4 py-4 hidden xs:table-cell">
+                        <div className="relative h-11 w-11 mx-auto">
+                          <div className="relative h-full w-full rounded-xl overflow-hidden border border-border/30 shadow-sm bg-muted shrink-0 z-10 flex items-center justify-center">
+                            {cat.image ? (
+                              <img src={cat.image} alt={cat.name} className="h-full w-full object-cover"/>
+                            ) : (
+                              <ImageIcon className="h-5 w-5 text-muted-foreground/40"/>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4">
+                        <p className="font-bold text-sm text-foreground mb-0.5 leading-tight truncate">{cat.name}</p>
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest truncate max-w-[120px] opacity-70">{cat._id}</p>
+                      </td>
+                      <td className="px-4 py-4 hidden sm:table-cell">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted px-2.5 py-1 rounded-lg">
+                          /{cat.slug}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 hidden md:table-cell">
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-primary italic">
+                          {cat.parent ? (typeof cat.parent === 'object' ? cat.parent.name : cat.parent) : 'Root level'}
+                        </span>
+                      </td>
+                      <td className="px-4 py-4 text-center font-bold text-sm">
+                        {cat.productsCount || 0}
+                      </td>
+                      <td className="px-4 py-4">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground w-12">
+                            {cat.isActive ? "Active" : "Hidden"}
+                          </span>
+                          <button
+                            onClick={() => handleToggleStatus(cat)}
+                            disabled={isUpdating}
+                            className={cn(
+                              "h-5 w-9 rounded-full relative transition-all duration-300 p-0.5 shrink-0",
+                              cat.isActive
+                                ? "bg-primary shadow-[0_0_8px_rgba(245,158,11,0.3)]"
+                                : "bg-muted"
+                            )}
+                          >
+                            <div
+                              className={cn(
+                                "h-4 w-4 rounded-full bg-white shadow-sm transition-all duration-300 transform",
+                                cat.isActive ? "translate-x-4" : "translate-x-0"
+                              )}
+                            />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-4 py-4 text-right">
+                        <div className="flex items-center justify-end gap-1 sm:gap-1.5 sm:opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Button variant="ghost" size="icon" onClick={() => openEditCategoryDialog(cat)} className="h-8 w-8 rounded-xl hover:bg-primary/10 hover:text-primary border border-transparent hover:border-primary/20 transition-all">
+                            <Edit2 className="h-4 w-4"/>
+                          </Button>
+                          <Button variant="ghost" size="icon" disabled={isDeleting} onClick={() => handleDelete(cat._id)} className="h-8 w-8 rounded-xl hover:bg-destructive/10 hover:text-destructive border border-transparent hover:border-destructive/20 transition-all">
+                            <Trash2 className="h-4 w-4"/>
+                          </Button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         ) : (
           /* Cards View */
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 p-6 bg-muted/5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {filteredCategories.map((cat) => (
               <div
                 key={cat._id}
@@ -273,22 +274,16 @@ export default function CategoriesPage() {
                     </div>
                   </div>
 
-                  {/* Content details */}
-                  <div className="p-5 space-y-3">
+                  {/* Body Content */}
+                  <div className="p-6 space-y-4">
                     <div>
-                      <h4 className="font-bold text-base text-foreground leading-snug group-hover:text-primary transition-colors line-clamp-1 mb-1" title={cat.name}>
-                        {cat.name}
-                      </h4>
-                      <p className="text-[9px] font-bold text-muted-foreground uppercase tracking-widest truncate">
-                        ID: {cat._id}
-                      </p>
+                      <h4 className="text-xl font-bold text-foreground font-heading">{cat.name}</h4>
+                      <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground bg-muted px-2.5 py-1 rounded-lg inline-block mt-2">
+                        /{cat.slug}
+                      </span>
                     </div>
 
                     <div className="space-y-2">
-                      <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-medium">
-                        <span>Registry Slug</span>
-                        <span className="text-foreground bg-muted px-2 py-0.5 rounded">/{cat.slug}</span>
-                      </div>
                       <div className="flex justify-between text-[10px] font-bold uppercase tracking-wider text-muted-foreground font-medium">
                         <span>Parent Nexus</span>
                         <span className="text-primary italic">
@@ -327,7 +322,6 @@ export default function CategoriesPage() {
             ))}
           </div>
         )}
-      </div>
 
         <CategoryDialog isOpen={isCategoryDialogOpen} onOpenChange={setIsCategoryDialogOpen} category={editingCategory} categories={categories.map(c => ({ id: c._id, name: c.name }))}/>
       </div>

@@ -2,17 +2,27 @@
 
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useDispatch } from "react-redux";
 import { addToCart } from "@/features/cart/cartSlice";
-import { Plus, ArrowUpRight } from "lucide-react";
+import { Plus, Zap } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function FoodCard({ dish }) {
   const dispatch = useDispatch();
+  const router = useRouter();
 
   const handleAdd = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     dispatch(addToCart(dish));
+  };
+
+  const handleBuyNow = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dispatch(addToCart(dish));
+    router.push("/checkout");
   };
 
   return (
@@ -63,8 +73,8 @@ export default function FoodCard({ dish }) {
             </p>
           </div>
 
-          <div className="flex items-center justify-between mt-auto pt-1 sm:pt-2">
-            <div className="flex flex-col">
+          <div className="flex items-center justify-between mt-auto pt-1 sm:pt-2 gap-2">
+            <div className="flex flex-col shrink-0">
               <span className="text-[6px] sm:text-[8px] font-bold text-foreground/30 uppercase tracking-widest">
                 Per Pack
               </span>
@@ -72,13 +82,28 @@ export default function FoodCard({ dish }) {
                 ₹{dish.price}
               </span>
             </div>
-            <button
-              onClick={handleAdd}
-              className="flex items-center justify-center w-8 h-8 sm:w-auto sm:px-4 sm:py-2 sm:gap-1.5 bg-primary text-primary-foreground rounded-full font-bold text-xs uppercase tracking-widest shadow-lg hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
-            >
-              <Plus className="w-3.5 h-3.5" />
-              <span className="hidden sm:inline">Add</span>
-            </button>
+
+            <div className="flex items-center gap-1.5 shrink-0">
+              {/* Outline Add Button (+) */}
+              <button
+                type="button"
+                onClick={handleAdd}
+                title="Add to Cart"
+                className="flex items-center justify-center w-7 h-7 sm:w-9 sm:h-9 rounded-full border border-primary/40 text-primary hover:bg-primary/10 hover:border-primary active:scale-95 transition-all cursor-pointer shrink-0"
+              >
+                <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              </button>
+
+              {/* Primary Buy Now Button */}
+              <button
+                type="button"
+                onClick={handleBuyNow}
+                className="flex items-center justify-center gap-1 px-3 py-1.5 sm:px-4 sm:py-2 bg-primary text-primary-foreground rounded-full font-bold text-[9px] sm:text-xs uppercase tracking-wider shadow-md hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
+              >
+                <span>Buy</span>
+                <Zap className="w-3 h-3 fill-current hidden sm:inline" />
+              </button>
+            </div>
           </div>
         </div>
       </Link>
