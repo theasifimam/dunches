@@ -2,7 +2,20 @@
 
 import React from "react";
 import Link from "next/link";
-import { User, ChevronDown, Sun, Moon, HelpCircle, Lock, BookOpen, MessageSquare, LogOut } from "lucide-react";
+import {
+  User,
+  ChevronDown,
+  Sun,
+  Moon,
+  HelpCircle,
+  Lock,
+  BookOpen,
+  MessageSquare,
+  LogOut,
+  ChevronRight,
+  ShoppingBag,
+  MapPin,
+} from "lucide-react";
 import { Popover, PopoverTrigger, PopoverContent } from "../ui/popover";
 
 export default function UserMenuPopover({
@@ -16,7 +29,7 @@ export default function UserMenuPopover({
 
   return (
     <Popover>
-      <PopoverTrigger className="flex items-center gap-2 border border-border/50 hover:border-primary/40 rounded-full p-1 pr-4 transition-all bg-foreground/2 hover:bg-foreground/4 group outline-hidden cursor-pointer">
+      <PopoverTrigger className="flex items-center gap-2 border border-border/50 hover:border-primary/40 rounded-full p-1 pr-3.5 transition-all bg-foreground/2 hover:bg-foreground/5 group outline-none cursor-pointer active:scale-95">
         <div className="w-8 h-8 rounded-full border border-primary/50 overflow-hidden flex items-center justify-center shrink-0 bg-foreground/5">
           {avatarSrc ? (
             <img
@@ -25,20 +38,22 @@ export default function UserMenuPopover({
               className="w-full h-full object-cover"
             />
           ) : (
-            <User className="w-4 h-4 text-foreground/45" />
+            <User className="w-4 h-4 text-foreground/60 group-hover:text-primary transition-colors" />
           )}
         </div>
-        <span className="text-[9px] font-black uppercase tracking-[0.15em] text-foreground/60 group-hover:text-primary transition-all font-heading">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-foreground/80 group-hover:text-primary transition-colors font-heading truncate max-w-25">
           {user.name}
         </span>
-        <ChevronDown className="w-3.5 h-3.5 text-foreground/30 group-hover:text-primary transition-colors" />
+        <ChevronDown className="w-3.5 h-3.5 text-foreground/40 group-hover:text-primary transition-transform duration-200 group-data-[state=open]:rotate-180" />
       </PopoverTrigger>
+
       <PopoverContent
         align="end"
-        className="w-56 p-4 rounded-2xl border border-border/50 bg-background/95 backdrop-blur-xl shadow-2xl flex flex-col gap-2.5 z-150"
+        className="w-64 p-3 rounded-2xl border border-border/40 bg-background/95 backdrop-blur-xl shadow-xl flex flex-col gap-2 z-150 animate-in fade-in-0 zoom-in-95 duration-150"
       >
-        <div className="flex items-center gap-3 pb-3 border-b border-border/10">
-          <div className="w-10 h-10 rounded-full border border-primary/50 overflow-hidden shrink-0 flex items-center justify-center bg-foreground/5">
+        {/* User Card Header */}
+        <div className="flex items-center gap-3 p-2.5 rounded-xl bg-foreground/3 border border-border/15">
+          <div className="w-9 h-9 rounded-full border border-primary/50 overflow-hidden shrink-0 flex items-center justify-center bg-primary/10">
             {avatarSrc ? (
               <img
                 src={avatarSrc}
@@ -46,79 +61,164 @@ export default function UserMenuPopover({
                 className="w-full h-full object-cover"
               />
             ) : (
-              <User className="w-5 h-5 text-foreground/45" />
+              <User className="w-4 h-4 text-primary" />
             )}
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-[11px] font-black font-heading uppercase tracking-widest text-foreground truncate">
+            <span className="text-xs font-bold font-heading uppercase tracking-wider text-foreground truncate">
               {user.name}
             </span>
-            <span className="text-[9px] font-medium text-foreground/40 truncate">
-              {user.email || "ayaan.ahmed@makhana.wellness"}
+            <span className="text-[10px] text-foreground/50 truncate">
+              {user.email || user.mobile || "Member"}
             </span>
           </div>
         </div>
-        <Link href="/profile" className="w-full">
-          <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
-            <User className="w-3.5 h-3.5" />
-            View Profile
-          </button>
-        </Link>
 
-        {/* Theme Toggle */}
+        {/* User Specific Links */}
+        <div className="flex flex-col gap-1">
+          <Link href="/profile" className="w-full">
+            <div className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all cursor-pointer group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-foreground/5 group-hover:bg-primary/10 text-foreground/60 group-hover:text-primary flex items-center justify-center transition-colors">
+                  <User className="w-4 h-4" />
+                </div>
+                <span className="text-xs font-semibold font-heading">
+                  View Profile
+                </span>
+              </div>
+              <ChevronRight className="w-3.5 h-3.5 text-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+            </div>
+          </Link>
+
+          <Link href="/orders" className="w-full">
+            <div className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all cursor-pointer group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-foreground/5 group-hover:bg-primary/10 text-foreground/60 group-hover:text-primary flex items-center justify-center transition-colors">
+                  <ShoppingBag className="w-4 h-4" />
+                </div>
+                <span className="text-xs font-semibold font-heading">
+                  My Orders
+                </span>
+              </div>
+              <ChevronRight className="w-3.5 h-3.5 text-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+            </div>
+          </Link>
+
+          <Link href="/addresses" className="w-full">
+            <div className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all cursor-pointer group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-foreground/5 group-hover:bg-primary/10 text-foreground/60 group-hover:text-primary flex items-center justify-center transition-colors">
+                  <MapPin className="w-4 h-4" />
+                </div>
+                <span className="text-xs font-semibold font-heading">
+                  Saved Addresses
+                </span>
+              </div>
+              <ChevronRight className="w-3.5 h-3.5 text-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+            </div>
+          </Link>
+        </div>
+
+        <div className="h-px bg-border/20 my-1" />
+
+        {/* Theme Switcher Row */}
         <button
           onClick={toggleTheme}
-          className="w-full flex items-center justify-between text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer"
+          className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-foreground/5 text-foreground/80 hover:text-foreground transition-all cursor-pointer group"
         >
-          <span className="flex items-center gap-2">
-            {theme === "dark" ? (
-              <Sun className="w-3.5 h-3.5" />
-            ) : (
-              <Moon className="w-3.5 h-3.5" />
-            )}
-            Theme Mode
-          </span>
-          <span className="text-[8px] opacity-40 font-bold">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-foreground/5 group-hover:bg-primary/10 text-foreground/60 group-hover:text-primary flex items-center justify-center transition-colors">
+              {theme === "dark" ? (
+                <Sun className="w-4 h-4 text-amber-500" />
+              ) : (
+                <Moon className="w-4 h-4 text-indigo-500" />
+              )}
+            </div>
+            <span className="text-xs font-semibold font-heading">
+              Theme Mode
+            </span>
+          </div>
+          <span className="text-[10px] font-bold uppercase tracking-wider text-foreground/50 bg-foreground/5 px-2.5 py-0.5 rounded-full border border-border/30 group-hover:border-primary/30 group-hover:text-primary transition-colors">
             {theme === "dark" ? "Dark" : "Light"}
           </span>
         </button>
 
-        <div className="h-px bg-border/10 my-1" />
+        <div className="h-px bg-border/20 my-1" />
 
-        <Link href="/about" className="w-full">
-          <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
-            <HelpCircle className="w-3.5 h-3.5" />
-            About Us
-          </button>
-        </Link>
+        {/* Support Links */}
+        <div className="flex flex-col gap-1">
+          <Link href="/about" className="w-full">
+            <div className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all cursor-pointer group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-foreground/5 group-hover:bg-primary/10 text-foreground/60 group-hover:text-primary flex items-center justify-center transition-colors">
+                  <HelpCircle className="w-4 h-4" />
+                </div>
+                <span className="text-xs font-semibold font-heading">
+                  About Us
+                </span>
+              </div>
+              <ChevronRight className="w-3.5 h-3.5 text-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+            </div>
+          </Link>
 
-        <Link href="/privacy" className="w-full">
-          <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
-            <Lock className="w-3.5 h-3.5" />
-            Privacy Policy
-          </button>
-        </Link>
+          <Link href="/privacy" className="w-full">
+            <div className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all cursor-pointer group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-foreground/5 group-hover:bg-primary/10 text-foreground/60 group-hover:text-primary flex items-center justify-center transition-colors">
+                  <Lock className="w-4 h-4" />
+                </div>
+                <span className="text-xs font-semibold font-heading">
+                  Privacy Policy
+                </span>
+              </div>
+              <ChevronRight className="w-3.5 h-3.5 text-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+            </div>
+          </Link>
 
-        <Link href="/terms" className="w-full">
-          <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
-            <BookOpen className="w-3.5 h-3.5" />
-            Terms & Conditions
-          </button>
-        </Link>
+          <Link href="/terms" className="w-full">
+            <div className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all cursor-pointer group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-foreground/5 group-hover:bg-primary/10 text-foreground/60 group-hover:text-primary flex items-center justify-center transition-colors">
+                  <BookOpen className="w-4 h-4" />
+                </div>
+                <span className="text-xs font-semibold font-heading">
+                  Terms & Conditions
+                </span>
+              </div>
+              <ChevronRight className="w-3.5 h-3.5 text-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+            </div>
+          </Link>
 
-        <Link href="/contact" className="w-full">
-          <button className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-foreground/60 hover:text-primary py-2 px-1 rounded-lg hover:bg-foreground/3 transition-all font-heading cursor-pointer">
-            <MessageSquare className="w-3.5 h-3.5" />
-            Contact Us
-          </button>
-        </Link>
+          <Link href="/contact" className="w-full">
+            <div className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-foreground/5 text-foreground/80 hover:text-primary transition-all cursor-pointer group">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-foreground/5 group-hover:bg-primary/10 text-foreground/60 group-hover:text-primary flex items-center justify-center transition-colors">
+                  <MessageSquare className="w-4 h-4" />
+                </div>
+                <span className="text-xs font-semibold font-heading">
+                  Contact Us
+                </span>
+              </div>
+              <ChevronRight className="w-3.5 h-3.5 text-foreground/30 group-hover:text-primary group-hover:translate-x-0.5 transition-all" />
+            </div>
+          </Link>
+        </div>
 
+        <div className="h-px bg-border/20 my-1" />
+
+        {/* Logout Row */}
         <button
           onClick={handleLogout}
-          className="w-full flex items-center gap-2 text-left text-[9px] font-black uppercase tracking-widest text-red-500 hover:text-red-600 py-2 px-1 rounded-lg hover:bg-red-500/5 transition-all font-heading border-t border-border/10 pt-3 cursor-pointer"
+          className="w-full flex items-center justify-between p-2 rounded-xl hover:bg-rose-500/10 text-rose-500 transition-all cursor-pointer group"
         >
-          <LogOut className="w-3.5 h-3.5" />
-          Logout
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-500 flex items-center justify-center transition-colors">
+              <LogOut className="w-4 h-4" />
+            </div>
+            <span className="text-xs font-bold font-heading uppercase tracking-wider">
+              Logout
+            </span>
+          </div>
         </button>
       </PopoverContent>
     </Popover>

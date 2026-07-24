@@ -28,6 +28,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [timer, setTimer] = useState(30);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const otpRefs = [useRef(), useRef(), useRef(), useRef()];

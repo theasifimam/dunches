@@ -118,7 +118,7 @@ export function NotificationPanel() {
       const subject = encodeURIComponent(notif.title || "Complaint Received");
       const descMessage = notif.data?.comment || notif.message || "";
       const body = encodeURIComponent(
-        `Dear Customer,\n\nWe received your complaint:\n"${descMessage}"\n\n`
+        `Dear Customer,\n\nWe received your complaint:\n"${descMessage}"\n\n`,
       );
       window.location.href = `mailto:${email}?subject=${subject}&body=${body}`;
     }
@@ -154,7 +154,7 @@ export function NotificationPanel() {
         align="end"
         sideOffset={8}
         collisionPadding={12}
-        className="w-[calc(100vw-2rem)] sm:w-[380px] max-w-[380px] p-0 border border-border/40 bg-card rounded-3xl overflow-hidden shadow-2xl shadow-black/20 mt-2 z-50 animate-in fade-in slide-in-from-top-4 duration-300"
+        className="w-[calc(100vw-2rem)] sm:w-95 max-w-95 p-0 border border-border/40 bg-card rounded-3xl overflow-hidden shadow-2xl shadow-black/20 mt-2 z-50 animate-in fade-in slide-in-from-top-4 duration-300"
       >
         {/* Panel Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-border/30 bg-card">
@@ -194,7 +194,7 @@ export function NotificationPanel() {
         </div>
 
         {/* Notifications List */}
-        <div className="max-h-[320px] sm:max-h-[400px] overflow-y-auto scrollbar-hide">
+        <div className="max-h-80 sm:max-h-100 overflow-y-auto scrollbar-hide">
           {isLoading ? (
             <div className="flex items-center justify-center py-12">
               <Loader2 className="h-6 w-6 animate-spin text-primary" />
