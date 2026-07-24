@@ -22,19 +22,6 @@ const nextConfig = {
             },
         ],
     },
-    async headers() {
-        return [
-            {
-                source: '/_next/static/:path*',
-                headers: [
-                    {
-                        key: 'Cache-Control',
-                        value: 'public, max-age=31536000, immutable',
-                    },
-                ],
-            },
-        ];
-    },
     async rewrites() {
         const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://dunchesbackend.mazlis.com";
         return [
