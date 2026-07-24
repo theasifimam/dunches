@@ -19,7 +19,12 @@ export const bannerApi = createApi({
             transformResponse: (response) => {
                 return {
                     success: response.success,
-                    data: response.data.map(b => ({ ...b, id: b._id }))
+                    data: response.data.map(b => ({
+                        ...b,
+                        id: b._id,
+                        linkedProduct: b.linkedProduct || null,
+                        filterConfig: b.filterConfig || null,
+                    }))
                 };
             }
         }),

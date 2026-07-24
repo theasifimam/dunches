@@ -50,7 +50,7 @@ export default function ProductTable({
               </div>
             </td>
             <td className="px-4 py-4">
-              <div className="max-w-[150px] sm:max-w-[200px]">
+              <div className="max-w-37.5 sm:max-w-50">
                 <p className="font-bold text-sm text-foreground mb-1 leading-tight truncate">
                   {product.name}
                 </p>
@@ -67,7 +67,7 @@ export default function ProductTable({
               </span>
             </td>
             <td className="px-4 py-4">
-              <div className="flex flex-col gap-1.5 min-w-[80px] sm:min-w-[120px]">
+              <div className="flex flex-col gap-1.5 min-w-20 sm:min-w-30">
                 <div className="flex items-center justify-between text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
                   <span
                     className={cn(
@@ -75,7 +75,7 @@ export default function ProductTable({
                         ? "text-primary font-black"
                         : product.stock > 0
                           ? "text-orange-500"
-                          : "text-destructive"
+                          : "text-destructive",
                     )}
                   >
                     {product.stock} units
@@ -89,7 +89,7 @@ export default function ProductTable({
                         ? "bg-primary"
                         : product.stock > 0
                           ? "bg-orange-500"
-                          : "bg-destructive"
+                          : "bg-destructive",
                     )}
                     style={{
                       width: `${Math.min((product.stock / 50) * 100, 100)}%`,
@@ -115,13 +115,13 @@ export default function ProductTable({
                     "h-5 w-9 rounded-full relative transition-all duration-300 p-0.5 shrink-0",
                     product.isActive
                       ? "bg-primary shadow-[0_0_8px_rgba(245,158,11,0.3)]"
-                      : "bg-muted"
+                      : "bg-muted",
                   )}
                 >
                   <div
                     className={cn(
                       "h-4 w-4 rounded-full bg-white shadow-sm transition-all duration-300 transform",
-                      product.isActive ? "translate-x-4" : "translate-x-0"
+                      product.isActive ? "translate-x-4" : "translate-x-0",
                     )}
                   />
                 </button>

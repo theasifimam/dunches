@@ -67,5 +67,18 @@ export const BannerFormSchema = z.object({
     status: z.enum(['Active', 'Inactive', 'Scheduled']).default('Active'),
     placement: z.enum(['Both', 'Hero Slider', 'Mobile Promo']).default('Both'),
     expiry: z.string().optional(),
+    // Product picker (offer banners only)
+    linkedProduct: z.string().optional().nullable(), // product _id
+    // Filter builder fields — stored so they can be re-hydrated on edit
+    filterConfig: z.object({
+        productType: z.string().optional().nullable(),
+        category: z.string().optional().nullable(),
+        flavorProfile: z.string().optional().nullable(),
+        minPrice: z.coerce.number().optional().nullable(),
+        maxPrice: z.coerce.number().optional().nullable(),
+        brand: z.string().optional().nullable(),
+        productSlug: z.string().optional().nullable(),
+        searchQuery: z.string().optional().nullable(),
+    }).optional(),
 });
 

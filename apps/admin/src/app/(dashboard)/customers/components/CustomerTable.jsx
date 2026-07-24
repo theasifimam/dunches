@@ -113,7 +113,7 @@ export default function CustomerTable({
               </div>
             </td>
             <td className="px-4 py-4">
-              <div className="max-w-[150px] sm:max-w-[250px]">
+              <div className="max-w-37.5 sm:max-w-62.5">
                 <Link
                   href={`/customers/${user._id}`}
                   className="font-bold text-sm text-foreground mb-0.5 leading-tight truncate hover:text-primary transition-colors block"
@@ -174,13 +174,13 @@ export default function CustomerTable({
                       "h-5 w-9 rounded-full relative transition-all duration-300 p-0.5 shrink-0",
                       user.isActive
                         ? "bg-primary shadow-[0_0_8px_rgba(245,158,11,0.3)]"
-                        : "bg-muted"
+                        : "bg-muted",
                     )}
                   >
                     <div
                       className={cn(
                         "h-4 w-4 rounded-full bg-white shadow-sm transition-all duration-300 transform",
-                        user.isActive ? "translate-x-4" : "translate-x-0"
+                        user.isActive ? "translate-x-4" : "translate-x-0",
                       )}
                     />
                   </button>

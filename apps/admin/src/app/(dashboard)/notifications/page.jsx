@@ -265,11 +265,11 @@ export default function NotificationsPage() {
 
       {/* Notifications List / Cards */}
       {isLoading ? (
-        <div className="rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm flex items-center justify-center py-20">
+        <div className="rounded-2xl md:rounded-4xl bg-card border border-border/40 overflow-hidden shadow-sm flex items-center justify-center py-20">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       ) : notifications.length === 0 ? (
-        <div className="rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm flex flex-col items-center justify-center py-20 gap-4 text-center">
+        <div className="rounded-2xl md:rounded-4xl bg-card border border-border/40 overflow-hidden shadow-sm flex flex-col items-center justify-center py-20 gap-4 text-center">
           <div className="h-20 w-20 rounded-3xl bg-muted/40 flex items-center justify-center">
             <BellOff className="h-10 w-10 text-muted-foreground/30" />
           </div>
@@ -285,7 +285,7 @@ export default function NotificationsPage() {
           </div>
         </div>
       ) : viewMode === "list" ? (
-        <div className="rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm animate-in fade-in duration-300">
+        <div className="rounded-2xl md:rounded-4xl bg-card border border-border/40 overflow-hidden shadow-sm animate-in fade-in duration-300">
           <NotificationList
             notifications={notifications}
             TYPE_CONFIG={TYPE_CONFIG}
@@ -297,8 +297,8 @@ export default function NotificationsPage() {
           {pagination.pages > 1 && (
             <div className="flex items-center justify-between px-6 py-4 border-t border-border/20 bg-muted/10">
               <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                Page {pagination.page} of {pagination.pages} • {pagination.total}{" "}
-                total
+                Page {pagination.page} of {pagination.pages} •{" "}
+                {pagination.total} total
               </p>
               <div className="flex gap-2">
                 <Button
@@ -313,7 +313,9 @@ export default function NotificationsPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
+                  onClick={() =>
+                    setPage((p) => Math.min(pagination.pages, p + 1))
+                  }
                   disabled={page >= pagination.pages}
                   className="h-8 px-4 text-[10px] font-black uppercase tracking-widest rounded-xl"
                 >
@@ -334,10 +336,10 @@ export default function NotificationsPage() {
             deleteNotification={deleteNotification}
           />
           {pagination.pages > 1 && (
-            <div className="flex items-center justify-between px-6 py-4 rounded-2xl md:rounded-[2rem] bg-card border border-border/40 shadow-sm">
+            <div className="flex items-center justify-between px-6 py-4 rounded-2xl md:rounded-4xl bg-card border border-border/40 shadow-sm">
               <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
-                Page {pagination.page} of {pagination.pages} • {pagination.total}{" "}
-                total
+                Page {pagination.page} of {pagination.pages} •{" "}
+                {pagination.total} total
               </p>
               <div className="flex gap-2">
                 <Button
@@ -352,7 +354,9 @@ export default function NotificationsPage() {
                 <Button
                   variant="outline"
                   size="sm"
-                  onClick={() => setPage((p) => Math.min(pagination.pages, p + 1))}
+                  onClick={() =>
+                    setPage((p) => Math.min(pagination.pages, p + 1))
+                  }
                   disabled={page >= pagination.pages}
                   className="h-8 px-4 text-[10px] font-black uppercase tracking-widest rounded-xl"
                 >

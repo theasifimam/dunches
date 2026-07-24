@@ -2,13 +2,7 @@
 "use client";
 import React, { useState } from "react";
 import dynamic from "next/dynamic";
-import {
-  Search,
-  XCircle,
-  Boxes,
-  AlertCircle,
-  Loader2,
-} from "lucide-react";
+import { Search, XCircle, Boxes, AlertCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -43,10 +37,7 @@ export default function ProductsPage() {
   const debouncedSearch = useDebounce(productSearchTerm, 500);
   const [page, setPage] = useState(1);
 
-  const {
-    data: productsData,
-    isLoading: apiLoading,
-  } = useGetProductsQuery({
+  const { data: productsData, isLoading: apiLoading } = useGetProductsQuery({
     page,
     search: debouncedSearch,
     limit: 10,
@@ -169,7 +160,7 @@ export default function ProductsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex h-[400px] items-center justify-center">
+      <div className="flex h-100 items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -258,7 +249,7 @@ export default function ProductsPage() {
 
       {/* Products Table / Cards */}
       {viewMode === "list" ? (
-        <div className="rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
+        <div className="rounded-2xl md:rounded-4xl bg-card border border-border/40 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <ProductTable
               products={products}
@@ -292,7 +283,7 @@ export default function ProductsPage() {
             handleDelete={handleDelete}
           />
           {/* Pagination */}
-          <div className="p-4 md:p-6 rounded-2xl md:rounded-[2rem] bg-card border border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+          <div className="p-4 md:p-6 rounded-2xl md:rounded-4xl bg-card border border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
             <p className="text-xs text-muted-foreground">
               Showing {products.length} of {pagination?.total || 0} items
             </p>

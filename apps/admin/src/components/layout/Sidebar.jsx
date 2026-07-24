@@ -148,7 +148,7 @@ export function Sidebar() {
         initial={false}
         animate={{ width: collapsed ? 72 : 240 }}
         transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-        className="hidden md:flex h-full shrink-0 flex-col bg-card border border-border/60 rounded-2xl shadow-xs relative z-50 overflow-visible"
+        className="hidden md:flex h-full shrink-0 flex-col bg-card border border-border/60 rounded-2xl shadow-xs relative z-10 overflow-visible"
       >
         <div className="absolute inset-0 bg-linear-to-b from-primary/5 via-transparent to-transparent pointer-events-none rounded-2xl" />
 

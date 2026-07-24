@@ -50,10 +50,7 @@ export default function UsersPage() {
   const [page, setPage] = useState(1);
   const [isBroadcastDialogOpen, setIsBroadcastDialogOpen] = useState(false);
 
-  const {
-    data: usersData,
-    isLoading: isUsersLoading,
-  } = useGetUsersQuery();
+  const { data: usersData, isLoading: isUsersLoading } = useGetUsersQuery();
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
   const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
 
@@ -88,9 +85,7 @@ export default function UsersPage() {
     useGetSubscribersQuery();
 
   const users =
-    usersData?.data && usersData.data.length > 0
-      ? usersData.data
-      : DUMMY_USERS;
+    usersData?.data && usersData.data.length > 0 ? usersData.data : DUMMY_USERS;
   const subscribers =
     subscribersData?.data && subscribersData.data.length > 0
       ? subscribersData.data
@@ -165,7 +160,7 @@ export default function UsersPage() {
     (isUsersLoading || isSubLoading) && !usersData && !subscribersData;
   if (isLoadingCombined) {
     return (
-      <div className="flex h-[400px] items-center justify-center">
+      <div className="flex h-100 items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
@@ -255,7 +250,7 @@ export default function UsersPage() {
 
       {/* Users Table / Cards */}
       {viewMode === "list" ? (
-        <div className="rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm">
+        <div className="rounded-4xl bg-card border border-border/40 overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
             <CustomerTable
               roleFilter={roleFilter}
@@ -297,7 +292,7 @@ export default function UsersPage() {
             handleDelete={handleDelete}
           />
           {/* Pagination */}
-          <div className="p-4 md:p-6 rounded-[2rem] bg-card border border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+          <div className="p-4 md:p-6 rounded-4xl bg-card border border-border/40 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
             <p className="text-xs text-muted-foreground">
               Showing{" "}
               {roleFilter === "subscribers"

@@ -4,6 +4,9 @@ import React from "react";
 import { motion } from "framer-motion";
 import { ShieldCheck, Lock, Eye, AlertCircle } from "lucide-react";
 
+export const dynamic = 'force-static';
+export const revalidate = 86400; // 24 hours ISR revalidation
+
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-background text-foreground pt-32 pb-40 relative overflow-hidden">

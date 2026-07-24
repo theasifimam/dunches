@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useMemo } from "react";
-import { Sparkles, Brain, Lightbulb, CheckCircle2, TrendingUp, AlertTriangle } from "lucide-react";
+import {
+  Sparkles,
+  Brain,
+  Lightbulb,
+  CheckCircle2,
+  TrendingUp,
+  AlertTriangle,
+} from "lucide-react";
 
 export default function AutomatedIntelReader({ analyticsData }) {
   const {
@@ -14,26 +21,35 @@ export default function AutomatedIntelReader({ analyticsData }) {
 
   // Automated narrative generator
   const narrative = useMemo(() => {
-    const topFlavor = flavorPerformance[0]?.name || "Classic Himalayan Pink Salt";
+    const topFlavor =
+      flavorPerformance[0]?.name || "Classic Himalayan Pink Salt";
     const topFlavorRating = flavorPerformance[0]?.avgRating || 9.2;
     const topSource = sourceData[0]?._id || "Sampling Events";
     const topSourceCount = sourceData[0]?.count || totalFeedback || 150;
-    
-    const intentYesCount = purchaseIntentData.find(i => i._id === 'Yes')?.count || 0;
-    const totalIntent = purchaseIntentData.reduce((acc, curr) => acc + curr.count, 0) || 1;
+
+    const intentYesCount =
+      purchaseIntentData.find((i) => i._id === "Yes")?.count || 0;
+    const totalIntent =
+      purchaseIntentData.reduce((acc, curr) => acc + curr.count, 0) || 1;
     const intentRate = Math.round((intentYesCount / totalIntent) * 100) || 78;
 
     return {
-      executiveSummary: `Based on automated analysis of ${totalFeedback > 0 ? totalFeedback : 'live sampling'} consumer feedback entries, Dunches maintains an overall customer satisfaction score of ${avgRating > 0 ? avgRating : '8.8'} / 10 with a high purchase intent conversion rate of ${intentRate}%.`,
+      executiveSummary: `Based on automated analysis of ${totalFeedback > 0 ? totalFeedback : "live sampling"} consumer feedback entries, Dunches maintains an overall customer satisfaction score of ${avgRating > 0 ? avgRating : "8.8"} / 10 with a high purchase intent conversion rate of ${intentRate}%.`,
       flavorSpotlight: `The top-performing flavor in consumer preference is "${topFlavor}" with an average rating of ${topFlavorRating}/10. Flavor profiles with spicy and savory notes show the strongest customer retaste interest.`,
       seasonalInsight: `Seasonal telemetry indicates peak conversion during Festive and Summer sampling campaigns, where immediate purchase intent increases by over 34% compared to off-season touchpoints.`,
       channelEfficiency: `"${topSource}" is currently the primary driver for customer acquisition (${topSourceCount} entries logged). Customers acquired through on-ground sampling exhibit higher brand advocacy scores.`,
       strategicRecommendation: `Double down on sampling event activations for the top-rated flavor (${topFlavor}) during upcoming festive periods while offering trial bundles for newly introduced flavors.`,
     };
-  }, [totalFeedback, avgRating, flavorPerformance, purchaseIntentData, sourceData]);
+  }, [
+    totalFeedback,
+    avgRating,
+    flavorPerformance,
+    purchaseIntentData,
+    sourceData,
+  ]);
 
   return (
-    <div className="bg-gradient-to-br from-primary/5 via-card to-card border border-primary/20 p-5 md:p-6 rounded-2xl md:rounded-[2rem] shadow-sm space-y-4">
+    <div className="bg-linear-to-br from-primary/5 via-card to-card border border-primary/20 p-5 md:p-6 rounded-2xl md:rounded-4xl shadow-sm space-y-4">
       {/* Header */}
       <div className="flex items-center justify-between border-b border-primary/10 pb-3">
         <div className="flex items-center gap-2.5">
@@ -63,7 +79,9 @@ export default function AutomatedIntelReader({ analyticsData }) {
           <div className="flex items-start gap-2.5 bg-card/60 border border-border/40 p-3.5 rounded-xl">
             <CheckCircle2 className="h-4 w-4 text-emerald-500 shrink-0 mt-0.5" />
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Executive Telemetry</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                Executive Telemetry
+              </p>
               <p className="text-xs font-medium text-foreground leading-relaxed mt-0.5">
                 {narrative.executiveSummary}
               </p>
@@ -73,7 +91,9 @@ export default function AutomatedIntelReader({ analyticsData }) {
           <div className="flex items-start gap-2.5 bg-card/60 border border-border/40 p-3.5 rounded-xl">
             <Sparkles className="h-4 w-4 text-amber-500 shrink-0 mt-0.5" />
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Flavor & Product Dynamics</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                Flavor & Product Dynamics
+              </p>
               <p className="text-xs font-medium text-foreground leading-relaxed mt-0.5">
                 {narrative.flavorSpotlight}
               </p>
@@ -85,7 +105,9 @@ export default function AutomatedIntelReader({ analyticsData }) {
           <div className="flex items-start gap-2.5 bg-card/60 border border-border/40 p-3.5 rounded-xl">
             <TrendingUp className="h-4 w-4 text-blue-500 shrink-0 mt-0.5" />
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Seasonality & Channel Efficiency</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">
+                Seasonality & Channel Efficiency
+              </p>
               <p className="text-xs font-medium text-foreground leading-relaxed mt-0.5">
                 {narrative.seasonalInsight} {narrative.channelEfficiency}
               </p>
@@ -95,7 +117,9 @@ export default function AutomatedIntelReader({ analyticsData }) {
           <div className="flex items-start gap-2.5 bg-primary/10 border border-primary/20 p-3.5 rounded-xl">
             <Lightbulb className="h-4 w-4 text-primary shrink-0 mt-0.5" />
             <div>
-              <p className="text-[10px] font-black uppercase tracking-widest text-primary">Strategic Playbook Recommendation</p>
+              <p className="text-[10px] font-black uppercase tracking-widest text-primary">
+                Strategic Playbook Recommendation
+              </p>
               <p className="text-xs font-bold text-foreground leading-relaxed mt-0.5">
                 {narrative.strategicRecommendation}
               </p>

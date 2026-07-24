@@ -1,4 +1,4 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice, createSelector } from '@reduxjs/toolkit';
 
 const mockDishes = [
   {
@@ -137,12 +137,13 @@ export const selectMenu = (state) => state.menu.items;
 export const selectCategories = (state) => state.menu.categories;
 export const selectSelectedCategory = (state) => state.menu.selectedCategory;
 
-export const selectFilteredMenu = (state) => {
-  const items = state.menu.items;
-  const category = state.menu.selectedCategory;
-  if (category === 'All') return items;
-  return items.filter(item => item.category === category);
-};
+export const selectFilteredMenu = createSelector(
+  [selectMenu, selectSelectedCategory],
+  (items, category) => {
+    if (category === 'All') return items;
+    return items.filter((item) => item.category === category);
+  }
+);
 
 export const selectDishById = (state, dishId) =>
   state.menu.items.find(item => item.id === dishId);

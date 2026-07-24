@@ -1,5 +1,19 @@
+/** @type {import('next').NextConfig} */
 const nextConfig = {
-    /* config options here */
+    reactStrictMode: true,
+    poweredByHeader: false,
+    compress: true,
+    compiler: {
+        removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
+    },
+    experimental: {
+        optimizePackageImports: [
+            'lucide-react',
+            'framer-motion',
+            'recharts',
+            '@reduxjs/toolkit',
+        ],
+    },
     images: {
         remotePatterns: [
             {
@@ -7,6 +21,19 @@ const nextConfig = {
                 hostname: "images.unsplash.com",
             },
         ],
+    },
+    async headers() {
+        return [
+            {
+                source: '/_next/static/:path*',
+                headers: [
+                    {
+                        key: 'Cache-Control',
+                        value: 'public, max-age=31536000, immutable',
+                    },
+                ],
+            },
+        ];
     },
     async rewrites() {
         const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://dunchesbackend.mazlis.com";

@@ -72,7 +72,8 @@ export default function Home() {
   const promoSlides = promoBanners.map((b) => ({
     id: b.id || b._id,
     type: b.type || "offer",
-    label: b.label || (b.type === "announcement" ? "announcement" : "special offer"),
+    label:
+      b.label || (b.type === "announcement" ? "announcement" : "special offer"),
     badgeIcon: b.type === "announcement" ? Megaphone : Tag,
     title: b.title,
     description: b.description,
@@ -176,13 +177,14 @@ export default function Home() {
         {/* Spotlight Promo Banner / Multi-purpose Carousel — API-driven */}
         {!searchQuery && promoSlides.length > 0 && (
           <div className="px-5 pt-2 pb-6 z-10 relative select-none">
-            <div className="overflow-hidden relative rounded-[32px] min-h-[170px]">
+            <div className="overflow-hidden relative rounded-4xl min-h-42.5">
               <AnimatePresence mode="wait">
                 {promoSlides.map((slide, idx) => {
                   if (idx !== currentPromoSlide) return null;
                   const BadgeIcon = slide.badgeIcon;
                   const imageSrc =
-                    slide.image?.startsWith("http") || slide.image?.startsWith("/")
+                    slide.image?.startsWith("http") ||
+                    slide.image?.startsWith("/")
                       ? slide.image
                       : `/${slide.image}`;
 
@@ -198,19 +200,28 @@ export default function Home() {
                       dragElastic={0.2}
                       onDragEnd={(_, { offset, velocity }) => {
                         if (offset.x > 80 || velocity.x > 300) {
-                          setCurrentPromoSlide((prev) => (prev - 1 + promoSlides.length) % promoSlides.length);
+                          setCurrentPromoSlide(
+                            (prev) =>
+                              (prev - 1 + promoSlides.length) %
+                              promoSlides.length,
+                          );
                         } else if (offset.x < -80 || velocity.x < -300) {
-                          setCurrentPromoSlide((prev) => (prev + 1) % promoSlides.length);
+                          setCurrentPromoSlide(
+                            (prev) => (prev + 1) % promoSlides.length,
+                          );
                         }
                       }}
-                      className={`relative w-full rounded-[32px] p-5 flex items-center justify-between shadow-xs border ${slide.bgClass} cursor-grab active:cursor-grabbing`}
+                      className={`relative w-full rounded-4xl p-5 flex items-center justify-between shadow-xs border ${slide.bgClass} cursor-grab active:cursor-grabbing`}
                     >
-                      <div className={`absolute top-0 right-0 w-24 h-24 rounded-full blur-2xl pointer-events-none -z-10 ${slide.glowClass}`} />
+                      <div
+                        className={`absolute top-0 right-0 w-24 h-24 rounded-full blur-2xl pointer-events-none -z-10 ${slide.glowClass}`}
+                      />
 
                       {/* Left: Text content */}
                       <div className="flex flex-col gap-2 max-w-[58%] select-none">
                         <span className="inline-flex items-center gap-1 bg-primary/20 text-primary px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest w-fit">
-                          {BadgeIcon && <BadgeIcon className="w-2.5 h-2.5" />} {slide.label}
+                          {BadgeIcon && <BadgeIcon className="w-2.5 h-2.5" />}{" "}
+                          {slide.label}
                         </span>
                         <h3 className="text-base font-extrabold text-foreground leading-tight tracking-tight lowercase font-sans">
                           {slide.title}
@@ -221,7 +232,10 @@ export default function Home() {
 
                         {/* CTA button — always a link */}
                         <div className="flex items-center gap-3 mt-1">
-                          <Link href={slide.link || "/explore"} className="pointer-events-auto">
+                          <Link
+                            href={slide.link || "/explore"}
+                            className="pointer-events-auto"
+                          >
                             <button className="h-7 px-3 bg-foreground text-background hover:bg-foreground/90 rounded-full text-[9px] font-black uppercase tracking-widest transition-all cursor-pointer active:scale-95 flex items-center gap-1">
                               {slide.buttonText}
                               <ChevronRight className="w-3 h-3" />
@@ -231,8 +245,11 @@ export default function Home() {
                       </div>
 
                       {/* Right: Image — tapping the image also navigates */}
-                      <Link href={slide.link || "/explore"} className="pointer-events-auto shrink-0">
-                        <div className="relative w-28 h-28 rounded-[24px] overflow-hidden bg-foreground/5 shadow-inner">
+                      <Link
+                        href={slide.link || "/explore"}
+                        className="pointer-events-auto shrink-0"
+                      >
+                        <div className="relative w-28 h-28 rounded-3xl overflow-hidden bg-foreground/5 shadow-inner">
                           <motion.img
                             src={imageSrc}
                             alt={slide.title}
@@ -260,7 +277,9 @@ export default function Home() {
                     key={idx}
                     onClick={() => setCurrentPromoSlide(idx)}
                     className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                      currentPromoSlide === idx ? "w-6 bg-primary" : "w-1.5 bg-foreground/20 hover:bg-foreground/40"
+                      currentPromoSlide === idx
+                        ? "w-6 bg-primary"
+                        : "w-1.5 bg-foreground/20 hover:bg-foreground/40"
                     }`}
                     aria-label={`Go to promo slide ${idx + 1}`}
                   />
@@ -312,9 +331,9 @@ export default function Home() {
                 <Link
                   key={item.id}
                   href={`/product/${item.slug}`}
-                  className="group relative w-[210px] bg-foreground/1 border border-foreground/4 rounded-[32px] p-3 flex flex-col justify-between shrink-0 hover:border-primary/25 transition-all cursor-pointer active:scale-[0.99] h-[250px]"
+                  className="group relative w-52.5 bg-foreground/1 border border-foreground/4 rounded-4xl p-3 flex flex-col justify-between shrink-0 hover:border-primary/25 transition-all cursor-pointer active:scale-[0.99] h-62.5"
                 >
-                  <div className="relative w-full h-[130px] rounded-[24px] bg-foreground/2 overflow-hidden mb-3">
+                  <div className="relative w-full h-32.5 rounded-3xl bg-foreground/2 overflow-hidden mb-3">
                     <motion.img
                       src={item.image}
                       alt={item.name}
@@ -345,32 +364,32 @@ export default function Home() {
                           ₹{item.price}
                         </span>
                       </div>
-                    <div className="flex items-center gap-1.5 shrink-0">
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          dispatch(addToCart(item));
-                        }}
-                        title="Add to Cart"
-                        className="w-7 h-7 rounded-full border border-primary/40 text-primary hover:bg-primary/10 hover:border-primary flex items-center justify-center transition-all cursor-pointer"
-                      >
-                        <Plus className="w-3.5 h-3.5" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          dispatch(addToCart(item));
-                          router.push("/checkout");
-                        }}
-                        className="px-2.5 py-1 rounded-full bg-primary text-primary-foreground font-extrabold text-[9px] uppercase tracking-wider shadow-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
-                      >
-                        Buy
-                      </button>
-                    </div>
+                      <div className="flex items-center gap-1.5 shrink-0">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            dispatch(addToCart(item));
+                          }}
+                          title="Add to Cart"
+                          className="w-7 h-7 rounded-full border border-primary/40 text-primary hover:bg-primary/10 hover:border-primary flex items-center justify-center transition-all cursor-pointer"
+                        >
+                          <Plus className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            dispatch(addToCart(item));
+                            router.push("/checkout");
+                          }}
+                          className="px-2.5 py-1 rounded-full bg-primary text-primary-foreground font-extrabold text-[9px] uppercase tracking-wider shadow-sm hover:scale-105 active:scale-95 transition-all cursor-pointer"
+                        >
+                          Buy
+                        </button>
+                      </div>
                     </div>
                   </div>
                 </Link>
@@ -466,7 +485,8 @@ export default function Home() {
               <div className="flex items-center gap-3">
                 <ShoppingBag className="w-4 h-4" />
                 <span className="text-[10px] md:text-[11px] font-black uppercase tracking-widest">
-                  {cartCount} {cartCount === 1 ? "Pack" : "Packs"} Ready to Munch
+                  {cartCount} {cartCount === 1 ? "Pack" : "Packs"} Ready to
+                  Munch
                 </span>
               </div>
               <div className="flex items-center gap-1">

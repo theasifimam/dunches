@@ -1,7 +1,11 @@
 "use client";
 
 import { useSelector, useDispatch } from "react-redux";
-import { selectUser, selectAddresses, setLogoutConfirmOpen } from "@/features/user/userSlice";
+import {
+  selectUser,
+  selectAddresses,
+  setLogoutConfirmOpen,
+} from "@/features/user/userSlice";
 import { motion } from "framer-motion";
 import {
   Crown,
@@ -75,13 +79,13 @@ export default function ProfileOverviewPage() {
       <motion.div
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative min-h-[260px] sm:min-h-[300px] bg-gradient-to-br from-[#1E1816] via-[#281F1B] to-[#14100E] text-[#FAF7F2] rounded-3xl sm:rounded-[2.25rem] p-7 sm:p-12 overflow-hidden shadow-2xl border border-primary/25 group transition-all duration-300 hover:border-primary/40"
+        className="relative min-h-65 sm:min-h-75 bg-linear-to-br from-[#1E1816] via-[#281F1B] to-[#14100E] text-[#FAF7F2] rounded-3xl sm:rounded-[2.25rem] p-7 sm:p-12 overflow-hidden shadow-2xl border border-primary/25 group transition-all duration-300 hover:border-primary/40"
       >
         {/* Glow Overlay */}
-        <div className="absolute top-0 right-0 w-[350px] h-[350px] bg-primary/15 rounded-full blur-[100px] pointer-events-none group-hover:bg-primary/25 transition-all duration-700" />
-        <div className="absolute bottom-0 left-0 w-[250px] h-[250px] bg-accent/10 rounded-full blur-[90px] pointer-events-none" />
+        <div className="absolute top-0 right-0 w-87.5 h-87.5 bg-primary/15 rounded-full blur-[100px] pointer-events-none group-hover:bg-primary/25 transition-all duration-700" />
+        <div className="absolute bottom-0 left-0 w-62.5 h-62.5 bg-accent/10 rounded-full blur-[90px] pointer-events-none" />
 
-        <div className="relative z-10 flex flex-col justify-between h-full min-h-[220px] sm:min-h-[240px]">
+        <div className="relative z-10 flex flex-col justify-between h-full min-h-55 sm:min-h-60">
           {/* Top Bar */}
           <div className="flex justify-between items-start gap-4">
             <div className="flex items-center gap-2.5 bg-primary/15 backdrop-blur-md px-3.5 py-1.5 rounded-full border border-primary/30">
@@ -147,7 +151,7 @@ export default function ProfileOverviewPage() {
         transition={{ delay: 0.05 }}
         className="grid grid-cols-1 sm:grid-cols-3 gap-4"
       >
-        <div className="bg-foreground/[0.025] border border-border/80 rounded-2xl p-5 flex items-center gap-4">
+        <div className="bg-foreground/2.5 border border-border/80 rounded-2xl p-5 flex items-center gap-4">
           <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
             <Package className="w-5 h-5" />
           </div>
@@ -155,11 +159,13 @@ export default function ProfileOverviewPage() {
             <p className="text-[10px] font-bold uppercase tracking-wider text-foreground/40">
               Account Status
             </p>
-            <p className="text-sm font-bold text-foreground mt-0.5">Active & Verified</p>
+            <p className="text-sm font-bold text-foreground mt-0.5">
+              Active & Verified
+            </p>
           </div>
         </div>
 
-        <div className="bg-foreground/[0.025] border border-border/80 rounded-2xl p-5 flex items-center gap-4">
+        <div className="bg-foreground/2.5 border border-border/80 rounded-2xl p-5 flex items-center gap-4">
           <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
             <MapPin className="w-5 h-5" />
           </div>
@@ -173,7 +179,7 @@ export default function ProfileOverviewPage() {
           </div>
         </div>
 
-        <div className="bg-foreground/[0.025] border border-border/80 rounded-2xl p-5 flex items-center gap-4">
+        <div className="bg-foreground/2.5 border border-border/80 rounded-2xl p-5 flex items-center gap-4">
           <div className="w-11 h-11 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
             <Crown className="w-5 h-5" />
           </div>
@@ -181,7 +187,9 @@ export default function ProfileOverviewPage() {
             <p className="text-[10px] font-bold uppercase tracking-wider text-foreground/40">
               Membership Level
             </p>
-            <p className="text-sm font-bold text-foreground mt-0.5">Imperial Gold</p>
+            <p className="text-sm font-bold text-foreground mt-0.5">
+              Imperial Gold
+            </p>
           </div>
         </div>
       </motion.div>
@@ -197,13 +205,15 @@ export default function ProfileOverviewPage() {
           <h2 className="text-lg font-bold font-serif tracking-tight text-foreground">
             Account Navigation
           </h2>
-          <span className="text-xs text-foreground/40">Quick management options</span>
+          <span className="text-xs text-foreground/40">
+            Quick management options
+          </span>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {quickLinks.map(({ label, desc, badge, href, icon: Icon }) => (
             <Link key={href} href={href}>
-              <div className="flex flex-col justify-between p-6 bg-foreground/[0.025] border border-border/80 rounded-3xl hover:border-primary/40 hover:bg-foreground/[0.04] transition-all duration-200 group cursor-pointer h-full relative overflow-hidden">
+              <div className="flex flex-col justify-between p-6 bg-foreground/2.5 border border-border/80 rounded-3xl hover:border-primary/40 hover:bg-foreground/4 transition-all duration-200 group cursor-pointer h-full relative overflow-hidden">
                 <div className="flex items-start justify-between mb-4">
                   <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center border border-primary/20 group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300 text-primary">
                     <Icon className="w-6 h-6" />
@@ -237,7 +247,7 @@ export default function ProfileOverviewPage() {
         initial={{ opacity: 0, y: 16 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.15 }}
-        className="p-6 sm:p-8 bg-foreground/[0.025] border border-border/80 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-6 backdrop-blur-md"
+        className="p-6 sm:p-8 bg-foreground/2.5 border border-border/80 rounded-3xl flex flex-col sm:flex-row items-center justify-between gap-6 backdrop-blur-md"
       >
         <div className="flex items-center gap-4 text-center sm:text-left">
           <div className="w-12 h-12 bg-emerald-500/10 rounded-2xl flex items-center justify-center text-emerald-600 border border-emerald-500/20 shrink-0">
@@ -248,7 +258,8 @@ export default function ProfileOverviewPage() {
               Secure Imperial Vault
             </h3>
             <p className="text-xs text-foreground/50 mt-0.5 max-w-md leading-relaxed">
-              Your profile data and saved delivery preferences are protected with high-standard encryption.
+              Your profile data and saved delivery preferences are protected
+              with high-standard encryption.
             </p>
           </div>
         </div>

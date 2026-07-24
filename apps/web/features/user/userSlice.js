@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit';
 
 const API = '/api/v1/users';
 
@@ -273,7 +273,11 @@ export const selectUserError = (state) => state.user.error;
 export const selectDeleteRequested = (state) => state.user.deleteRequested;
 export const selectDeletionLoading = (state) => state.user.deletionLoading;
 export const selectDeletionError = (state) => state.user.deletionError;
-export const selectAddresses = (state) => state.user.profile?.addresses ?? [];
+const EMPTY_ADDRESSES = [];
+export const selectAddresses = createSelector(
+  [selectUser],
+  (profile) => profile?.addresses ?? EMPTY_ADDRESSES
+);
 export const selectIsLogoutConfirmOpen = (state) => state.user.isLogoutConfirmOpen;
 
 export default userSlice.reducer;

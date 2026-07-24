@@ -13,7 +13,7 @@ export default function BrandIdentityCard({
   handleLogoChange,
 }) {
   return (
-    <div className="p-4 md:p-6 rounded-2xl md:rounded-[2rem] bg-card border border-border/40 shadow-sm space-y-4 md:space-y-6">
+    <div className="p-4 md:p-6 rounded-2xl md:rounded-4xl bg-card border border-border/40 shadow-sm space-y-4 md:space-y-6">
       <div className="flex items-center gap-3 pb-4 border-b border-border/20">
         <div className="h-10 w-10 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
           <Palette className="h-5 w-5" />

@@ -22,7 +22,7 @@ export default function NotificationCardsGrid({
           <div
             key={notif._id}
             className={cn(
-              "group relative rounded-2xl md:rounded-[2rem] bg-card border border-border/40 p-4 md:p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between cursor-pointer",
+              "group relative rounded-2xl md:rounded-4xl bg-card border border-border/40 p-4 md:p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between cursor-pointer",
               !notif.isRead && "bg-primary/2 border-primary/20",
             )}
             onClick={() => handleNotifClick(notif)}

@@ -5,9 +5,22 @@ import Link from "next/link";
 import { useSelector, useDispatch } from "react-redux";
 import { selectMenu } from "@/features/menu/menuSlice";
 import { addToCart } from "@/features/cart/cartSlice";
-import { selectHeroBanners, selectBannersLoading } from "@/features/banner/bannerSlice";
+import {
+  selectHeroBanners,
+  selectBannersLoading,
+} from "@/features/banner/bannerSlice";
 import { Button } from "./ui/button";
-import { ArrowRight, Sparkles, Flame, Plus, Check, ChevronLeft, ChevronRight, Megaphone, Tag } from "lucide-react";
+import {
+  ArrowRight,
+  Sparkles,
+  Flame,
+  Plus,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  Megaphone,
+  Tag,
+} from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -36,7 +49,9 @@ export default function HeroSection() {
   }, [heroBanners.length]);
 
   // Get top 3 best sellers
-  const bestSellers = menu ? menu.filter((item) => ["1", "2", "6"].includes(item.id)) : [];
+  const bestSellers = menu
+    ? menu.filter((item) => ["1", "2", "6"].includes(item.id))
+    : [];
 
   const handleQuickAdd = (e, item) => {
     e.preventDefault();
@@ -53,7 +68,9 @@ export default function HeroSection() {
   };
 
   const handlePrev = () => {
-    setCurrentSlide((prev) => (prev - 1 + heroBanners.length) % heroBanners.length);
+    setCurrentSlide(
+      (prev) => (prev - 1 + heroBanners.length) % heroBanners.length,
+    );
   };
 
   const handleNext = () => {
@@ -85,7 +102,7 @@ export default function HeroSection() {
               </div>
             </div>
             <div className="lg:col-span-5 flex justify-center">
-              <div className="w-[320px] aspect-[4/5] bg-muted animate-pulse rounded-[2.5rem]" />
+              <div className="w-[320px] aspect-4/5 bg-muted animate-pulse rounded-[2.5rem]" />
             </div>
           </div>
         </div>
@@ -115,7 +132,12 @@ export default function HeroSection() {
         </motion.div>
         <motion.div
           animate={{ y: [0, 10, 0], rotate: [0, -5, 0] }}
-          transition={{ duration: 8, repeat: Infinity, ease: "easeInOut", delay: 1 }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 1,
+          }}
           className="absolute bottom-[20%] right-[10%] text-primary opacity-10"
         >
           <Flame className="w-16 h-16 -rotate-45" />
@@ -123,12 +145,10 @@ export default function HeroSection() {
       </div>
 
       <div className="container mx-auto px-6 max-w-7xl relative z-10 pt-20">
-
         {/* Slides Content */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-
           {/* Left Column: Slide Text Hook */}
-          <div className="lg:col-span-7 space-y-8 text-left min-h-[480px] flex flex-col justify-between">
+          <div className="lg:col-span-7 space-y-8 text-left min-h-120 flex flex-col justify-between">
             <AnimatePresence mode="wait">
               <motion.div
                 key={activeSlide.id}
@@ -147,7 +167,10 @@ export default function HeroSection() {
                       <Tag className="w-3 h-3 text-primary animate-pulse" />
                     )}
                     <span className="text-[9px] font-black uppercase tracking-[0.2em] text-primary font-heading">
-                      {activeSlide.label || (activeSlide.type === "announcement" ? "Announcement" : "Special Offer")}
+                      {activeSlide.label ||
+                        (activeSlide.type === "announcement"
+                          ? "Announcement"
+                          : "Special Offer")}
                     </span>
                   </div>
                   {activeSlide.discountText && (
@@ -163,7 +186,9 @@ export default function HeroSection() {
                 {/* Title — clickable to navigate */}
                 <div
                   onClick={() => handleBannerClick(activeSlide)}
-                  className={activeSlide.buttonLink ? "cursor-pointer group/title" : ""}
+                  className={
+                    activeSlide.buttonLink ? "cursor-pointer group/title" : ""
+                  }
                 >
                   <h1 className="text-4xl sm:text-6xl md:text-7xl font-light leading-[0.95] tracking-tighter font-serif text-foreground lowercase group-hover/title:text-primary transition-colors duration-300">
                     {activeSlide.title}
@@ -178,14 +203,22 @@ export default function HeroSection() {
                 <div className="space-y-4 pt-2">
                   <div className="flex flex-col sm:flex-row items-center gap-4">
                     {activeSlide.buttonLink ? (
-                      <Button asChild size="lg" className="w-full sm:w-auto text-[10px] rounded-full">
+                      <Button
+                        asChild
+                        size="lg"
+                        className="w-full sm:w-auto text-[10px] rounded-full"
+                      >
                         <Link href={activeSlide.buttonLink}>
                           {activeSlide.actionText || "Shop Now"}
                           <ArrowRight className="w-4 h-4 transition-transform group-hover/button:translate-x-1.5" />
                         </Link>
                       </Button>
                     ) : (
-                      <Button onClick={scrollToMenu} size="lg" className="w-full sm:w-auto text-[10px] rounded-full">
+                      <Button
+                        onClick={scrollToMenu}
+                        size="lg"
+                        className="w-full sm:w-auto text-[10px] rounded-full"
+                      >
                         {activeSlide.actionText || "View Menu"}
                         <ArrowRight className="w-4 h-4 transition-transform group-hover/button:translate-x-1.5" />
                       </Button>
@@ -203,12 +236,16 @@ export default function HeroSection() {
 
                   <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[10px] font-bold text-foreground/40 uppercase tracking-widest">
                     <span className="flex items-center gap-1.5">
-                      <span className="text-primary font-black">✓</span> Free Shipping Over ₹499
+                      <span className="text-primary font-black">✓</span> Free
+                      Shipping Over ₹499
                     </span>
                     {activeSlide.code && (
                       <span className="flex items-center gap-1.5">
                         <span className="text-primary font-black">✓</span> Code:{" "}
-                        <span className="text-accent font-black">{activeSlide.code}</span> Applied
+                        <span className="text-accent font-black">
+                          {activeSlide.code}
+                        </span>{" "}
+                        Applied
                       </span>
                     )}
                   </div>
@@ -230,7 +267,7 @@ export default function HeroSection() {
                   {bestSellers.map((item) => (
                     <div
                       key={item.id}
-                      className="flex items-center gap-3 p-2.5 bg-foreground/[0.02] border border-border/40 rounded-2xl hover:border-primary/20 transition-all group relative overflow-hidden"
+                      className="flex items-center gap-3 p-2.5 bg-foreground/2 border border-border/40 rounded-2xl hover:border-primary/20 transition-all group relative overflow-hidden"
                     >
                       <div className="relative w-10 h-10 rounded-xl overflow-hidden bg-neutral-900 shrink-0 shadow-md">
                         <Image
@@ -246,8 +283,12 @@ export default function HeroSection() {
                           {item.name.replace(" Makhāna", "")}
                         </h4>
                         <div className="flex items-baseline gap-1 mt-0.5">
-                          <span className="text-xs font-black text-foreground">₹{Math.round(item.price * 0.85)}</span>
-                          <span className="text-[8px] text-foreground/30 line-through font-medium">₹{item.price}</span>
+                          <span className="text-xs font-black text-foreground">
+                            ₹{Math.round(item.price * 0.85)}
+                          </span>
+                          <span className="text-[8px] text-foreground/30 line-through font-medium">
+                            ₹{item.price}
+                          </span>
                         </div>
                       </div>
                       <button
@@ -258,7 +299,11 @@ export default function HeroSection() {
                             : "border-border/80 hover:bg-primary hover:border-primary hover:text-primary-foreground text-foreground/40"
                         }`}
                       >
-                        {addedId === item.id ? <Check className="w-3.5 h-3.5" /> : <Plus className="w-3.5 h-3.5" />}
+                        {addedId === item.id ? (
+                          <Check className="w-3.5 h-3.5" />
+                        ) : (
+                          <Plus className="w-3.5 h-3.5" />
+                        )}
                       </button>
                     </div>
                   ))}
@@ -271,13 +316,13 @@ export default function HeroSection() {
           <div className="lg:col-span-5 relative flex flex-col justify-center items-center">
             {/* Spinning Orbit Ring */}
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="w-[320px] h-[320px] md:w-[480px] md:h-[480px] rounded-full border border-primary/5 border-dashed animate-[spin_80s_linear_infinite]" />
+              <div className="w-[320px] h-80 md:w-120 md:h-120 rounded-full border border-primary/5 border-dashed animate-[spin_80s_linear_infinite]" />
             </div>
 
             {/* Showcase Container — entire card is a link */}
             <Link
               href={activeSlide.buttonLink || "/#menu-archive"}
-              className="relative w-full max-w-[280px] sm:max-w-[340px] aspect-[4/5] z-10 group cursor-pointer block"
+              className="relative w-full max-w-70 sm:max-w-85 aspect-4/5 z-10 group cursor-pointer block"
               aria-label={`Go to: ${activeSlide.title}`}
             >
               {/* Back Card (Depth Effect) */}
@@ -309,7 +354,7 @@ export default function HeroSection() {
                     />
 
                     {/* Minimal Dark Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent z-10 opacity-80" />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/30 to-transparent z-10 opacity-80" />
 
                     {/* Overlay CTA badge */}
                     <div className="absolute bottom-6 left-6 right-6 z-20">
@@ -328,7 +373,6 @@ export default function HeroSection() {
         {/* Carousel Pagination & Manual Arrow Controls */}
         {heroBanners.length > 1 && (
           <div className="flex items-center justify-between mt-12 pt-8 border-t border-border/10 z-20 relative">
-
             {/* Navigation Bullet Dots */}
             <div className="flex gap-2">
               {heroBanners.map((_, idx) => (
@@ -336,7 +380,9 @@ export default function HeroSection() {
                   key={idx}
                   onClick={() => setCurrentSlide(idx)}
                   className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
-                    currentSlide === idx ? "w-8 bg-primary" : "w-2 bg-foreground/20 hover:bg-foreground/40"
+                    currentSlide === idx
+                      ? "w-8 bg-primary"
+                      : "w-2 bg-foreground/20 hover:bg-foreground/40"
                   }`}
                   aria-label={`Go to slide ${idx + 1}`}
                 />
@@ -353,7 +399,7 @@ export default function HeroSection() {
                 <ChevronLeft className="w-5 h-5" />
               </button>
 
-              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/30 select-none min-w-[70px] text-center">
+              <span className="text-[9px] font-black uppercase tracking-[0.2em] text-foreground/30 select-none min-w-17.5 text-center">
                 {currentSlide + 1} / {heroBanners.length}
               </span>
 
@@ -365,10 +411,8 @@ export default function HeroSection() {
                 <ChevronRight className="w-5 h-5" />
               </button>
             </div>
-
           </div>
         )}
-
       </div>
     </section>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Phone, ArrowRight, ArrowLeft, RefreshCw } from "lucide-react";
 import { Button } from "../ui/button";
@@ -12,6 +13,8 @@ export default function PhoneRequestForm({
   loading,
   onSubmit,
   onBackToLogin,
+  agreedToTerms,
+  setAgreedToTerms,
 }) {
   return (
     <motion.form
@@ -41,9 +44,47 @@ export default function PhoneRequestForm({
           className="flex-1 bg-transparent outline-none text-[10px] font-black tracking-[0.2em] placeholder:text-foreground/20"
         />
       </div>
+
+      {step === "signup" && (
+        <div className="flex items-start gap-2.5 px-1 py-1">
+          <input
+            type="checkbox"
+            id="phone-req-terms"
+            checked={agreedToTerms || false}
+            onChange={(e) => setAgreedToTerms && setAgreedToTerms(e.target.checked)}
+            className="mt-0.5 w-4 h-4 rounded border-foreground/20 text-primary focus:ring-primary/40 cursor-pointer accent-primary shrink-0"
+          />
+          <label
+            htmlFor="phone-req-terms"
+            className="text-[10px] text-foreground/60 leading-relaxed cursor-pointer select-none"
+          >
+            I agree to the{" "}
+            <Link
+              href="/privacy"
+              target="_blank"
+              className="text-primary font-bold hover:underline"
+              onClick={(e) => e.stopPropagation()}
+            >
+              Privacy Policy
+            </Link>{" "}
+            and{" "}
+            <Link
+              href="/terms"
+              target="_blank"
+              className="text-primary font-bold hover:underline"
+              onClick={(e) => e.stopPropagation()}
+            >
+              Terms &amp; Conditions
+            </Link>
+          </label>
+        </div>
+      )}
+
       <Button
         type="submit"
-        disabled={phone.length !== 10 || loading}
+        disabled={
+          phone.length !== 10 || (step === "signup" && !agreedToTerms) || loading
+        }
         className="w-full h-13 rounded-2xl text-[11px] font-black tracking-[0.2em] uppercase shadow-xl flex items-center justify-center gap-2"
       >
         {loading ? (

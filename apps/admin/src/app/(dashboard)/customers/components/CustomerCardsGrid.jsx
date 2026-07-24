@@ -23,7 +23,7 @@ export default function CustomerCardsGrid({
           {filteredSubscribers.map((sub, idx) => (
             <div
               key={sub._id}
-              className="group rounded-2xl md:rounded-[2rem] bg-card border border-border/40 p-4 md:p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between gap-4"
+              className="group rounded-2xl md:rounded-4xl bg-card border border-border/40 p-4 md:p-5 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between gap-4"
             >
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
@@ -38,7 +38,9 @@ export default function CustomerCardsGrid({
                     />
                     <span
                       className={`text-[9px] font-black uppercase tracking-wider ${
-                        sub.isActive ? "text-primary" : "text-muted-foreground/50"
+                        sub.isActive
+                          ? "text-primary"
+                          : "text-muted-foreground/50"
                       }`}
                     >
                       {sub.isActive ? "Active" : "Unsubscribed"}
@@ -73,7 +75,7 @@ export default function CustomerCardsGrid({
           {filteredUsers.map((user) => (
             <div
               key={user._id}
-              className="group rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between"
+              className="group rounded-2xl md:rounded-4xl bg-card border border-border/40 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between"
             >
               <div className="p-4 space-y-3 md:p-5 md:space-y-4">
                 <div className="flex items-start justify-between gap-3">
@@ -164,13 +166,13 @@ export default function CustomerCardsGrid({
                       "h-5 w-9 rounded-full relative transition-all duration-300 p-0.5 shrink-0",
                       user.isActive
                         ? "bg-primary shadow-[0_0_8px_rgba(245,158,11,0.3)]"
-                        : "bg-muted"
+                        : "bg-muted",
                     )}
                   >
                     <div
                       className={cn(
                         "h-4 w-4 rounded-full bg-white shadow-sm transition-all duration-300 transform",
-                        user.isActive ? "translate-x-4" : "translate-x-0"
+                        user.isActive ? "translate-x-4" : "translate-x-0",
                       )}
                     />
                   </button>

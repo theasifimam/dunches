@@ -21,13 +21,24 @@ export default function SidebarMobileDrawer({
       {/* Mobile Drawer Overlay */}
       <AnimatePresence>
         {isMobileMoreOpen && (
-          <motion.div
-            initial={{ opacity: 0, y: 80 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 80 }}
-            transition={{ duration: 0.25 }}
-            className="md:hidden fixed bottom-20 left-4 right-4 bg-card border border-border/80 rounded-2xl p-4 shadow-2xl z-50 flex flex-col gap-3 max-h-[60vh] overflow-y-auto"
-          >
+          <>
+            {/* Backdrop overlay — clicking outside closes the bottom tabs menu dialog */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+              onClick={() => setIsMobileMoreOpen(false)}
+              className="md:hidden fixed inset-0 bg-background/60 backdrop-blur-xs z-40 cursor-pointer"
+            />
+
+            <motion.div
+              initial={{ opacity: 0, y: 80 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 80 }}
+              transition={{ duration: 0.25 }}
+              className="md:hidden fixed bottom-20 left-4 right-4 bg-card border border-border/80 rounded-2xl p-4 shadow-2xl z-50 flex flex-col gap-3 max-h-[60vh] overflow-y-auto"
+            >
             <div className="flex items-center justify-between border-b border-border/40 pb-2">
               <h3 className="text-xs font-bold text-muted-foreground uppercase tracking-wider">
                 Navigation
@@ -97,6 +108,7 @@ export default function SidebarMobileDrawer({
               </button>
             </div>
           </motion.div>
+          </>
         )}
       </AnimatePresence>
 
@@ -112,6 +124,7 @@ export default function SidebarMobileDrawer({
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => setIsMobileMoreOpen(false)}
               className={cn(
                 "flex flex-col items-center justify-center p-1.5 rounded-xl transition-colors relative flex-1",
                 isActive ? "text-primary font-bold" : "text-muted-foreground",

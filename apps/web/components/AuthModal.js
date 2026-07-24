@@ -28,7 +28,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
   const [otp, setOtp] = useState(["", "", "", ""]);
   const [timer, setTimer] = useState(30);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const otpRefs = [useRef(), useRef(), useRef(), useRef()];
 
@@ -43,6 +43,7 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
       setTimer(30);
       setLoading(false);
       setError("");
+      setAgreedToTerms(false);
     }
   }, [isOpen]);
 
@@ -357,6 +358,8 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
                   phone={phone}
                   setPhone={setPhone}
                   loading={loading}
+                  agreedToTerms={agreedToTerms}
+                  setAgreedToTerms={setAgreedToTerms}
                   onSubmit={
                     step === "signup"
                       ? handleSignupRequest
@@ -406,6 +409,8 @@ export default function AuthModal({ isOpen, onClose, onLoginSuccess }) {
                   showNewPwd={showNewPwd}
                   setShowNewPwd={setShowNewPwd}
                   loading={loading}
+                  agreedToTerms={agreedToTerms}
+                  setAgreedToTerms={setAgreedToTerms}
                   onSubmit={handleSignupVerify}
                 />
               )}

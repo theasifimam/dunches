@@ -28,6 +28,7 @@ export default function AuthStep({ onSuccess }) {
   const [timer, setTimer] = useState(30);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
   const otpRefs = [useRef(null), useRef(null), useRef(null), useRef(null)];
 
   useEffect(() => {
@@ -297,6 +298,8 @@ export default function AuthStep({ onSuccess }) {
           phone={phone}
           setPhone={setPhone}
           loading={loading}
+          agreedToTerms={agreedToTerms}
+          setAgreedToTerms={setAgreedToTerms}
           onSubmit={
             step === "signup" ? handleSignupRequest : handleForgotRequest
           }
@@ -342,6 +345,8 @@ export default function AuthStep({ onSuccess }) {
           showNewPwd={showNewPwd}
           setShowNewPwd={setShowNewPwd}
           loading={loading}
+          agreedToTerms={agreedToTerms}
+          setAgreedToTerms={setAgreedToTerms}
           onSubmit={handleSignupVerify}
         />
       )}

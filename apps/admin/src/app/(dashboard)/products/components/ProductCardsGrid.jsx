@@ -18,7 +18,7 @@ export default function ProductCardsGrid({
       {products.map((product) => (
         <div
           key={product._id}
-          className="group rounded-2xl md:rounded-[2rem] bg-card border border-border/40 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col"
+          className="group rounded-2xl md:rounded-4xl bg-card border border-border/40 overflow-hidden shadow-sm hover:shadow-md transition-all duration-300 flex flex-col"
         >
           {/* Product Image */}
           <div className="relative aspect-video w-full bg-muted overflow-hidden border-b border-border/20">
@@ -45,13 +45,13 @@ export default function ProductCardsGrid({
                   "h-5 w-9 rounded-full relative transition-all duration-300 p-0.5 shrink-0",
                   product.isActive
                     ? "bg-primary shadow-[0_0_8px_rgba(245,158,11,0.3)]"
-                    : "bg-muted"
+                    : "bg-muted",
                 )}
               >
                 <div
                   className={cn(
                     "h-4 w-4 rounded-full bg-white shadow-sm transition-all duration-300 transform",
-                    product.isActive ? "translate-x-4" : "translate-x-0"
+                    product.isActive ? "translate-x-4" : "translate-x-0",
                   )}
                 />
               </button>
@@ -92,7 +92,7 @@ export default function ProductCardsGrid({
                       ? "text-primary font-black"
                       : product.stock > 0
                         ? "text-orange-500"
-                        : "text-destructive"
+                        : "text-destructive",
                   )}
                 >
                   {product.stock} units
@@ -106,7 +106,7 @@ export default function ProductCardsGrid({
                       ? "bg-primary"
                       : product.stock > 0
                         ? "bg-orange-500"
-                        : "bg-destructive"
+                        : "bg-destructive",
                   )}
                   style={{
                     width: `${Math.min((product.stock / 50) * 100, 100)}%`,

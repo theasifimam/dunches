@@ -3,13 +3,8 @@
 import Link from "next/link";
 import {
   ShoppingBag,
-  Menu,
   Flame,
-  Sun,
-  Moon,
-  ArrowRight,
   User,
-  Search,
 } from "lucide-react";
 import { useSelector, useDispatch } from "react-redux";
 import { selectCartCount } from "@/features/cart/cartSlice";
@@ -22,7 +17,6 @@ import {
   setLogoutConfirmOpen,
   selectIsLogoutConfirmOpen,
 } from "@/features/user/userSlice";
-import { Button } from "./ui/button";
 import { useState, useEffect } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
@@ -209,42 +203,22 @@ export default function Navbar() {
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-1.5 md:gap-2">
-            {/* Mobile Search Link */}
-            <Link href="/explore" className="md:hidden">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-foreground/45 hover:text-primary bg-foreground/5 active:scale-95 transition-all cursor-pointer shrink-0">
-                <Search className="w-4 h-4" />
-              </div>
-            </Link>
-
-            {/* Guest Popover */}
-            {!user && (
-              <GuestMenuPopover theme={theme} toggleTheme={toggleTheme} />
-            )}
-
-            {/* Mobile Guest Menu Button */}
-            {!user && (
-              <button
-                onClick={() => setIsGuestMenuOpen(true)}
-                className="md:hidden w-8 h-8 rounded-full flex items-center justify-center text-foreground/45 hover:text-primary bg-foreground/5 active:scale-95 transition-all cursor-pointer shrink-0"
-              >
-                <Menu className="w-4 h-4" />
-              </button>
-            )}
-
+          <div className="flex items-center gap-1.5 md:gap-3">
             {/* Desktop Actions */}
-            <div className="hidden md:flex items-center gap-2">
-              <button
-                onClick={toggleTheme}
-                className="w-10 h-10 rounded-full flex items-center justify-center text-foreground/40 hover:text-primary transition-all"
-              >
-                {theme === "dark" ? (
-                  <Sun className="w-4 h-4" />
-                ) : (
-                  <Moon className="w-4 h-4" />
-                )}
-              </button>
-              <div className="w-px h-4 bg-border mx-1" />
+            <div className="hidden md:flex items-center gap-3">
+              <Link href="/cart">
+                <div className="relative w-10 h-10 md:w-11 md:h-11 flex items-center justify-center rounded-full glass hover:bg-primary hover:text-primary-foreground transition-all group cursor-pointer">
+                  <ShoppingBag
+                    className="w-4 h-4 md:w-5 md:h-5"
+                    strokeWidth={2}
+                  />
+                  {cartCount > 0 && (
+                    <span className="absolute -top-1 -right-1 flex h-4 w-4 md:h-5 md:w-5 items-center justify-center rounded-full bg-primary text-[8px] md:text-[10px] font-black text-primary-foreground shadow-lg border-2 border-background">
+                      {cartCount}
+                    </span>
+                  )}
+                </div>
+              </Link>
 
               {user ? (
                 <UserMenuPopover
@@ -255,48 +229,12 @@ export default function Navbar() {
                   handleLogout={handleLogout}
                 />
               ) : (
-                <button
-                  onClick={() => openAuth("login")}
-                  className="w-8 h-8 rounded-full border border-border flex items-center justify-center sm:hidden text-foreground/40"
-                >
-                  <User className="w-4 h-4" />
-                </button>
+                <GuestMenuPopover
+                  theme={theme}
+                  toggleTheme={toggleTheme}
+                  openAuth={openAuth}
+                />
               )}
-
-              <div className="hidden sm:flex items-center gap-2">
-                {!user && (
-                  <button
-                    onClick={() => openAuth("login")}
-                    className="text-[9px] font-black uppercase tracking-widest text-foreground/40 hover:text-primary px-3 transition-all font-heading cursor-pointer"
-                  >
-                    Login
-                  </button>
-                )}
-
-                <Link href="/cart">
-                  <div className="relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full glass hover:bg-primary hover:text-primary-foreground transition-all group">
-                    <ShoppingBag
-                      className="w-4 h-4 md:w-5 md:h-5"
-                      strokeWidth={2}
-                    />
-                    {cartCount > 0 && (
-                      <span className="absolute -top-1 -right-1 flex h-4 w-4 md:h-5 md:w-5 items-center justify-center rounded-full bg-primary text-[8px] md:text-[10px] font-black text-primary-foreground shadow-lg border-2 border-background">
-                        {cartCount}
-                      </span>
-                    )}
-                  </div>
-                </Link>
-
-                {!user && (
-                  <Button
-                    onClick={() => openAuth("signup")}
-                    className="hidden md:flex h-12 px-8 rounded-full text-xs font-black tracking-widest uppercase group"
-                  >
-                    Join Us{" "}
-                    <ArrowRight className="ml-2 w-4 h-4 transition-transform group-hover:translate-x-1" />
-                  </Button>
-                )}
-              </div>
             </div>
           </div>
         </nav>

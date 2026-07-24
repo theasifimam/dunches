@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createSlice, createAsyncThunk, createSelector } from '@reduxjs/toolkit';
 
 // Static fallback data used when the API is unreachable
 const FALLBACK_BANNERS = [
@@ -102,13 +102,13 @@ export const selectBannersLoading = (state) => state.banner.loading;
 export const selectBannersFetched = (state) => state.banner.fetched;
 
 /** Banners for the desktop Hero Slider */
-export const selectHeroBanners = (state) =>
-  state.banner.items.filter(
-    (b) => b.placement === 'Hero Slider' || b.placement === 'Both'
-  );
+export const selectHeroBanners = createSelector(
+  [selectAllBanners],
+  (items) => items.filter((b) => b.placement === 'Hero Slider' || b.placement === 'Both')
+);
 
 /** Banners for the mobile Promo Carousel */
-export const selectPromoBanners = (state) =>
-  state.banner.items.filter(
-    (b) => b.placement === 'Mobile Promo' || b.placement === 'Both'
-  );
+export const selectPromoBanners = createSelector(
+  [selectAllBanners],
+  (items) => items.filter((b) => b.placement === 'Mobile Promo' || b.placement === 'Both')
+);

@@ -42,7 +42,7 @@ const QuickSuggestions = ({ options, onSelect, currentValue }) => (
             "text-[9px] font-black uppercase tracking-widest px-2 py-1 rounded-md border transition-all",
             isSelected
               ? "bg-primary/20 text-primary border-primary"
-              : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted"
+              : "bg-muted/30 text-muted-foreground border-transparent hover:bg-muted",
           )}
         >
           {opt}
@@ -136,7 +136,7 @@ export default function QualitativeIntelSection({ formData, handleChange }) {
         <textarea
           value={formData.exactQuote}
           onChange={(e) => handleChange("exactQuote", e.target.value)}
-          className="w-full bg-background border border-border/50 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-primary/20 outline-none min-h-[50px] resize-y font-medium"
+          className="w-full bg-background border border-border/50 rounded-xl px-3 py-2 text-xs focus:ring-2 focus:ring-primary/20 outline-none min-h-12.5 resize-y font-medium"
           placeholder='"Highly spiced, loved the texture!"'
         />
       </div>
